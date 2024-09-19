@@ -15,21 +15,21 @@ jobs:
       with:
         python-version: '3.12'
         check-latest: true
-        cache: 'pip'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install sphinx sphinx-rtd-theme
+        python -m pip install sphinx sphinx-rtd-theme myst_parser
 
-    - name: Build documentation
+    - name: Sphinx build
       run: |
-        cd docs
-        make html
+        sphinx-build docs _build
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       with:
+        publish_branch: gh-pages
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/_build/html
-
+        publish_dir: _build/
+        force_orphan: true

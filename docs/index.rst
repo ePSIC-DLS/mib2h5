@@ -5,8 +5,8 @@ Welcome to the mib2h5 documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   quick_start
-   user_guide
+   quick_start <quick_start>
+   user_guide <user_guide>
    installation
    api_reference
    faq
