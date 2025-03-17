@@ -268,6 +268,6 @@ convert(
 For detailed parameter descriptions, refer to the header file `mib2h5.h` or the
 Python docstrings.
 
-## License
+## Licence
 
 MIT
