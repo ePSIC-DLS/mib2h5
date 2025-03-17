@@ -199,7 +199,6 @@ try:
     convert("input.mib")
 except (ValueError, RuntimeError):
     print("Conversion failed.")
-    raise
 else:
     print("Conversion successful!")
 ```
@@ -223,7 +222,6 @@ try:
     )
 except (ValueError, RuntimeError):
     print("Conversion failed.")
-    raise
 else:
     print("Conversion successful!")
 ```
