@@ -12,29 +12,31 @@ for handling large datasets efficiently.
 
 Below shows the hierarchy of the resulting HDF5 file:
 
+```text
 /                                   # Root group
 ├── data                            # Frames group
-│   └── shape: (100, 512, 512)      # (number\_of\_frames, height, width)
+│   └── shape: (100, 512, 512)      # (number_of_frames, height, width)
 │
 └── metadata/                       # Metadata group
-    ├── header\_id                  # Dataset: ['MQ1', 'MQ1', 'MQ1', ...]
+    ├── header_id                   # Dataset: ['MQ1', 'MQ1', 'MQ1', ...]
     │   └── shape: (100,)
     │
-    ├── acquisition\_sequence       # Dataset: [1, 2, 3, ...]
+    ├── acquisition_sequence        # Dataset: [1, 2, 3, ...]
     │   └── shape: (100,)
     │
-    ├── data\_offset                # Dataset: [768, 768, 768, ...]
+    ├── data_offset                 # Dataset: [768, 768, 768, ...]
     │   └── shape: (100,)
     │
-    ├── chip\_count                 # Dataset: [4, 4, 4, ...]
+    ├── chip_count                  # Dataset: [4, 4, 4, ...]
     │   └── shape: (100,)
     │
-    │── \<OTHER HEADERS...\>
+    │── <OTHER HEADERS...>
     │
-    └── conversion\_info/           # Information about the conversion process
-        ├── converter\_version      # Version number like 1.0.0
-        ├── conversion\_date        # Timestamp of the conversion
-        └── source\_file            # The name of the converted MIB file
+    └── conversion_info/            # Information about the conversion process
+        ├── converter_version       # Version number like 1.0.0
+        ├── conversion_date         # Timestamp of the conversion
+        └── source_file             # The name of the converted MIB file
+```
 
 [Documentation](https://epsic-dls.github.io/mib2h5/) is available.
 
