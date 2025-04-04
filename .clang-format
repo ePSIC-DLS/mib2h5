@@ -1,0 +1,25 @@
+BasedOnStyle: LLVM
+Language: C
+IndentWidth: 2
+ContinuationIndentWidth: 2
+ColumnLimit: 80
+PointerAlignment: Right
+BreakBeforeBraces: Linux
+UseTab: Never
+MaxEmptyLinesToKeep: 1
+SpaceBeforeParens: ControlStatements
+AllowShortIfStatementsOnASingleLine: Never
+IndentCaseLabels: true
+SortIncludes: CaseInsensitive
+IncludeBlocks: Preserve
+SpaceAfterCStyleCast: true
+AlignConsecutiveAssignments: Consecutive
+AllowShortFunctionsOnASingleLine: None
+AllowShortBlocksOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BinPackParameters: OnePerLine
+AlignAfterOpenBracket: Align
+SpaceBeforeAssignmentOperators: true
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 1
