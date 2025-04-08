@@ -1,3 +1,4 @@
+// clang-format Language: C
 #ifndef MIB_HEADER_DAC_RX_H
 #define MIB_HEADER_DAC_RX_H
 

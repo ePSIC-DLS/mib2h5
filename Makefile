@@ -18,4 +18,3 @@ $(BINDIR):
 
 clean:
 	rm -rf $(OBJDIR)/*.o $(TARGET)
-

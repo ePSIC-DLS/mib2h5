@@ -1,3 +1,4 @@
+// clang-format Language: C
 /*
 field 1: header ID (MQ1)
 field 2: sequence number of a frame
@@ -56,7 +57,6 @@ typedef struct {
 } mq1s;
 
 #endif
-
 
 #ifndef MIB_HEADER_MQ1_QUAD_H
 #define MIB_HEADER_MQ1_QUAD_H

@@ -1,3 +1,4 @@
+// clang-format Language: C
 #ifndef MQ1_SINGLE_HEADER_BYTES
 #define MQ1_SINGLE_HEADER_BYTES 384
 #endif
