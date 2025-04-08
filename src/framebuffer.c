@@ -12,11 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void allocate_frame(framebuffer *fb)
-{
-  return;
-}
-
 void free_frame(framebuffer *fb)
 {
   if (fb->rows)

@@ -9,6 +9,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* Mainly this is just for easy access to mq1_fields and dac
+ */
+
 info *mq1_fields_iter(MQ1_fields *fields_struct, size_t *out_count)
 {
   if (!fields_struct || !out_count)

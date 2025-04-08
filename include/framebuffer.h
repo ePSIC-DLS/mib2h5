@@ -20,7 +20,6 @@ typedef struct {
 	void *data;
 } framebuffer;
 
-void allocate_frame(framebuffer* fb);
 void free_frame(framebuffer* fb);
 
 #endif
