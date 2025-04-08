@@ -117,6 +117,7 @@ mib2h5 -c -d '/rawdata' -r '10x10' -t 300 input.mib
 ```
 
 This will:
+
 - enable Blosc compression
 - store the frames at the dataset key `/rawdata` in the HDF5 file
 - reshape the data to `(10, 10, det_y, det_x)` if there are 100 frames with
