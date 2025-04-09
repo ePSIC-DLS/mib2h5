@@ -20,6 +20,11 @@ void free_frame(framebuffer *fb)
     free(fb->dac2);
   if (fb->dac3)
     free(fb->dac3);
+  if (fb->mq1_header) {
+    deallocate_MQ1_fields(fb->mq1_header);
+    free(fb->mq1_header);
+    fb->mq1_header = NULL;
+  }
   fb->rows = NULL;
   fb->data = NULL;
   fb->dac0 = NULL;
