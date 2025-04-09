@@ -1,5 +1,9 @@
 // clang-format Language: C
-#include <mib_header_MQ1.h>
+#include "mib_header_DAC.h"
+#include "mib_header_MQ1.h"
+#include "read_mq1_headers.h"
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #ifndef MQ1_FIELDS_H
@@ -73,4 +77,17 @@ void fill_MQ1_single_fields(MQ1_fields *mq1_field,
 void fill_MQ1_quad_fields(MQ1_fields *mq1_field,
                           unsigned int index,
                           mq1q mq1_h);
+#endif
+
+#ifndef MQ1_FIELD_ITER_H
+#define MQ1_FIELD_ITER_H
+
+typedef struct {
+  const char *name;
+  void *data;
+} info;
+
+info *mq1_fields_iter(MQ1_fields *fields, size_t *out_count);
+info *dac_iter(dac_rx *dac, size_t *out_count);
+
 #endif

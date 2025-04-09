@@ -1,12 +1,6 @@
 #include "framebuffer.h"
-#include "mib_header_DAC.h"
-#include "mib_header_MQ1.h"
 #include "mib_macros.h"
-#include "mib_props_supp.h"
-#include "mib_utils.h"
-#include "mq1_quad.h"
-#include "mq1_single.h"
-#include "read_mq1_headers.h"
+#include "utils.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

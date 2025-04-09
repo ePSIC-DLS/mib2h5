@@ -1,10 +1,9 @@
-#include "read_mq1_headers.h"
-#include "mib_header_MQ1.h"
+#include "io_header.h"
+#include "mib_header.h"
 #include "mib_macros.h"
-#include "mib_utils.h"
-#include "mq1_quad.h"
-#include "mq1_single.h"
-
+#include "parser.h"
+#include "read_mq1_headers.h"
+#include "utils.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -392,4 +391,92 @@ void fill_MQ1_quad_fields(MQ1_fields *mq1_field, unsigned int index, mq1q mq1_h)
            MQ1_CHAR_LEN_EXTENDED_TIMESTAMP, "%s", mq1_h.extended_timestamp);
   mq1_field->exposure_time_ns[index] = mq1_h.exposure_time_ns;
   mq1_field->bit_depth[index]        = mq1_h.bit_depth;
+}
+
+/* Mainly this is just for easy access to mq1_fields and dac
+ */
+
+info *mq1_fields_info(MQ1_fields *fields_struct, size_t num_count)
+{
+  if (!fields_struct || !num_count)
+    return NULL;
+
+  if (num_count != 19) {
+    fprintf(stderr, "Wrong number of fields in mq1_fields_info\n");
+    return NULL;
+  }
+
+  info *fields = malloc(num_count * sizeof(info));
+  if (!fields)
+    return NULL;
+
+  fields[0]  = (info) {"max_length", &fields_struct->max_length};
+  fields[1]  = (info) {"sequence_number", fields_struct->sequence_number};
+  fields[2]  = (info) {"header_bytes", fields_struct->header_bytes};
+  fields[3]  = (info) {"num_chips", fields_struct->num_chips};
+  fields[4]  = (info) {"det_x", fields_struct->det_x};
+  fields[5]  = (info) {"det_y", fields_struct->det_y};
+  fields[6]  = (info) {"pixel_depth", fields_struct->pixel_depth};
+  fields[7]  = (info) {"sensor_layout", fields_struct->sensor_layout};
+  fields[8]  = (info) {"chip_select", fields_struct->chip_select};
+  fields[9]  = (info) {"timestamp", fields_struct->timestamp};
+  fields[10] = (info) {"exposure_time_s", fields_struct->exposure_time_s};
+  fields[11] = (info) {"counter", fields_struct->counter};
+  fields[12] = (info) {"colour_mode", fields_struct->colour_mode};
+  fields[13] = (info) {"gain_mode", fields_struct->gain_mode};
+  fields[14] = (info) {"threshold", fields_struct->threshold};
+  fields[15] =
+    (info) {"header_extension_id", fields_struct->header_extension_id};
+  fields[16] = (info) {"extended_timestamp", fields_struct->extended_timestamp};
+  fields[17] = (info) {"exposure_time_ns", fields_struct->exposure_time_ns};
+  fields[18] = (info) {"bit_depth", fields_struct->bit_depth};
+
+  return fields;
+}
+
+info *dac_info(dac_rx *dac, size_t num_count)
+{
+  if (!dac || !out_count)
+    return NULL;
+
+  if (num_count != 28) {
+    fprintf(stderr, "Wrong number of fields in dac_info\n");
+    return NULL;
+  }
+
+  info *dinfo = malloc(NUM_FIELDS * sizeof(info));
+  if (!dinfo)
+    return NULL;
+
+  dinfo[0]  = (info) {"dac_format", &dac->dac_format};
+  dinfo[1]  = (info) {"threshold0", &dac->threshold0};
+  dinfo[2]  = (info) {"threshold1", &dac->threshold1};
+  dinfo[3]  = (info) {"threshold2", &dac->threshold2};
+  dinfo[4]  = (info) {"threshold3", &dac->threshold3};
+  dinfo[5]  = (info) {"threshold4", &dac->threshold4};
+  dinfo[6]  = (info) {"threshold5", &dac->threshold5};
+  dinfo[7]  = (info) {"threshold6", &dac->threshold6};
+  dinfo[8]  = (info) {"threshold7", &dac->threshold7};
+  dinfo[9]  = (info) {"preamp", &dac->preamp};
+  dinfo[10] = (info) {"ikrum", &dac->ikrum};
+  dinfo[11] = (info) {"shaper", &dac->shaper};
+  dinfo[12] = (info) {"disc", &dac->disc};
+  dinfo[13] = (info) {"disc_LS", &dac->disc_LS};
+  dinfo[14] = (info) {"shaper_test", &dac->shaper_test};
+  dinfo[15] = (info) {"dac_disc_L", &dac->dac_disc_L};
+  dinfo[16] = (info) {"dac_test", &dac->dac_test};
+  dinfo[17] = (info) {"dac_disc_H", &dac->dac_disc_H};
+  dinfo[18] = (info) {"delay", &dac->delay};
+  dinfo[19] = (info) {"TP_buff_in", &dac->TP_buff_in};
+  dinfo[20] = (info) {"TP_buff_out", &dac->TP_buff_out};
+  dinfo[21] = (info) {"RPZ", &dac->RPZ};
+  dinfo[22] = (info) {"GND", &dac->GND};
+  dinfo[23] = (info) {"TP_ref", &dac->TP_ref};
+  dinfo[24] = (info) {"FBK", &dac->FBK};
+  dinfo[25] = (info) {"Cas", &dac->Cas};
+  dinfo[26] = (info) {"TP_ref_A", &dac->TP_ref_A};
+  dinfo[27] = (info) {"TP_ref_B", &dac->TP_ref_B};
+
+  *out_count = NUM_FIELDS;
+  return dinfo;
 }
