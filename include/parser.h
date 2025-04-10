@@ -1,5 +1,5 @@
 // clang-format Language: C
-#include "mib_header_MQ1.h"
+#include "mib_header.h"
 
 #ifndef PARSE_MQ1_SINGLE_H
 #define PARSE_MQ1_SINGLE_H

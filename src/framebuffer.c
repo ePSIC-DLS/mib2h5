@@ -1,5 +1,5 @@
 #include "framebuffer.h"
-#include "mib_macros.h"
+#include "macros.h"
 #include "utils.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -8,6 +8,10 @@
 
 void free_frame(framebuffer *fb)
 {
+  if (fb == NULL) {
+    fprintf(stderr, "NULL framebuffer\n");
+    return;
+  }
   if (fb->rows)
     free(fb->rows);
   if (fb->data)

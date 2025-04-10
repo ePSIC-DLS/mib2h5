@@ -1,8 +1,7 @@
 #include "io_header.h"
+#include "macros.h"
 #include "mib_header.h"
-#include "mib_macros.h"
 #include "parser.h"
-#include "read_mq1_headers.h"
 #include "utils.h"
 #include <errno.h>
 #include <stdio.h>
@@ -436,7 +435,7 @@ info *mq1_fields_info(MQ1_fields *fields_struct, size_t num_count)
 
 info *dac_info(dac_rx *dac, size_t num_count)
 {
-  if (!dac || !out_count)
+  if (!dac || !num_count)
     return NULL;
 
   if (num_count != 28) {
@@ -477,6 +476,5 @@ info *dac_info(dac_rx *dac, size_t num_count)
   dinfo[26] = (info) {"TP_ref_A", &dac->TP_ref_A};
   dinfo[27] = (info) {"TP_ref_B", &dac->TP_ref_B};
 
-  *out_count = NUM_FIELDS;
   return dinfo;
 }

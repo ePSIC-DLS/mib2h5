@@ -1,7 +1,6 @@
 // clang-format Language: C
-#include "mib_header_DAC.h"
-#include "mib_header_MQ1.h"
-#include "read_mq1_headers.h"
+#include "mib_header.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>

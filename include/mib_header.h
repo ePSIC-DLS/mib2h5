@@ -1,5 +1,5 @@
 // clang-format Language: C
-#include "mib_macros.h"
+#include "macros.h"
 #ifndef MIB_HEADER_DAC_RX_H
 #define MIB_HEADER_DAC_RX_H
 

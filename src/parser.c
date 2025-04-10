@@ -1,7 +1,7 @@
 #include "parser.h"
 #include "io_header.h"
+#include "macros.h"
 #include "mib_header.h"
-#include "mib_macros.h"
 #include "utils.h"
 
 #include <stdio.h>
