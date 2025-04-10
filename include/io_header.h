@@ -5,8 +5,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#ifndef MQ1_FIELDS_H
-#define MQ1_FIELDS_H
+#ifndef IO_HEADER_H
+#define IO_HEADER_H
 
 typedef struct {
   unsigned int max_length;
@@ -30,56 +30,29 @@ typedef struct {
   unsigned int *bit_depth;
 } MQ1_fields;
 
-#endif
-
-#ifndef ALLOCATE_MQ1_FIELDS_H
-#define ALLOCATE_MQ1_FIELDS_H
-
 MQ1_fields allocate_MQ1_fields(unsigned int nheaders);
-
-#endif
-
-#ifndef DEALLOCATE_MQ1_FIELDS_H
-#define DEALLOCATE_MQ1_FIELDS_H
 
 void deallocate_MQ1_fields(MQ1_fields mq1_fields);
 
-#endif
-
-#ifndef MQ1_SINGLE_FROM_FILE_H
-#define MQ1_SINGLE_FROM_FILE_H
 unsigned int mq1_single_from_file(FILE *mib_ptr,
                                   unsigned int nheaders,
                                   unsigned int detector_frame_bytes,
                                   mq1s *mq1s_h,
                                   MQ1_fields *mq1_fields);
-#endif
 
-#ifndef MQ1_QUAD_FROM_FILE_H
-#define MQ1_QUAD_FROM_FILE_H
 unsigned int mq1_quad_from_file(FILE *mib_ptr,
                                 unsigned int nheaders,
                                 unsigned int detector_frame_bytes,
                                 mq1q *mq1q_h,
                                 MQ1_fields *mq1_fields);
-#endif
 
-#ifndef FILL_MQ1_SINGLE_FIELDS_H
-#define FILL_MQ1_SINGLE_FIELDS_H
 void fill_MQ1_single_fields(MQ1_fields *mq1_field,
                             unsigned int index,
                             mq1s mq1_h);
-#endif
 
-#ifndef FILL_MQ1_QUAD_FIELDS_H
-#define FILL_MQ1_QUAD_FIELDS_H
 void fill_MQ1_quad_fields(MQ1_fields *mq1_field,
                           unsigned int index,
                           mq1q mq1_h);
-#endif
-
-#ifndef MQ1_FIELD_ITER_H
-#define MQ1_FIELD_ITER_H
 
 typedef struct {
   const char *name;

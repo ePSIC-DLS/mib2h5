@@ -1,4 +1,7 @@
 // clang-format Language: C
+#include "io_header.h"
+#include "mib_header.h"
+
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 

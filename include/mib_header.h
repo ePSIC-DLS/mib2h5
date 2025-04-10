@@ -1,7 +1,7 @@
 // clang-format Language: C
 #include "macros.h"
-#ifndef MIB_HEADER_DAC_RX_H
-#define MIB_HEADER_DAC_RX_H
+#ifndef MIB_HEADER_H
+#define MIB_HEADER_H
 
 typedef struct {
   char dac_format[4];
@@ -34,7 +34,6 @@ typedef struct {
   unsigned int TP_ref_B;
 } dac_rx;
 
-#endif
 /*
 field 1: header ID (MQ1)
 field 2: sequence number of a frame
@@ -64,9 +63,6 @@ field  54     / 138  : the pixel data bit depth
 The remainings are null bytes for padding.
 */
 
-#ifndef MIB_HEADER_MQ1_SINGLE_H
-#define MIB_HEADER_MQ1_SINGLE_H
-
 typedef struct {
   char header_id[MQ1_CHAR_LEN_HEADER_ID];
   unsigned int sequence_number;
@@ -89,11 +85,6 @@ typedef struct {
   unsigned int exposure_time_ns;
   unsigned int bit_depth;
 } mq1s;
-
-#endif
-
-#ifndef MIB_HEADER_MQ1_QUAD_H
-#define MIB_HEADER_MQ1_QUAD_H
 
 typedef struct {
   char header_id[MQ1_CHAR_LEN_HEADER_ID];
