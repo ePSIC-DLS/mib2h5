@@ -59,7 +59,7 @@ typedef struct {
   void *data;
 } info;
 
-info *mq1_fields_iter(MQ1_fields *fields, size_t *out_count);
-info *dac_iter(dac_rx *dac, size_t *out_count);
+info *mq1_fields_info(MQ1_fields *fields, size_t *out_count);
+info *dac_info(dac_rx *dac, size_t *out_count);
 
 #endif

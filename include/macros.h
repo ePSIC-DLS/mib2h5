@@ -46,3 +46,11 @@
 #ifndef MQ1_CHAR_LEN_EXTENDED_TIMESTAMP
 #define MQ1_CHAR_LEN_EXTENDED_TIMESTAMP 31
 #endif
+
+#ifndef MQ1_NUM_FIELDS
+#define MQ1_NUM_FIELDS 19
+#endif
+
+#ifndef DAC_NUM_FIELDS
+#define DAC_NUM_FIELDS 28
+#endif

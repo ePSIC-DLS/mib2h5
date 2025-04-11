@@ -1,3 +1,15 @@
+/* These are the memory allocation functions of he struct framebuffer declared
+ * in framebuffer.h
+ *
+ * allocate_frame_header only allocates mq1_header and dacs in framebuffer
+ * allocate_frame_data only allocates rows and data in framebuffer
+ *
+ * Please check if both of them have been used before any usage on the struct
+ *
+ * Please also call deallocate_frame for freeing the memory. deallocate_frame
+ * frees both header and data
+ */
+
 #include "framebuffer.h"
 #include "macros.h"
 #include "utils.h"
@@ -6,7 +18,107 @@
 #include <stdlib.h>
 #include <string.h>
 
-void free_frame(framebuffer *fb)
+void allocate_frame_header(framebuffer *fb)
+{
+  fb->mq1_header = malloc(sizeof(MQ1_fields));
+  if (!mq1_header) {
+    fprintf(stderr,
+            "Error in malloc for mq1_header in allocate_frame_header\n");
+    return;
+  }
+  fb->mq1_header = allocate_MQ1_fields(1);
+  fb->dac0       = (dac_rx *) malloc(sizeof(dac_rx));
+  if (!fb->dac0) {
+    fprintf(stderr, "Error in malloc for dac0 in allocate_frame_header\n");
+    return;
+  }
+  fb->mq1_header = allocate_MQ1_fields(1);
+  fb->dac1       = (dac_rx *) malloc(sizeof(dac_rx));
+  if (!fb->dac1) {
+    fprintf(stderr, "Error in malloc for dac1 in allocate_frame_header\n");
+    return;
+  }
+  fb->dac2 = (dac_rx *) malloc(sizeof(dac_rx));
+  if (!fb->dac2) {
+    fprintf(stderr, "Error in malloc for dac2 in allocate_frame_header\n");
+    return;
+  }
+  fb->dac3 = (dac_rx *) malloc(sizeof(dac_rx));
+  if (!fb->dac3) {
+    fprintf(stderr, "Error in malloc for dac3 in allocate_frame_header\n");
+    return;
+  }
+}
+
+void allocate_frame_data(framebuffer *fb)
+{
+  int bufsize = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
+                (fb->mq1_header->pixel_depth[2] - '0');
+  bufsize = bufsize / 8;
+
+  int detx = (int) *(fb->mq1_header->det_x);
+  int dety = (int) *(fb->mq1_header->det_y);
+
+  fb->rows = malloc(sizeof(void *) * dety);
+  if (!fb->rows) {
+    fprintf(stderr, "Error in malloc for fb->rows in allocate_frame_data\n");
+    return;
+  }
+  fb->data = NULL;
+  switch (bufsize) {
+    case 1: {
+      fb->data = malloc(sizeof(uint8_t) * detx * dety);
+      if (!data) {
+        fprintf(stderr, "malloc failed for data in read_frame");
+        return;
+      }
+      for (int i = 0; i < (int) dety; i++) {
+        fb->rows[i] = (uint8_t *) data + i * detx;
+      }
+      break;
+    }
+    case 2: {
+      fb->data = malloc(sizeof(uint16_t) * detx * dety);
+      if (!data) {
+        fprintf(stderr, "malloc failed for data in read_frame");
+        return;
+      }
+      for (int i = 0; i < (int) dety; i++) {
+        fb->rows[i] = (uint16_t *) data + i * detx;
+      }
+      break;
+    }
+    case 4: {
+      fb->data = malloc(sizeof(uint32_t) * detx * dety);
+      if (!data) {
+        fprintf(stderr, "malloc failed for data in read_frame");
+        return;
+      }
+      for (int i = 0; i < (int) dety; i++) {
+        fb->rows[i] = (uint32_t *) data + i * detx;
+      }
+      break;
+    }
+    case 8: {
+      fb->data = malloc(sizeof(uint64_t) * detx * dety);
+      if (!data) {
+        fprintf(stderr, "malloc failed for data in read_frame");
+        return;
+      }
+      for (int i = 0; i < (int) dety; i++) {
+        fb->rows[i] = (uint64_t *) data + i * detx;
+      }
+      break;
+    }
+    default:
+      printf("Unsupported pixel depth, single bit will be implemented later\n");
+      if (fb->data)
+        free(fb->data);
+      return;
+  }
+}
+
+void deallocate_frame(framebuffer *fb)
 {
   if (fb == NULL) {
     fprintf(stderr, "NULL framebuffer\n");

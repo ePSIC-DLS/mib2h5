@@ -393,6 +393,7 @@ void fill_MQ1_quad_fields(MQ1_fields *mq1_field, unsigned int index, mq1q mq1_h)
 }
 
 /* Mainly this is just for easy access to mq1_fields and dac
+ * Please free the returning array after using it
  */
 
 info *mq1_fields_info(MQ1_fields *fields_struct, size_t num_count)
@@ -443,7 +444,7 @@ info *dac_info(dac_rx *dac, size_t num_count)
     return NULL;
   }
 
-  info *dinfo = malloc(NUM_FIELDS * sizeof(info));
+  info *dinfo = malloc(num_count * sizeof(info));
   if (!dinfo)
     return NULL;
 
