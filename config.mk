@@ -1,7 +1,6 @@
 # === Directories ===
 SRCDIR := src
 OBJDIR := obj
-BINDIR ?= bin
 INCDIR := include
 HDFDIR ?= $(HDF5_ROOT)
 
@@ -34,4 +33,4 @@ SOURCES := $(wildcard $(SRCDIR)/*.c)
 
 OBJECTS := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SOURCES))
 
-TARGET := $(BINDIR)/mib2h5
+TARGET := mib2h5
