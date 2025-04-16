@@ -396,17 +396,12 @@ void fill_MQ1_quad_fields(MQ1_fields *mq1_field, unsigned int index, mq1q mq1_h)
  * Please free the returning array after using it
  */
 
-info *mq1_fields_info(MQ1_fields *fields_struct, size_t num_count)
+info *mq1_fields_info(MQ1_fields *fields_struct)
 {
-  if (!fields_struct || !num_count)
+  if (!fields_struct)
     return NULL;
 
-  if (num_count != 19) {
-    fprintf(stderr, "Wrong number of fields in mq1_fields_info\n");
-    return NULL;
-  }
-
-  info *fields = malloc(num_count * sizeof(info));
+  info *fields = malloc(MQ1_NUM_FIELDS * sizeof(info));
   if (!fields)
     return NULL;
 
@@ -434,17 +429,12 @@ info *mq1_fields_info(MQ1_fields *fields_struct, size_t num_count)
   return fields;
 }
 
-info *dac_info(dac_rx *dac, size_t num_count)
+info *dac_info(dac_rx *dac)
 {
-  if (!dac || !num_count)
+  if (!dac)
     return NULL;
 
-  if (num_count != 28) {
-    fprintf(stderr, "Wrong number of fields in dac_info\n");
-    return NULL;
-  }
-
-  info *dinfo = malloc(num_count * sizeof(info));
+  info *dinfo = malloc(DAC_NUM_FIELDS * sizeof(info));
   if (!dinfo)
     return NULL;
 

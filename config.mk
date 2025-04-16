@@ -1,8 +1,10 @@
 # === Directories ===
-SRCDIR := src
-OBJDIR := obj
-INCDIR := include
-HDFDIR ?= $(HDF5_ROOT)
+SRCDIR   := src
+OBJDIR   := obj
+INCDIR   := include
+HDFDIR   ?= $(HDF5_ROOT)
+HBDIR    := /home/wck38436/Desktop/hdf5-blosc
+BLOSCDIR := /home/wck38436/.blosc
 
 BUILD ?= debug
 
@@ -24,8 +26,8 @@ else
 	$(error Unknown BUILD type: $(BUILD))
 endif
 
-CFLAGS += -I$(SRCDIR) -I$(INCDIR) -I$(HDFDIR)/include
-LDFLAGS += -L$(HDFDIR)/lib -lhdf5
+CFLAGS += -I$(SRCDIR) -I$(INCDIR) -I$(HDFDIR)/include -I$(BLOSCDIR)/include -I$(HBDIR)/src
+LDFLAGS += -L$(HDFDIR)/lib -L$(BLOSCDIR)/lib64 -L$(HBDIR)/build -Wl,-rpath=/home/wck38436/.blosc/lib64 -Wl,-rpath=/home/wck38436/Desktop/hdf5-blosc/build -lhdf5 -lblosc -lblosc_filter
 
 # === Sources ===
 
