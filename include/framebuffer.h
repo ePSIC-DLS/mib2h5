@@ -23,6 +23,14 @@ void allocate_frame_header(framebuffer *fb);
 // allocate memory for data in framebuffer
 void allocate_frame_data(framebuffer *fb);
 
+// compress data inside framebuffer
+int compress_frame(framebuffer *fb,
+		   unsigned int compression_level,
+		   unsigned int shuffle,
+		   char *compressor,
+		   size_t blocksize,
+		   int numinternalthreads);
+
 // this is responsible for freeing the whole struct
 void deallocate_frame(framebuffer *fb);
 
