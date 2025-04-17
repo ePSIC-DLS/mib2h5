@@ -59,61 +59,67 @@ void allocate_frame_data(framebuffer *fb)
   int detx = (int) *(fb->mq1_header->det_x);
   int dety = (int) *(fb->mq1_header->det_y);
 
-  fb->rows = malloc(sizeof(void *) * dety);
-  if (!fb->rows) {
+  void **buffer = malloc(sizeof(void *) * dety);
+  if (!buffer) {
     fprintf(stderr, "Error in malloc for fb->rows in allocate_frame_data\n");
     return;
   }
-  fb->data = NULL;
+  void *data - NULL;
+  fb->rows = buffer;
   switch (bufsize) {
     case 1: {
-      fb->data = malloc(sizeof(uint8_t) * detx * dety);
+      data = malloc(sizeof(uint8_t) * detx * dety);
       if (!data) {
         fprintf(stderr, "malloc failed for data in read_frame");
         return;
       }
+      fb->data = data;
       for (int i = 0; i < (int) dety; i++) {
-        fb->rows[i] = (uint8_t *) data + i * detx;
+        buffer[i] = (uint8_t *) data + i * detx;
       }
       break;
     }
     case 2: {
-      fb->data = malloc(sizeof(uint16_t) * detx * dety);
+      data = malloc(sizeof(uint16_t) * detx * dety);
       if (!data) {
         fprintf(stderr, "malloc failed for data in read_frame");
         return;
       }
+      fb->data = data;
       for (int i = 0; i < (int) dety; i++) {
-        fb->rows[i] = (uint16_t *) data + i * detx;
+        buffer[i] = (uint16_t *) data + i * detx;
       }
       break;
     }
     case 4: {
-      fb->data = malloc(sizeof(uint32_t) * detx * dety);
+      data = malloc(sizeof(uint32_t) * detx * dety);
       if (!data) {
         fprintf(stderr, "malloc failed for data in read_frame");
         return;
       }
+      fb->data = data;
       for (int i = 0; i < (int) dety; i++) {
-        fb->rows[i] = (uint32_t *) data + i * detx;
+        buffer[i] = (uint32_t *) data + i * detx;
       }
       break;
     }
     case 8: {
-      fb->data = malloc(sizeof(uint64_t) * detx * dety);
+      data = malloc(sizeof(uint64_t) * detx * dety);
       if (!data) {
         fprintf(stderr, "malloc failed for data in read_frame");
         return;
       }
+      fb->data = data
       for (int i = 0; i < (int) dety; i++) {
-        fb->rows[i] = (uint64_t *) data + i * detx;
+        buffer[i] = (uint64_t *) data + i * detx;
       }
       break;
     }
     default:
       printf("Unsupported pixel depth, single bit will be implemented later\n");
-      if (fb->data)
-        free(fb->data);
+      if (data)
+        free(data);
+      free(buffer);
       return;
   }
 }
