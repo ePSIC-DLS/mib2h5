@@ -60,6 +60,6 @@ typedef struct {
 } info;
 
 info *mq1_fields_info(MQ1_fields *fields);
-info *dac_info(dac_rx *dac, size_t *out_count);
+info *dac_info(dac_rx *dac);
 
 #endif

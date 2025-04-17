@@ -429,17 +429,12 @@ info *mq1_fields_info(MQ1_fields *fields_struct)
   return fields;
 }
 
-info *dac_info(dac_rx *dac, size_t num_count)
+info *dac_info(dac_rx *dac)
 {
-  if (!dac || !num_count)
+  if (!dac)
     return NULL;
 
-  if (num_count != 28) {
-    fprintf(stderr, "Wrong number of fields in dac_info\n");
-    return NULL;
-  }
-
-  info *dinfo = malloc(num_count * sizeof(info));
+  info *dinfo = malloc(DAC_NUM_FIELDS * sizeof(info));
   if (!dinfo)
     return NULL;
 
