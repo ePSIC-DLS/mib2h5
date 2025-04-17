@@ -23,7 +23,7 @@
 void allocate_frame_header(framebuffer *fb)
 {
   fb->mq1_header = malloc(sizeof(MQ1_fields));
-  if (!mq1_header) {
+  if (!fb->mq1_header) {
     fprintf(stderr,
             "Error in malloc for mq1_header in allocate_frame_header\n");
     return;
