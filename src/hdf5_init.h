@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-// void check_space_and_storage(hid_t dset);
+void check_space_and_storage(hid_t dset);
 
 void initialize_file_and_plist(char *filename,
                                hid_t *file_id,
