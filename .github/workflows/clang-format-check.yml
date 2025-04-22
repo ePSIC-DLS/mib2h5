@@ -14,8 +14,8 @@ jobs:
     strategy:
       matrix:
         path:
-        - 'src'
-        - 'include'
+          - 'src'
+          - 'include'
     steps:
     - uses: actions/checkout@v4
     - name: Run clang-format style check
