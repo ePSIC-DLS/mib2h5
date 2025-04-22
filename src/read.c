@@ -21,18 +21,6 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
   headersize_str[5]      = '\0';
   int headersize         = atoi(headersize_str);
   char *header           = malloc(sizeof(char) * headersize);
-  MQ1_fields *mq1_header = malloc(sizeof(MQ1_fields));
-  if (!mq1_header) {
-    fprintf(stderr, "malloc fail for mq1_header in read_header\n");
-    free(header);
-    header = NULL;
-    return;
-  }
-  *mq1_header = allocate_MQ1_fields(1);
-  fb->dac0    = (dac_rx *) malloc(sizeof(dac_rx));
-  fb->dac1    = (dac_rx *) malloc(sizeof(dac_rx));
-  fb->dac2    = (dac_rx *) malloc(sizeof(dac_rx));
-  fb->dac3    = (dac_rx *) malloc(sizeof(dac_rx));
 
   fseek(mib_ptr, offset, SEEK_SET);
   fread(header, sizeof(char), headersize, mib_ptr);
