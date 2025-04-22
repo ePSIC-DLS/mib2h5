@@ -111,8 +111,8 @@ void allocate_frame_data(framebuffer *fb)
         fprintf(stderr, "malloc failed for data in read_frame");
         return;
       }
-      fb->data = data
-      for (int i = 0; i < (int) dety; i++) {
+      fb->data = data for (int i = 0; i < (int) dety; i++)
+      {
         buffer[i] = (uint64_t *) data + i * detx;
       }
       break;
@@ -130,12 +130,12 @@ void allocate_frame_data(framebuffer *fb)
  * The function will return the size of the data after compression
  * which is from blosc_compress_ctx
  */
-int compress_frame(framebuffer fb*,
-		   unsigned int compression_level,
-		   unsigned int shuffle,
-		   char *compressor,
-		   size_t blocksize,
-		   int numinternalthreads)
+int compress_frame(framebuffer fb *,
+                   unsigned int compression_level,
+                   unsigned int shuffle,
+                   char *compressor,
+                   size_t blocksize,
+                   int numinternalthreads)
 {
   int bufsize = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
                 (fb->mq1_header->pixel_depth[2] - '0');
