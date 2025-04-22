@@ -18,9 +18,9 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
   char headersize_str[6] = {0};
   fread(buf, sizeof(char), 16, mib_ptr);
   memcpy(headersize_str, buf + 11, 5);
-  headersize_str[5]      = '\0';
-  int headersize         = atoi(headersize_str);
-  char *header           = malloc(sizeof(char) * headersize);
+  headersize_str[5] = '\0';
+  int headersize    = atoi(headersize_str);
+  char *header      = malloc(sizeof(char) * headersize);
 
   fseek(mib_ptr, offset, SEEK_SET);
   fread(header, sizeof(char), headersize, mib_ptr);
