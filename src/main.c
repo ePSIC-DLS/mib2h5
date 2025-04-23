@@ -31,8 +31,6 @@
  */
 #define COMPRESSOR "blosclz"
 #define DIM 3
-#define NUM_META_FIELD 19
-#define NUM_DAC_FIELD 28
 
 int main(int argc, char *argv[])
 {
@@ -149,14 +147,16 @@ int main(int argc, char *argv[])
                         SHUFFLE, com);
   // printf("=== done create frame dataset ===\n");
 
-  hid_t meta_handle[NUM_META_FIELD];
-  hid_t dac_handle[NUM_DAC_FIELD * 4];
+  hid_t meta_handle[MQ1_FIELDS_NUM_FIELDS];
+  hid_t dac_handle[DAC_NUM_FIELDS * 4];
 
   create_meta_mq1_fields_dataset(&file_id, &lcpl_id, meta_handle);
   // printf("== done create meta_mq1===\n");
   create_dac_dataset(*num_chips, &file_id, &lcpl_id, dac_handle);
 
-  // === end initialize hdf5 ===
+  // for (int i=0; i<DAC_NUM_FIELDS * 4; i++)
+  //   printf("Dataset number :%ld\n", dac_handle[i]);
+  //  === end initialize hdf5 ===
 
   // printf("+++ init hdf5 done +++\n");
   end                         = clock();
@@ -204,6 +204,7 @@ int main(int argc, char *argv[])
   double time_per_loop   = time_total_loop / loop;
   printf("+++ Time per loop: %02f +++\n", time_per_loop);
 
+  /*
   for (int i = 0; i < NUM_META_FIELD; i++) {
     if (meta_handle[i] >= 0)
       H5Dclose(meta_handle[i]);
@@ -212,6 +213,9 @@ int main(int argc, char *argv[])
     if (dac_handle[i] >= 0)
       H5Dclose(dac_handle[i]);
   }
+  */
+  close_dataset_handle(meta_handle, MQ1_FIELDS_NUM_FIELDS);
+  close_dataset_handle(dac_handle, DAC_NUM_FIELDS * 4);
 
   if (frame_dset_id >= 0)
     H5Dclose(frame_dset_id);

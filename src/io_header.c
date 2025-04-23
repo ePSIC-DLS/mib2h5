@@ -401,7 +401,7 @@ info *mq1_fields_info(MQ1_fields *fields_struct)
   if (!fields_struct)
     return NULL;
 
-  info *fields = malloc(MQ1_NUM_FIELDS * sizeof(info));
+  info *fields = malloc(MQ1_FIELDS_NUM_FIELDS * sizeof(info));
   if (!fields)
     return NULL;
 

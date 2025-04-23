@@ -106,7 +106,6 @@ void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
 
   // TO-DO: add checks for corruption
   fread(raw_data, sizeof(char), bufsize * detx * dety, mib_ptr);
-  // fix buffer
 
   for (int i = 0; i < dety; i++) {
     for (int j = 0; j < detx; j++) {
