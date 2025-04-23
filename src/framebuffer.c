@@ -34,8 +34,7 @@ void allocate_frame_header(framebuffer *fb)
     fprintf(stderr, "Error in malloc for dac0 in allocate_frame_header\n");
     return;
   }
-  fb->mq1_header = allocate_MQ1_fields(1);
-  fb->dac1       = (dac_rx *) malloc(sizeof(dac_rx));
+  fb->dac1 = (dac_rx *) malloc(sizeof(dac_rx));
   if (!fb->dac1) {
     fprintf(stderr, "Error in malloc for dac1 in allocate_frame_header\n");
     return;
