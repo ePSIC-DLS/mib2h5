@@ -15,6 +15,7 @@
 #include "framebuffer.h"
 #include "macros.h"
 #include "utils.h"
+#include <blosc.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,8 +29,8 @@ void allocate_frame_header(framebuffer *fb)
             "Error in malloc for mq1_header in allocate_frame_header\n");
     return;
   }
-  fb->mq1_header = allocate_MQ1_fields(1);
-  fb->dac0       = (dac_rx *) malloc(sizeof(dac_rx));
+  *(fb->mq1_header) = allocate_MQ1_fields(1);
+  fb->dac0          = (dac_rx *) malloc(sizeof(dac_rx));
   if (!fb->dac0) {
     fprintf(stderr, "Error in malloc for dac0 in allocate_frame_header\n");
     return;
@@ -129,7 +130,7 @@ void allocate_frame_data(framebuffer *fb)
  * The function will return the size of the data after compression
  * which is from blosc_compress_ctx
  */
-int compress_frame(framebuffer fb *,
+int compress_frame(framebuffer *fb,
                    unsigned int compression_level,
                    unsigned int shuffle,
                    char *compressor,
