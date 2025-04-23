@@ -118,7 +118,7 @@ void append_meta_to_dataset(hid_t *meta_handle, framebuffer *fb)
   hsize_t mem_dim[1] = {1};
 
   //	size_t num_fields = sizeof(meta_handle) / sizeof(meta_handle[0]);
-  for (size_t i = 0; i < MQ1_NUM_FIELDS; i++) {
+  for (size_t i = 0; i < MQ1_FIELDS_NUM_FIELDS; i++) {
     datatype  = H5Dget_type(meta_handle[i]);
     filespace = H5Dget_space(meta_handle[i]);
     H5Sget_simple_extent_dims(filespace, dim, NULL);
