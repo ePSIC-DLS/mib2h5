@@ -15,6 +15,7 @@
 #include "macros.h"
 #include "mib_header.h"
 #include "utils.h"
+
 #include <blosc.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -68,6 +69,7 @@ void allocate_frame_data(framebuffer *fb)
   }
   void *data = NULL;
   fb->rows   = buffer;
+
   switch (bufsize) {
     case 1: {
       data = malloc(sizeof(uint8_t) * detx * dety);
@@ -126,10 +128,6 @@ void allocate_frame_data(framebuffer *fb)
   }
 }
 
-/* This is to compress the data inside framebuffer->data
- * The function will return the size of the data after compression
- * which is from blosc_compress_ctx
- */
 int compress_frame(framebuffer *fb,
                    unsigned int compression_level,
                    unsigned int shuffle,
