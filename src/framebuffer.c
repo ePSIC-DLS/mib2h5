@@ -68,7 +68,6 @@ void allocate_frame_data(framebuffer *fb)
   }
   void *data = NULL;
   fb->rows   = buffer;
-
   switch (bufsize) {
     case 1: {
       data = malloc(sizeof(uint8_t) * detx * dety);
