@@ -65,8 +65,8 @@ void allocate_frame_data(framebuffer *fb)
     fprintf(stderr, "Error in malloc for fb->rows in allocate_frame_data\n");
     return;
   }
-  void *data - NULL;
-  fb->rows = buffer;
+  void *data = NULL;
+  fb->rows   = buffer;
   switch (bufsize) {
     case 1: {
       data = malloc(sizeof(uint8_t) * detx * dety);
@@ -110,8 +110,8 @@ void allocate_frame_data(framebuffer *fb)
         fprintf(stderr, "malloc failed for data in read_frame");
         return;
       }
-      fb->data = data for (int i = 0; i < (int) dety; i++)
-      {
+      fb->data = data;
+      for (int i = 0; i < (int) dety; i++) {
         buffer[i] = (uint64_t *) data + i * detx;
       }
       break;
@@ -203,7 +203,7 @@ void deallocate_frame(framebuffer *fb)
   if (fb->dac3)
     free(fb->dac3);
   if (fb->mq1_header) {
-    deallocate_MQ1_fields(fb->mq1_header);
+    deallocate_MQ1_fields(*(fb->mq1_header));
     free(fb->mq1_header);
     fb->mq1_header = NULL;
   }
