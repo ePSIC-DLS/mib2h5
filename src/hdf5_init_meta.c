@@ -270,6 +270,9 @@ void create_dac_dataset(unsigned int num_chips,
         dac_handle[j] = H5I_INVALID_HID;
         continue;
       }
+      // else {
+      //   printf("Created dataset: %s\n", dataset_path);
+      // }
       dac_handle[j] = dataset;
     }
 
@@ -284,10 +287,12 @@ void create_dac_dataset(unsigned int num_chips,
 
 void close_dataset_handle(hid_t *handle, size_t count)
 {
-  if (!handle)
+  if (!handle) {
+    printf("No handle\n");
     return;
+  }
   for (size_t i = 0; i < count; i++) {
-    if (handle[i] >= 0) {
+    if (H5Iis_valid(handle[i])) {
       H5Dclose(handle[i]);
     }
   }
