@@ -1,14 +1,14 @@
 #include "hdf5_init.h"
-#include "macros.h"
-#include "utils.h"
+#include "blosc_filter.h"
+#include <blosc.h>
 #include <hdf5.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-void initialize_plist(char *path,
-                      hid_t *fapl_id,
-                      hid_t *fcpl_id,
-                      hid_t *lcpl_id)
+void initialize_file_and_plist(char *filename,
+                               hid_t *file_id,
+                               hid_t *fapl_id,
+                               hid_t *fcpl_id)
 {
   if ((*fcpl_id = H5Pcreate(H5P_FILE_CREATE)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating fcpl in create_file\n");
