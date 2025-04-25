@@ -70,7 +70,6 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
   hid_t lcpl = *lcpl_id;
   hid_t dcpl;
   hid_t dapl;
-  // int fill_value = -1;
   unsigned int cd_values[7] = {0};
 
   if ((dcpl = H5Pcreate(H5P_DATASET_CREATE)) == H5I_INVALID_HID) {
@@ -85,12 +84,6 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
       fprintf(stderr, "Error in H5Pset_fill_time\n");
       return;
     }
-    /*
-    if (H5Pset_fill_value(dcpl, H5T_NATIVE_INT, &fill_value) < 0) {
-      fprintf(stderr, "Error in H5Pset_fill_value\n");
-      return;
-    }
-   */
     cd_values[0] = 0;
     cd_values[1] = compression_level;
     cd_values[2] = shuffle;
