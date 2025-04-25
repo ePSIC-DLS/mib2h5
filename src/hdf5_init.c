@@ -5,10 +5,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void initialize_file_and_plist(char *filename,
-                               hid_t *file_id,
-                               hid_t *fapl_id,
-                               hid_t *fcpl_id)
+void initialize_plist(char *filename,
+                      hid_t *file_id,
+                      hid_t *fapl_id,
+                      hid_t *fcpl_id,
+                      hid_t *lcpl_id)
 {
   if ((*fcpl_id = H5Pcreate(H5P_FILE_CREATE)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating fcpl in create_file\n");
@@ -25,26 +26,29 @@ void initialize_file_and_plist(char *filename,
       return;
     }
   }
+  if ((*file_id = H5Fcreate(filename, mode, *fcpl_id, *fapl_id)) ==
+      H5I_INVALID_HID) {
+    fprintf(stderr, "Error in creating file_id in create_file, please check if "
+                    "file already existed\n");
+    return;
+  }
   if ((*lcpl_id = H5Pcreate(H5P_LINK_CREATE)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating lcpl in initialize_dataset_plist\n");
     return;
   }
 }
 
-void initialize_file(char *filename, hid_t *file_id, hid_t fapl, hid_t fcpl)
+void initialize_file(char *filename,
+                     hid_t *file_id,
+                     hid_t fapl,
+                     hid_t fcpl)
 {
-  if (filename == NULL) {
-    fprintf(stderr, "Empty or other error in filename, please check\n");
-    return;
-  }
-
   if (!H5Iis_valid(fapl) || !H5Iis_valid(fcpl)) {
     fprintf(stderr, "fapl or fcpl is invalid in initialize_file\n");
     return;
   }
 
-  if ((*file_id = H5Fcreate(filename, H5F_ACC_TRUNC, fcpl, fapl)) ==
-      H5I_INVALID_HID) {
+  if ((*file_id = H5Fcreate(filename, H5F_ACC_TRUNC, fcpl, fapl)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating file_id in intialize_file\n");
     return;
   }
