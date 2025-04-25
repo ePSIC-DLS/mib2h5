@@ -26,12 +26,6 @@ void initialize_plist(char *filename,
       return;
     }
   }
-  if ((*file_id = H5Fcreate(filename, mode, *fcpl_id, *fapl_id)) ==
-      H5I_INVALID_HID) {
-    fprintf(stderr, "Error in creating file_id in create_file, please check if "
-                    "file already existed\n");
-    return;
-  }
   if ((*lcpl_id = H5Pcreate(H5P_LINK_CREATE)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating lcpl in initialize_dataset_plist\n");
     return;
@@ -77,18 +71,6 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
     }
     if (H5Pset_fill_time(dcpl, H5D_FILL_TIME_NEVER) < 0) {
       fprintf(stderr, "Error in H5Pset_fill_time\n");
-      return;
-    }
-    cd_values[0] = 0;
-    cd_values[1] = compression_level;
-    cd_values[2] = shuffle;
-    cd_values[3] = 0; // blocksize
-    cd_values[4] = 0; // unused
-    cd_values[5] = 0; // unused
-    cd_values[6] = compressor;
-    if (H5Pset_filter(dcpl, FILTER_BLOSC, H5Z_FLAG_OPTIONAL, 7, cd_values) <
-        0) {
-      fprintf(stderr, "Error in H5Pset_filter\n");
       return;
     }
   }
