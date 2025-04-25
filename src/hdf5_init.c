@@ -38,17 +38,15 @@ void initialize_plist(char *filename,
   }
 }
 
-void initialize_file(char *filename,
-                     hid_t *file_id,
-                     hid_t fapl,
-                     hid_t fcpl)
+void initialize_file(char *filename, hid_t *file_id, hid_t fapl, hid_t fcpl)
 {
   if (!H5Iis_valid(fapl) || !H5Iis_valid(fcpl)) {
     fprintf(stderr, "fapl or fcpl is invalid in initialize_file\n");
     return;
   }
 
-  if ((*file_id = H5Fcreate(filename, H5F_ACC_TRUNC, fcpl, fapl)) == H5I_INVALID_HID) {
+  if ((*file_id = H5Fcreate(filename, H5F_ACC_TRUNC, fcpl, fapl)) ==
+      H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating file_id in intialize_file\n");
     return;
   }
