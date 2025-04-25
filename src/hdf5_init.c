@@ -1,6 +1,5 @@
 #include "hdf5_init.h"
 #include "blosc_filter.h"
-
 #include <blosc.h>
 #include <hdf5.h>
 #include <math.h>
@@ -8,21 +7,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-/*
-// functions for debugging
-void check_space_and_storage(hid_t dset) {
-        H5D_space_status_t space_status;
-        hsize_t storage_size;
-
-        status = H5Dget_space_status(dset, &space_status);
-        storage_size = H5Dget_storage_size(dset);
-        printf("Space for dataset has%sbeen allocated. \n", space_status ==
-H5D_SPACE_STATUS_ALLOCATED ? " " : " NOT "); printf("Storage size for dataset is
-: %ld bytes.\n", (long)storage_size);
-}
-*/
-
-// REAL functions
 void initialize_file_and_plist(char *filename,
                                hid_t *file_id,
                                hid_t *fapl_id,
