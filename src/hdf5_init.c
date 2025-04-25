@@ -7,14 +7,12 @@
 #include <stdlib.h>
 #include <time.h>
 
-void initialize_file_and_plist(char *filename,
-                               hid_t *file_id,
-                               hid_t *fapl_id,
-                               hid_t *fcpl_id)
+void initialize_plist(char *filename,
+                      hid_t *file_id,
+                      hid_t *fapl_id,
+                      hid_t *fcpl_id,
+                      hid_t *lcpl_id)
 {
-  unsigned mode = H5F_ACC_TRUNC;
-  char *version, *date;
-
   if ((*fcpl_id = H5Pcreate(H5P_FILE_CREATE)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating fcpl in create_file\n");
     return;
@@ -34,34 +32,26 @@ void initialize_file_and_plist(char *filename,
                     "file already existed\n");
     return;
   }
-  if (register_blosc(&version, &date) < 0) {
-    fprintf(stderr, "Error in register_blosc\n");
-    return;
-  } else {
-    printf("Blosc version info: %s (%s)\n", version, date);
-    free(version);
-    free(date);
-  }
-}
-
-void initialize_lcpl(hid_t *lcpl_id)
-{
   if ((*lcpl_id = H5Pcreate(H5P_LINK_CREATE)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating lcpl in initialize_dataset_plist\n");
     return;
   }
-  /*
-  else {
-    if (H5Pset_create_intermediate_group(*lcpl_id, 1) < 0) {
-      fprintf(stderr, "Error in H5Pset_create_intermediate_group\n");
-      return;
-    }
-    if (H5Pset_char_encoding(*lcpl_id, H5T_CSET_UTF8) < 0) {
-      fprintf(stderr, "Error in H5Pset_char_encoding\n");
-      return;
-    }
+}
+
+void initialize_file(char *filename,
+                     hid_t *file_id,
+                     hid_t fapl,
+                     hid_t fcpl)
+{
+  if (!H5Iis_valid(fapl) || !H5Iis_valid(fcpl)) {
+    fprintf(stderr, "fapl or fcpl is invalid in initialize_file\n");
+    return;
   }
-  */
+
+  if ((*file_id = H5Fcreate(filename, H5F_ACC_TRUNC, fcpl, fapl)) == H5I_INVALID_HID) {
+    fprintf(stderr, "Error in creating file_id in intialize_file\n");
+    return;
+  }
 }
 
 void create_merlin_dataset(hid_t *merlin_dataset_id,
