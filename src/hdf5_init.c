@@ -63,9 +63,11 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
                            size_t dim,
                            hsize_t *frame_dim)
 {
-  hid_t dcpl     = H5I_INVALID_HID;
-  hid_t dapl     = H5I_INVALID_HID;
-  hid_t datatype = H5I_INVALID_HID;
+  hid_t file = *file_id;
+  hid_t lcpl = *lcpl_id;
+  hid_t dcpl;
+  hid_t dapl;
+  unsigned int cd_values[7] = {0};
 
   if ((dcpl = H5Pcreate(H5P_DATASET_CREATE)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating dcpl\n");
@@ -77,7 +79,19 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
     }
     if (H5Pset_fill_time(dcpl, H5D_FILL_TIME_NEVER) < 0) {
       fprintf(stderr, "Error in H5Pset_fill_time\n");
-      goto cleanup;
+      return;
+    }
+    cd_values[0] = 0;
+    cd_values[1] = compression_level;
+    cd_values[2] = shuffle;
+    cd_values[3] = 0; // blocksize
+    cd_values[4] = 0; // unused
+    cd_values[5] = 0; // unused
+    cd_values[6] = compressor;
+    if (H5Pset_filter(dcpl, FILTER_BLOSC, H5Z_FLAG_OPTIONAL, 7, cd_values) <
+        0) {
+      fprintf(stderr, "Error in H5Pset_filter\n");
+      return;
     }
   }
 
