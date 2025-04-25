@@ -1,6 +1,4 @@
 #include "hdf5_init.h"
-#include "blosc_filter.h"
-#include <blosc.h>
 #include <hdf5.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,7 +59,6 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
   hid_t lcpl = *lcpl_id;
   hid_t dcpl;
   hid_t dapl;
-  unsigned int cd_values[7] = {0};
 
   if ((dcpl = H5Pcreate(H5P_DATASET_CREATE)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating dcpl\n");
