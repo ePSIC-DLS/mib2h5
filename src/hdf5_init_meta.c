@@ -158,7 +158,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   if (num_meta_handle < num_data) {
     fprintf(stderr, "meta_handle not enough space, please check declaration in "
                     "main and hdf5_init.c");
-    goto label_close_ext_timestmp;
+    goto label_close_threshold;
   }
 
   for (size_t i = 0; i < num_datasets; i++) {
