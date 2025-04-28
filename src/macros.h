@@ -30,10 +30,6 @@
 
 #define DAC_NUM_FIELDS 28
 
-#define NUM_CHUNKS_IN_CACHE 32
-
-#define PRIME_FOR_HASH 521
-
-#define ALIGNMENT_THRESHOLD 512
+#define NUM_CHUNKSS_IN_CACHE 32
 
 #endif
