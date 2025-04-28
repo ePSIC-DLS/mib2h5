@@ -1,4 +1,5 @@
 // clang-format Language: C
+#include <hdf5.h>
 #include <stdio.h>
 
 #ifndef UTILS_H
