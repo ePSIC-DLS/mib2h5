@@ -152,12 +152,17 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     {"bit_depth", H5T_NATIVE_UINT},
   };
 
-  size_t num_datasets = sizeof(fields) / sizeof(fields[0]);
+  size_t num_datasets    = sizeof(fields) / sizeof(fields[0]);
+  size_t num_meta_handle = sizeof(meta_handle) / sizeof(hid_t);
+
+  if (num_meta_handle < num_data) {
+    fprintf(stderr, "meta_handle not enough space, please check declaration in "
+                    "main and hdf5_init.c");
+    goto label_close_ext_timestmp;
+  }
 
   for (size_t i = 0; i < num_datasets; i++) {
     char dataset_path[256];
-    // snprintf(dataset_path, sizeof(dataset_path), "metadata/%s",
-    // fields[i].name);
 
     snprintf(dataset_path, sizeof(dataset_path), "%s", fields[i].name);
 
@@ -187,7 +192,6 @@ label_close_sensor:
   H5Tclose(sensor_layout_type);
 label_close_pixel:
   H5Tclose(pixel_depth_type);
-
 label_close4:
   H5Pclose(dapl);
 label_close3:
