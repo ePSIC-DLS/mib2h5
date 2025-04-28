@@ -149,3 +149,15 @@ hid_t bufsize_to_datatype(int dtype)
   }
   return datatype;
 }
+
+unsigned long get_filesystem_block_size(const char *path)
+{
+  struct statvfs stat;
+
+  if (statvfs(path, &stat) != 0) {
+    fprintf(stderr, "statvfs failed\n");
+    return 1;
+  }
+
+  return stat.f_bsize;
+}

@@ -34,4 +34,6 @@
 
 #define PRIME_FOR_HASH 521
 
+#define ALIGNMENT_THRESHOLD 512
+
 #endif
