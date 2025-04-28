@@ -3,9 +3,8 @@
 #include <hdf5.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
-void initialize_plist(hid_t *file_id,
+void initialize_plist(char *path,
                       hid_t *fapl_id,
                       hid_t *fcpl_id,
                       hid_t *lcpl_id)
