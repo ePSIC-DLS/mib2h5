@@ -29,4 +29,7 @@
 #define MQ1_FIELDS_NUM_FIELDS 19
 
 #define DAC_NUM_FIELDS 28
+
+#define NUM_CHUNKSS_IN_CACHE 32
+
 #endif
