@@ -15,4 +15,6 @@ void header_meta_from_first(FILE *mib_ptr,
                             unsigned int *det_x,
                             unsigned int *det_y,
                             char *pixel_depth);
+
+hid_t bufsize_to_datatype(int dtype);
 #endif
