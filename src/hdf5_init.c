@@ -1,4 +1,5 @@
 #include "hdf5_init.h"
+#include "macros.h"
 #include "utils.h"
 #include <hdf5.h>
 #include <stdio.h>
@@ -13,11 +14,13 @@ void initialize_plist(char *path,
     fprintf(stderr, "Error in creating fcpl in create_file\n");
     return;
   }
+  unsigned long f_blocksize = get_filesystem_block_size(path);
+  printf("block size of filesystem: %ld\n", f_blocksize);
   if ((*fapl_id = H5Pcreate(H5P_FILE_ACCESS)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating fapl in create_file\n");
     return;
   } else {
-    if (H5Pset_alignment(*fapl_id, 1024, 4096) < 0) {
+    if (H5Pset_alignment(*fapl_id, ALIGNMENT_THRESHOLD, f_blocksize) < 0) {
       fprintf(stderr, "Error in H5Pset_alignment\n");
       return;
     }
