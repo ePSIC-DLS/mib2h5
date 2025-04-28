@@ -52,8 +52,6 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
                            size_t dim,
                            hsize_t *frame_dim)
 {
-  hid_t file = *file_id;
-  hid_t lcpl = *lcpl_id;
   hid_t dcpl;
   hid_t dapl;
 
