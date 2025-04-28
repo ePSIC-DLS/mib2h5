@@ -43,6 +43,34 @@ void initialize_file(char *filename, hid_t *file_id, hid_t fapl, hid_t fcpl)
   }
 }
 
+hid_t bufsize_to_datatype(int dtype)
+{
+  hid_t datatype;
+  switch (dtype) {
+    case 1: {
+      datatype = H5T_STD_U8LE;
+      break;
+    }
+    case 2: {
+      datatype = H5T_STD_U16LE;
+      break;
+    }
+    case 4: {
+      datatype = H5T_STD_U32LE;
+      break;
+    }
+    case 8: {
+      datatype = H5T_STD_U64LE;
+      break;
+    }
+    default: {
+      fprintf(stderr, "Error in datatype, please check input dtype\n");
+      return;
+    }
+  }
+  return datatype;
+}
+
 void create_merlin_dataset(hid_t *merlin_dataset_id,
                            hid_t file,
                            char *merlin_dataset_name,
@@ -83,7 +111,7 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
     }
   }
 
-  datatype = bufsize_to_datatype(dtype);
+  hid_t datatype = bufsize_to_datatype(dtype);
 
   if ((*merlin_dataset_id = H5Dcreate2(file, merlin_dataset_name, datatype,
                                        memspace, lcpl, dcpl, dapl)) ==
