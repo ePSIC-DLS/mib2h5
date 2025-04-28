@@ -77,8 +77,8 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
     unsigned int y = frame_dim[1];
     unsigned int x = frame_dim[2];
 
-    if (H5Pset_chunk_cache(dapl, 521, NUM_CHUNKS_IN_CACHE * dtype * y * x,
-                           1.0) < 0) {
+    if (H5Pset_chunk_cache(dapl, PRIME_FOR_HASH,
+                           NUM_CHUNKS_IN_CACHE * dtype * y * x, 1.0) < 0) {
       fprintf(stderr, "Error in H5Pset)chunk_cache\n");
       return;
     }
