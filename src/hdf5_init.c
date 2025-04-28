@@ -32,6 +32,10 @@ void initialize_plist(hid_t *file_id,
 
 void initialize_file(char *filename, hid_t *file_id, hid_t fapl, hid_t fcpl)
 {
+  if (!filename) {
+    fprintf(stderr, "Empty or other error in filename, please check\n");
+  }
+
   if (!H5Iis_valid(fapl) || !H5Iis_valid(fcpl)) {
     fprintf(stderr, "fapl or fcpl is invalid in initialize_file\n");
     return;
