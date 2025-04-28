@@ -33,7 +33,7 @@ void initialize_plist(char *path,
 
 void initialize_file(char *filename, hid_t *file_id, hid_t fapl, hid_t fcpl)
 {
-  if (!filename) {
+  if (filename == NULL) {
     fprintf(stderr, "Empty or other error in filename, please check\n");
   }
 
