@@ -7,17 +7,12 @@
 #include <stdlib.h>
 #include <time.h>
 
-void create_meta_mq1_fields_dataset(hid_t *file_id,
-                                    hid_t *lcpl_id,
-                                    hid_t *meta_handle)
+void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
 {
   if (meta_handle == NULL) {
     fprintf(stderr, "meta_handle is NULL in create_meta_fields_dataset\n");
     return;
   }
-
-  hid_t file = *file_id;
-  hid_t lcpl = *lcpl_id;
 
   char meta_group_path[64] = "metadata";
   hid_t meta_group =
@@ -152,8 +147,8 @@ void create_meta_mq1_fields_dataset(hid_t *file_id,
 }
 
 void create_dac_dataset(unsigned int num_chips,
-                        hid_t *file_id,
-                        hid_t *lcpl_id,
+                        hid_t file,
+                        hid_t lcpl,
                         hid_t *dac_handle)
 {
   if (dac_handle == NULL) {
@@ -161,13 +156,6 @@ void create_dac_dataset(unsigned int num_chips,
     return;
   }
 
-  hid_t file = *file_id;
-  hid_t lcpl;
-  if (lcpl_id == NULL) {
-    lcpl = H5P_DEFAULT;
-  } else {
-    lcpl = *lcpl_id;
-  }
   char chip_group_path[256];
   char dataset_path[512];
   hid_t chip_group;
