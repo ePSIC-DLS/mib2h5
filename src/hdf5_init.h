@@ -10,12 +10,12 @@ void initialize_plist(char *path,
                       hid_t *fcpl_id,
                       hid_t *lcpl_id);
 
-void initialize_file_and_plist(char *filename,
-                               hid_t *file_id,
-                               hid_t *fapl_id,
-                               hid_t *fcpl_id);
+void initialize_plist(hid_t *file_id,
+                      hid_t *fapl_id,
+                      hid_t *fcpl_id,
+                      hid_t *lcpl_id);
 
-void initialize_lcpl(hid_t *lcpl_id);
+void initialize_file(char *filename, hid_t *file_id, hid_t fapl, hid_t fcpl);
 
 void create_merlin_dataset(hid_t *merlin_dataset_id,
                            hid_t file,
