@@ -233,8 +233,7 @@ void create_dac_dataset(unsigned int num_chips,
   } else {
     if (H5Pset_chunk(dcpl, 1, chunk_dim) < 0) {
       fprintf(stderr, "Error setting chunking in create_dac_dataset\n");
-      H5Pclose(dcpl);
-      return;
+      goto cleanup;
     }
   }
 
@@ -250,10 +249,7 @@ void create_dac_dataset(unsigned int num_chips,
   hid_t str_type = H5Tcopy(H5T_C_S1);
   if (H5Tset_size(str_type, 4) < 0) {
     fprintf(stderr, "Error setting string type size in create_dac_dataset\n");
-    H5Tclose(str_type);
-    H5Pclose(dcpl);
-    H5Pclose(dapl);
-    return;
+    goto cleanup;
   }
 
   struct {
@@ -286,20 +282,13 @@ void create_dac_dataset(unsigned int num_chips,
     if (chip_group < 0) {
       fprintf(stderr, "Error creating group chip%02d in create_dac_dataset\n",
               i);
-      H5Tclose(str_type);
-      H5Pclose(dcpl);
-      H5Pclose(dapl);
-      return;
+      goto cleanup;
     }
 
     dataspace = H5Screate_simple(1, dim, max_dim);
     if (dataspace < 0) {
       fprintf(stderr, "Error creating dataspace in create_dac_meta_dataset\n");
-      H5Tclose(str_type);
-      H5Pclose(dcpl);
-      H5Pclose(dapl);
-      H5Gclose(chip_group);
-      return;
+      goto cleanup;
     }
 
     handle_pos = num_datasets * (size_t) i;
@@ -329,9 +318,15 @@ void create_dac_dataset(unsigned int num_chips,
     H5Gclose(chip_group);
   }
 
-  H5Tclose(str_type);
-  H5Pclose(dcpl);
-  H5Pclose(dapl);
+cleanup:
+  if (H5Iis_valid(str_type))
+    H5Tclose(str_type);
+  if (H5Iis_valid(dcpl))
+    H5Pclose(dcpl);
+  if (H5Iis_valid(dapl))
+    H5Pclose(dapl);
+  if (H5Iis_valid(chip_group))
+    H5Gclose(chip_group);
 }
 
 void close_dataset_handle(hid_t *handle, size_t count)
