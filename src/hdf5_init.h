@@ -13,8 +13,6 @@ void initialize_plist(char *path,
 
 void initialize_file(char *filename, hid_t *file_id, hid_t fapl, hid_t fcpl);
 
-hid_t bufsize_to_datatype(int dtype);
-
 void create_merlin_dataset(hid_t *merlin_dataset_id,
                            hid_t file,
                            char *merlin_dataset_name,
