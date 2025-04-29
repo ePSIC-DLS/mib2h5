@@ -19,7 +19,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     H5Gcreate(file, meta_group_path, lcpl, H5P_DEFAULT, H5P_DEFAULT);
   if (meta_group < 0) {
     fprintf(stderr, "Error creating group in create_meta_mq1_fields_dataset\n");
-    return;
+    goto cleanup;
   }
 
   hsize_t dim[1]       = {0};
@@ -30,19 +30,18 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   if (dataspace < 0) {
     fprintf(stderr,
             "Error creating dataspace in create_meta_mq1_fields_dataset\n");
-    goto label_close1;
-    return;
+    goto cleanup;
   }
 
   hid_t dcpl = H5Pcreate(H5P_DATASET_CREATE);
   if (dcpl < 0) {
     fprintf(stderr, "Error creating dcpl in create_meta_mq1_fields_dataset\n");
-    goto label_close2;
+    goto cleanup;
   } else {
     if (H5Pset_chunk(dcpl, 1, chunk_dim) < 0) {
       fprintf(stderr,
               "Error setting chunking in create_meta_mq1_fields_dataset\n");
-      goto label_close3;
+      goto cleanup;
     }
   }
 
@@ -50,80 +49,86 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   if (dapl < 0) {
     fprintf(stderr,
             "Error in creating dapl in create_meta_mq1_fields_dataset\n");
-    goto label_close3;
+    goto cleanup;
   } else {
   }
 
   // hid_t header_id_type = H5Tcopy(H5T_C_S1);
   // H5Tset_size(header_id_type, MQ1_CHAR_LEN_HEADER_ID);
 
-  hid_t pixel_depth_type = H5Tcopy(H5T_C_S1);
+  hid_t pixel_depth_type = H5I_INVALID_HID;
+  pixel_depth_type       = H5Tcopy(H5T_C_S1);
   if (pixel_depth_type < 0) {
     fprintf(stderr, "H5Tcopy failed for pixel_depth_type\n");
-    goto label_close4;
+    goto cleanup;
   }
   if (H5Tset_size(pixel_depth_type, MQ1_CHAR_LEN_PIXEL_DEPTH) < 0) {
     fprintf(stderr, "H5Tsetsize failed for pixel_depth_type\n");
-    goto label_close_pixel;
+    goto cleanup;
   }
 
-  hid_t sensor_layout_type = H5Tcopy(H5T_C_S1);
+  hid_t sensor_layout_type = H5I_INVALID_HID;
+  sensor_layout_type       = H5Tcopy(H5T_C_S1);
   if (sensor_layout_type < 0) {
     fprintf(stderr, "H5Tcopy failed for sensor_layout_type\n");
-    goto label_close_pixel;
+    goto cleanup;
   }
   if (H5Tset_size(sensor_layout_type, MQ1_CHAR_LEN_SENSOR_LAYOUT) < 0) {
     fprintf(stderr, "H5Tset_size failed for sensor_layout_type\n");
-    goto label_close_sensor;
+    goto cleanup;
   }
 
-  hid_t chip_select_type = H5Tcopy(H5T_C_S1);
+  hid_t chip_select_type = H5I_INVALID_HID;
+  chip_select_type       = H5Tcopy(H5T_C_S1);
   if (chip_select_type < 0) {
     fprintf(stderr, "H5Tcopy failed for chip_select_type\n");
-    goto label_close_sensor;
+    goto cleanup;
   }
   if (H5Tset_size(chip_select_type, MQ1_CHAR_LEN_CHIP_SELECT) < 0) {
     fprintf(stderr, "H5Tset_size failed for chip_select_type\n");
-    goto label_close_chip;
+    goto cleanup;
   }
 
-  hid_t timestamp_type = H5Tcopy(H5T_C_S1);
+  hid_t timestamp_type = H5I_INVALID_HID;
+  timestamp_type       = H5Tcopy(H5T_C_S1);
   if (timestamp_type < 0) {
     fprintf(stderr, "H5Tcopy failed for timestamp_type\n");
-    goto label_close_chip;
+    goto cleanup;
   }
   if (H5Tset_size(timestamp_type, MQ1_CHAR_LEN_TIMESTAMP) < 0) {
     fprintf(stderr, "H5Tset_size failed for timestamp_type\n");
-    goto label_close_timestamp;
+    goto cleanup;
   }
 
-  hid_t header_extension_id_type = H5Tcopy(H5T_C_S1);
+  hid_t header_extension_id_type = H5I_INVALID_HID;
+  header_extension_id_type       = H5Tcopy(H5T_C_S1);
   if (header_extension_id_type < 0) {
     fprintf(stderr, "H5Tcopy failed for header_extension_id_type\n");
-    goto label_close_timestamp;
+    goto cleanup;
   }
   if (H5Tset_size(header_extension_id_type, MQ1_CHAR_LEN_HEADER_EXTENSION_ID) <
       0) {
     fprintf(stderr, "H5Tset_size failed for header_extension_id_type\n");
-    goto label_close_header_ext;
+    goto cleanup;
   }
 
-  hid_t extended_timestamp_type = H5Tcopy(H5T_C_S1);
+  hid_t extended_timestamp_type = H5I_INVALID_HID;
+  extended_timestamp_type       = H5Tcopy(H5T_C_S1);
   if (extended_timestamp_type < 0) {
     fprintf(stderr, "H5Tcopy failed for extended_timestamp_type\n");
-    goto label_close_header_ext;
+    goto cleanup;
   }
   if (H5Tset_size(extended_timestamp_type, MQ1_CHAR_LEN_EXTENDED_TIMESTAMP) <
       0) {
     fprintf(stderr, "H5Tset_size failed for extended_timestamp_type\n");
-    goto label_close_ext_timestamp;
+    goto cleanup;
   }
 
   hsize_t threshold_dims[1] = {MQ1_FLOAT_LEN_THRESHOLD};
   hid_t threshold_type = H5Tarray_create(H5T_NATIVE_FLOAT, 1, threshold_dims);
   if (threshold_type < 0) {
     fprintf(stderr, "H5Tarray_create failed for thresholds\n");
-    goto label_close_ext_timestamp;
+    goto cleanup;
   }
 
   struct {
@@ -154,10 +159,10 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
 
   size_t num_datasets = sizeof(fields) / sizeof(fields[0]);
 
-  if (num_datasets != MQ1_FIELDS_NUM_FIELD) {
+  if (num_datasets != MQ1_FIELDS_NUM_FIELDS) {
     fprintf(stderr,
             "Number of dataset not match in create_meta_mq1_fields_dataset\n");
-    goto label_close_threshold;
+    goto cleanup;
   }
 
   for (size_t i = 0; i < num_datasets; i++) {
@@ -176,29 +181,30 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     meta_handle[i] = dataset;
   }
 
+cleanup:
   // H5Tclose(header_id_type);
-label_close_threshold:
-  H5Tclose(threshold_type);
-label_close_ext_timestamp:
-  H5Tclose(extended_timestamp_type);
-label_close_header_ext:
-  H5Tclose(header_extension_id_type);
-label_close_timestamp:
-  H5Tclose(timestamp_type);
-label_close_chip:
-  H5Tclose(chip_select_type);
-label_close_sensor:
-  H5Tclose(sensor_layout_type);
-label_close_pixel:
-  H5Tclose(pixel_depth_type);
-label_close4:
-  H5Pclose(dapl);
-label_close3:
-  H5Pclose(dcpl);
-label_close2:
-  H5Sclose(dataspace);
-label_close1:
-  H5Gclose(meta_group);
+  if (H5Iis_valid(pixel_depth_type))
+    H5Tclose(threshold_type);
+  if (H5Iis_valid(extended_timestamp_type))
+    H5Tclose(extended_timestamp_type);
+  if (H5Iis_valid(header_extension_id_type))
+    H5Tclose(header_extension_id_type);
+  if (H5Iis_valid(timestamp_type))
+    H5Tclose(timestamp_type);
+  if (H5Iis_valid(chip_select_type))
+    H5Tclose(chip_select_type);
+  if (H5Iis_valid(sensor_layout_type))
+    H5Tclose(sensor_layout_type);
+  if (H5Iis_valid(pixel_depth_type))
+    H5Tclose(pixel_depth_type);
+  if (H5Iis_valid(dapl))
+    H5Pclose(dapl);
+  if (H5Iis_valid(dcpl))
+    H5Pclose(dcpl);
+  if (H5Iis_valid(dataspace))
+    H5Sclose(dataspace);
+  if (H5Iis_valid(meta_group))
+    H5Gclose(meta_group);
 }
 
 void create_dac_dataset(unsigned int num_chips,
