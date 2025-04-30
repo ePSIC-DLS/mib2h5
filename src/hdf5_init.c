@@ -64,21 +64,21 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
 
   if ((dcpl = H5Pcreate(H5P_DATASET_CREATE)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating dcpl\n");
-    return;
+    goto cleanup;
   } else {
     if (H5Pset_chunk(dcpl, dim, frame_dim) < 0) {
       fprintf(stderr, "Error in H5Pset_chunk\n");
-      return;
+      goto cleanup;
     }
     if (H5Pset_fill_time(dcpl, H5D_FILL_TIME_NEVER) < 0) {
       fprintf(stderr, "Error in H5Pset_fill_time\n");
-      return;
+      goto cleanup;
     }
   }
 
   if ((dapl = H5Pcreate(H5P_DATASET_ACCESS)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating dapl_id\n");
-    return;
+    goto cleanup;
   } else {
     unsigned int y = frame_dim[1];
     unsigned int x = frame_dim[2];
@@ -86,7 +86,7 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
     if (H5Pset_chunk_cache(dapl, PRIME_FOR_HASH,
                            NUM_CHUNKS_IN_CACHE * dtype * y * x, 1.0) < 0) {
       fprintf(stderr, "Error in H5Pset)chunk_cache\n");
-      return;
+      goto cleanup;
     }
   }
 
@@ -96,6 +96,11 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
                                        memspace, lcpl, dcpl, dapl)) ==
       H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating merlin_dataset\n");
-    return;
+    goto cleanup;
   }
+cleanup:
+  if (H5Iis_valid(dcpl))
+    H5Pclose(dcpl);
+  if (H5Iis_valid(dapl))
+    H5Pclose(dapl);
 }
