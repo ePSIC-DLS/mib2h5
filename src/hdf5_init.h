@@ -1,10 +1,10 @@
 // clang-format Language: C
-#ifndef HDF5_INIT_H
-#define HDF5_INIT_H
-
 #include <hdf5.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifndef HDF5_INIT_H
+#define HDF5_INIT_H
 
 void initialize_plist(char *path,
                       hid_t *fapl_id,
