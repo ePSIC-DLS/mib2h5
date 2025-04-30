@@ -144,7 +144,7 @@ hid_t bufsize_to_datatype(int dtype)
     }
     default: {
       fprintf(stderr, "Error in datatype, please check input dtype\n");
-      return;
+      return H5I_INVALID_HID;
     }
   }
   return datatype;
