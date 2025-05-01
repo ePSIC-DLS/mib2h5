@@ -59,8 +59,9 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
                            size_t dim,
                            hsize_t *frame_dim)
 {
-  hid_t dcpl;
-  hid_t dapl;
+  hid_t dcpl     = H5I_INVALID_HID;
+  hid_t dapl     = H5I_INVALID_HID;
+  hid_t datatype = H5I_INVALID_HID;
 
   if ((dcpl = H5Pcreate(H5P_DATASET_CREATE)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating dcpl\n");
@@ -90,7 +91,7 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
     }
   }
 
-  hid_t datatype = bufsize_to_datatype(dtype);
+  datatype = bufsize_to_datatype(dtype);
 
   if ((*merlin_dataset_id = H5Dcreate2(file, merlin_dataset_name, datatype,
                                        memspace, lcpl, dcpl, dapl)) ==
@@ -98,6 +99,7 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
     fprintf(stderr, "Error in creating merlin_dataset\n");
     goto cleanup;
   }
+
 cleanup:
   if (H5Iis_valid(dcpl))
     H5Pclose(dcpl);
