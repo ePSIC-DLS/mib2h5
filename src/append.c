@@ -57,8 +57,6 @@ void append_frame_to_dataset(hid_t dset, framebuffer *fb, int cbytes)
   H5Sget_simple_extent_dims(filespace, dims, NULL);
 
   hsize_t frame_index = dims[0];
-  printf("frame_index = %ld\r", frame_index);
-  fflush(stdout);
 
   hsize_t new_dims[3] = {frame_index + 1, dety, detx};
   if (H5Dset_extent(dset, new_dims) < 0) {
