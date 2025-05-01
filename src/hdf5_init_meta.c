@@ -20,7 +20,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   hid_t dataspace                = H5I_INVALID_HID;
   hid_t dcpl                     = H5I_INVALID_HID;
   hid_t dapl                     = H5I_INVALID_HID;
-  hid_meta_group                 = H5I_INVALID_HID;
+  hid_t meta_group               = H5I_INVALID_HID;
   if (meta_handle == NULL) {
     fprintf(stderr, "meta_handle is NULL in create_meta_fields_dataset\n");
     return;
@@ -216,6 +216,13 @@ void create_dac_dataset(unsigned int num_chips,
                         hid_t lcpl,
                         hid_t *dac_handle)
 {
+  hid_t dcpl       = H5I_INVALID_HID;
+  hid_t dapl       = H5I_INVALID_HID;
+  hid_t chip_group = H5I_INVALID_HID;
+  hid_t dataspace  = H5I_INVALID_HID;
+  hid_t dataset    = H5I_INVALID_HID;
+  hid_t str_type   = H5I_INVALID_HID;
+
   if (dac_handle == NULL) {
     fprintf(stderr, "dac_handle is NULL in create_dac_meta_dataset\n");
     return;
@@ -223,14 +230,11 @@ void create_dac_dataset(unsigned int num_chips,
 
   char chip_group_path[256];
   char dataset_path[512];
-  hid_t chip_group;
   hsize_t dim[1]       = {0};
   hsize_t max_dim[1]   = {H5S_UNLIMITED};
   hsize_t chunk_dim[1] = {1};
-  hid_t dataspace;
-  hid_t dataset;
 
-  hid_t dcpl = H5Pcreate(H5P_DATASET_CREATE);
+  dcpl = H5Pcreate(H5P_DATASET_CREATE);
   if (dcpl < 0) {
     fprintf(stderr, "Error creating dcpl in create_dac_dataset\n");
     return;
@@ -241,16 +245,14 @@ void create_dac_dataset(unsigned int num_chips,
     }
   }
 
-  hid_t dapl = H5Pcreate(H5P_DATASET_ACCESS);
+  dapl = H5Pcreate(H5P_DATASET_ACCESS);
   if (dapl < 0) {
     fprintf(stderr, "Error creating dapl in create_dac_dataset\n");
     H5Pclose(dcpl);
     return;
-  } else {
-    // modify dapl if needed
   }
 
-  hid_t str_type = H5Tcopy(H5T_C_S1);
+  str_type = H5Tcopy(H5T_C_S1);
   if (H5Tset_size(str_type, 4) < 0) {
     fprintf(stderr, "Error setting string type size in create_dac_dataset\n");
     goto cleanup;
@@ -298,8 +300,6 @@ void create_dac_dataset(unsigned int num_chips,
     handle_pos = num_datasets * (size_t) i;
 
     for (size_t j = handle_pos; j < (handle_pos + num_datasets); j++) {
-      // snprintf(dataset_path, sizeof(dataset_path), "%s/%s", chip_group_path,
-      // datasets[j-handle_pos].name);
 
       snprintf(dataset_path, sizeof(dataset_path), "%s",
                datasets[j - handle_pos].name);
@@ -312,12 +312,8 @@ void create_dac_dataset(unsigned int num_chips,
         dac_handle[j] = H5I_INVALID_HID;
         continue;
       }
-      // else {
-      //   printf("Created dataset: %s\n", dataset_path);
-      // }
       dac_handle[j] = dataset;
     }
-
     H5Sclose(dataspace);
     H5Gclose(chip_group);
   }

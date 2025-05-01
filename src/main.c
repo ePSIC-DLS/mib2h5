@@ -18,8 +18,8 @@
 // Declaration of Marco here, temporary
 
 #define MERLIN_DSET_NAME "MerlinData"
-#define COMPRESSION_LEVEL 9
-#define SHUFFLE 2
+#define COMPRESSION_LEVEL 0
+#define SHUFFLE 0
 #define BLOCKSIZE 0
 #define NUMINTERNALTHREADS 1
 /* BLOSC_BLOSCLZ blosclz
