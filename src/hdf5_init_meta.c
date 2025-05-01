@@ -9,14 +9,25 @@
 
 void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
 {
+  hid_t pixel_depth_type         = H5I_INVALID_HID;
+  hid_t sensor_layout_type       = H5I_INVALID_HID;
+  hid_t chip_select_type         = H5I_INVALID_HID;
+  hid_t timestamp_type           = H5I_INVALID_HID;
+  hid_t header_extension_id_type = H5I_INVALID_HID;
+  hid_t extended_timestamp_type  = H5I_INVALID_HID;
+  hsize_t threshold_dims[1]      = {MQ1_FLOAT_LEN_THRESHOLD};
+  hid_t threshold_type           = H5I_INVALID_HID;
+  hid_t dataspace                = H5I_INVALID_HID;
+  hid_t dcpl                     = H5I_INVALID_HID;
+  hid_t dapl                     = H5I_INVALID_HID;
+  hid_meta_group                 = H5I_INVALID_HID;
   if (meta_handle == NULL) {
     fprintf(stderr, "meta_handle is NULL in create_meta_fields_dataset\n");
     return;
   }
 
   char meta_group_path[64] = "metadata";
-  hid_t meta_group =
-    H5Gcreate(file, meta_group_path, lcpl, H5P_DEFAULT, H5P_DEFAULT);
+  meta_group = H5Gcreate(file, meta_group_path, lcpl, H5P_DEFAULT, H5P_DEFAULT);
   if (meta_group < 0) {
     fprintf(stderr, "Error creating group in create_meta_mq1_fields_dataset\n");
     goto cleanup;
@@ -26,14 +37,14 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   hsize_t max_dim[1]   = {H5S_UNLIMITED};
   hsize_t chunk_dim[1] = {1};
 
-  hid_t dataspace = H5Screate_simple(1, dim, max_dim);
+  dataspace = H5Screate_simple(1, dim, max_dim);
   if (dataspace < 0) {
     fprintf(stderr,
             "Error creating dataspace in create_meta_mq1_fields_dataset\n");
     goto cleanup;
   }
 
-  hid_t dcpl = H5Pcreate(H5P_DATASET_CREATE);
+  dcpl = H5Pcreate(H5P_DATASET_CREATE);
   if (dcpl < 0) {
     fprintf(stderr, "Error creating dcpl in create_meta_mq1_fields_dataset\n");
     goto cleanup;
@@ -45,7 +56,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     }
   }
 
-  hid_t dapl = H5Pcreate(H5P_DATASET_ACCESS);
+  dapl = H5Pcreate(H5P_DATASET_ACCESS);
   if (dapl < 0) {
     fprintf(stderr,
             "Error in creating dapl in create_meta_mq1_fields_dataset\n");
@@ -56,8 +67,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   // hid_t header_id_type = H5Tcopy(H5T_C_S1);
   // H5Tset_size(header_id_type, MQ1_CHAR_LEN_HEADER_ID);
 
-  hid_t pixel_depth_type = H5I_INVALID_HID;
-  pixel_depth_type       = H5Tcopy(H5T_C_S1);
+  pixel_depth_type = H5Tcopy(H5T_C_S1);
   if (pixel_depth_type < 0) {
     fprintf(stderr, "H5Tcopy failed for pixel_depth_type\n");
     goto cleanup;
@@ -67,8 +77,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     goto cleanup;
   }
 
-  hid_t sensor_layout_type = H5I_INVALID_HID;
-  sensor_layout_type       = H5Tcopy(H5T_C_S1);
+  sensor_layout_type = H5Tcopy(H5T_C_S1);
   if (sensor_layout_type < 0) {
     fprintf(stderr, "H5Tcopy failed for sensor_layout_type\n");
     goto cleanup;
@@ -78,8 +87,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     goto cleanup;
   }
 
-  hid_t chip_select_type = H5I_INVALID_HID;
-  chip_select_type       = H5Tcopy(H5T_C_S1);
+  chip_select_type = H5Tcopy(H5T_C_S1);
   if (chip_select_type < 0) {
     fprintf(stderr, "H5Tcopy failed for chip_select_type\n");
     goto cleanup;
@@ -89,8 +97,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     goto cleanup;
   }
 
-  hid_t timestamp_type = H5I_INVALID_HID;
-  timestamp_type       = H5Tcopy(H5T_C_S1);
+  timestamp_type = H5Tcopy(H5T_C_S1);
   if (timestamp_type < 0) {
     fprintf(stderr, "H5Tcopy failed for timestamp_type\n");
     goto cleanup;
@@ -100,8 +107,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     goto cleanup;
   }
 
-  hid_t header_extension_id_type = H5I_INVALID_HID;
-  header_extension_id_type       = H5Tcopy(H5T_C_S1);
+  header_extension_id_type = H5Tcopy(H5T_C_S1);
   if (header_extension_id_type < 0) {
     fprintf(stderr, "H5Tcopy failed for header_extension_id_type\n");
     goto cleanup;
@@ -112,8 +118,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     goto cleanup;
   }
 
-  hid_t extended_timestamp_type = H5I_INVALID_HID;
-  extended_timestamp_type       = H5Tcopy(H5T_C_S1);
+  extended_timestamp_type = H5Tcopy(H5T_C_S1);
   if (extended_timestamp_type < 0) {
     fprintf(stderr, "H5Tcopy failed for extended_timestamp_type\n");
     goto cleanup;
@@ -124,8 +129,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     goto cleanup;
   }
 
-  hsize_t threshold_dims[1] = {MQ1_FLOAT_LEN_THRESHOLD};
-  hid_t threshold_type = H5Tarray_create(H5T_NATIVE_FLOAT, 1, threshold_dims);
+  threshold_type = H5Tarray_create(H5T_NATIVE_FLOAT, 1, threshold_dims);
   if (threshold_type < 0) {
     fprintf(stderr, "H5Tarray_create failed for thresholds\n");
     goto cleanup;
