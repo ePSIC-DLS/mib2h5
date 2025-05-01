@@ -126,8 +126,9 @@ int main(int argc, char *argv[])
    */
 
   hid_t file_id, fapl_id, fcpl_id, lcpl_id;
-  initialize_file_and_plist(full_path, &file_id, &fapl_id, &fcpl_id);
-  initialize_lcpl(&lcpl_id);
+
+  initialize_plist(full_path, &fapl_id, &fcpl_id, &lcpl_id);
+  initialize_file(full_path, &file_id, fapl_id, fcpl_id);
 
   hid_t frame_dset_id;
   hsize_t dim[DIM]       = {0, *det_y, *det_x};
@@ -142,17 +143,17 @@ int main(int argc, char *argv[])
 
   int com = blosc_compname_to_compcode(COMPRESSOR);
   // printf("=== create frame dataset ===\n");
-  create_merlin_dataset(&frame_dset_id, &file_id, MERLIN_DSET_NAME, bufsize,
-                        memspace, &lcpl_id, DIM, frame_dim, COMPRESSION_LEVEL,
+  create_merlin_dataset(&frame_dset_id, file_id, MERLIN_DSET_NAME, bufsize,
+                        memspace, lcpl_id, DIM, frame_dim, COMPRESSION_LEVEL,
                         SHUFFLE, com);
   // printf("=== done create frame dataset ===\n");
 
   hid_t meta_handle[MQ1_FIELDS_NUM_FIELDS];
   hid_t dac_handle[DAC_NUM_FIELDS * 4];
 
-  create_meta_mq1_fields_dataset(&file_id, &lcpl_id, meta_handle);
+  create_meta_mq1_fields_dataset(file_id, lcpl_id, meta_handle);
   // printf("== done create meta_mq1===\n");
-  create_dac_dataset(*num_chips, &file_id, &lcpl_id, dac_handle);
+  create_dac_dataset(*num_chips, file_id, lcpl_id, dac_handle);
 
   // for (int i=0; i<DAC_NUM_FIELDS * 4; i++)
   //   printf("Dataset number :%ld\n", dac_handle[i]);
@@ -193,6 +194,8 @@ int main(int argc, char *argv[])
 
     append_frame_to_dataset(frame_dset_id, frame_ptr, cbytes);
 
+    deallocate_frame(frame_ptr);
+
     printf("pointer position after loop %d: %ld\r", loop, ftell(mib_ptr));
     fflush(stdout);
     loop++;
@@ -202,7 +205,7 @@ int main(int argc, char *argv[])
   end                    = clock();
   double time_total_loop = (double) (end - begin) / CLOCKS_PER_SEC;
   double time_per_loop   = time_total_loop / loop;
-  printf("+++ Time per loop: %02f +++\n", time_per_loop);
+  printf("\n+++ Time per loop: %02f +++\n", time_per_loop);
 
   /*
   for (int i = 0; i < NUM_META_FIELD; i++) {

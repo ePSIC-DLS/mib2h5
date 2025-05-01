@@ -1,4 +1,5 @@
 // clang-format Language: C
+#include <hdf5.h>
 #include <stdio.h>
 
 #ifndef UTILS_H
@@ -15,4 +16,9 @@ void header_meta_from_first(FILE *mib_ptr,
                             unsigned int *det_x,
                             unsigned int *det_y,
                             char *pixel_depth);
+
+hid_t bufsize_to_datatype(int dtype);
+
+unsigned long get_filesystem_block_size(const char *path);
+
 #endif

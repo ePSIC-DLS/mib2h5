@@ -29,10 +29,6 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
     return;
   }
   *mq1_header = allocate_MQ1_fields(1);
-  fb->dac0    = (dac_rx *) malloc(sizeof(dac_rx));
-  fb->dac1    = (dac_rx *) malloc(sizeof(dac_rx));
-  fb->dac2    = (dac_rx *) malloc(sizeof(dac_rx));
-  fb->dac3    = (dac_rx *) malloc(sizeof(dac_rx));
 
   fseek(mib_ptr, offset, SEEK_SET);
   fread(header, sizeof(char), headersize, mib_ptr);
