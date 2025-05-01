@@ -85,7 +85,7 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
 
     if (H5Pset_chunk_cache(dapl, PRIME_FOR_HASH,
                            NUM_CHUNKS_IN_CACHE * dtype * y * x, 1.0) < 0) {
-      fprintf(stderr, "Error in H5Pset)chunk_cache\n");
+      fprintf(stderr, "Error in H5Pset_chunk_cache\n");
       goto cleanup;
     }
   }
