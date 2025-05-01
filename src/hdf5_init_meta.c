@@ -20,7 +20,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   hid_t dataspace                = H5I_INVALID_HID;
   hid_t dcpl                     = H5I_INVALID_HID;
   hid_t dapl                     = H5I_INVALID_HID;
-  hid_meta_group                 = H5I_INVALID_HID;
+  hid_t meta_group               = H5I_INVALID_HID;
   if (meta_handle == NULL) {
     fprintf(stderr, "meta_handle is NULL in create_meta_fields_dataset\n");
     return;
