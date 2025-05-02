@@ -29,4 +29,11 @@
 #define MQ1_FIELDS_NUM_FIELDS 19
 
 #define DAC_NUM_FIELDS 28
+
+#define NUM_CHUNKS_IN_CACHE 32
+
+#define PRIME_FOR_HASH 521
+
+#define ALIGNMENT_THRESHOLD 512
+
 #endif
