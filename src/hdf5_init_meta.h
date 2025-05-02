@@ -4,10 +4,7 @@
 
 #include "macros.h"
 #include <hdf5.h>
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle);
 
