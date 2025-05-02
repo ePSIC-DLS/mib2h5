@@ -216,7 +216,7 @@ void create_dac_dataset(unsigned int num_chips,
                         hid_t *dac_handle)
 {
   hid_t dcpl       = H5I_INVALID_HID;
-  hid_t dcpl       = H5I_INVALID_HID;
+  hid_t dapl       = H5I_INVALID_HID;
   hid_t chip_group = H5I_INVALID_HID;
   hid_t dataspace  = H5I_INVALID_HID;
   hid_t dataset    = H5I_INVALID_HID;
