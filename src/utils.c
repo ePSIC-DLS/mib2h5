@@ -146,7 +146,6 @@ hid_t bufsize_to_datatype(int dtype)
     default: {
       fprintf(stderr, "Error in datatype, please check input dtype\n");
       return H5I_INVALID_HID;
-
     }
   }
   return datatype;
@@ -167,4 +166,3 @@ unsigned long get_filesystem_block_size(const char *path)
 
   return stat.f_bsize;
 }
-
