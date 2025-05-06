@@ -9,6 +9,7 @@
 
 void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
 {
+  hid_t header_id_type           = H5I_INVALID_HID;
   hid_t pixel_depth_type         = H5I_INVALID_HID;
   hid_t sensor_layout_type       = H5I_INVALID_HID;
   hid_t chip_select_type         = H5I_INVALID_HID;
@@ -64,8 +65,15 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   } else {
   }
 
-  // hid_t header_id_type = H5Tcopy(H5T_C_S1);
-  // H5Tset_size(header_id_type, MQ1_CHAR_LEN_HEADER_ID);
+  header_id_type = H5Tcopy(H5T_C_S1);
+  if (header_id_type < 0) {
+    fprintf(stderr, "H5Tcopy failed for header_id_type\n");
+    goto cleanup;
+  }
+  if (H5Tset_size(header_id_type, MQ1_CHAR_LEN_HEADER_ID) < 0) {
+    fprintf(stderr, "H5Tset_size failed for header_id_type\n");
+    goto cleanup;
+  }
 
   pixel_depth_type = H5Tcopy(H5T_C_S1);
   if (pixel_depth_type < 0) {
@@ -73,7 +81,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     goto cleanup;
   }
   if (H5Tset_size(pixel_depth_type, MQ1_CHAR_LEN_PIXEL_DEPTH) < 0) {
-    fprintf(stderr, "H5Tsetsize failed for pixel_depth_type\n");
+    fprintf(stderr, "H5Tset_size failed for pixel_depth_type\n");
     goto cleanup;
   }
 
@@ -139,7 +147,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     const char *name;
     hid_t type;
   } fields[] = {
-    //{"header_id", header_id_type},
+    {"header_id", header_id_type},
     {"max_length", H5T_NATIVE_UINT},
     {"sequence_number", H5T_NATIVE_UINT},
     {"header_bytes", H5T_NATIVE_UINT},
@@ -186,7 +194,8 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   }
 
 cleanup:
-  // H5Tclose(header_id_type);
+  if (H5Iis_valid(header_id_type))
+    H5Tclose(header_id_type);
   if (H5Iis_valid(pixel_depth_type))
     H5Tclose(threshold_type);
   if (H5Iis_valid(extended_timestamp_type))
