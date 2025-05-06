@@ -8,7 +8,6 @@
 
 void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
 {
-  hid_t header_id_type           = H5I_INVALID_HID;
   hid_t pixel_depth_type         = H5I_INVALID_HID;
   hid_t sensor_layout_type       = H5I_INVALID_HID;
   hid_t chip_select_type         = H5I_INVALID_HID;
@@ -80,7 +79,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     goto cleanup;
   }
   if (H5Tset_size(pixel_depth_type, MQ1_CHAR_LEN_PIXEL_DEPTH) < 0) {
-    fprintf(stderr, "H5Tset_size failed for pixel_depth_type\n");
+    fprintf(stderr, "H5Tsetsize failed for pixel_depth_type\n");
     goto cleanup;
   }
 
@@ -193,6 +192,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   }
 
 cleanup:
+  // H5Tclose(header_id_type);
   if (H5Iis_valid(threshold_type))
     H5Tclose(threshold_type);
   if (H5Iis_valid(extended_timestamp_type))
@@ -207,8 +207,6 @@ cleanup:
     H5Tclose(sensor_layout_type);
   if (H5Iis_valid(pixel_depth_type))
     H5Tclose(pixel_depth_type);
-  if (H5Iis_valid(header_id_type))
-    H5Tclose(header_id_type);
   if (H5Iis_valid(dapl))
     H5Pclose(dapl);
   if (H5Iis_valid(dcpl))
@@ -323,9 +321,6 @@ void create_dac_dataset(unsigned int num_chips,
         dac_handle[j] = H5I_INVALID_HID;
         continue;
       }
-      // else {
-      //   printf("Created dataset: %s\n", dataset_path);
-      // }
       dac_handle[j] = dataset;
     }
     H5Sclose(dataspace);

@@ -1,10 +1,11 @@
 #include "hdf5_init.h"
+#include "macros.h"
 #include "utils.h"
 #include <hdf5.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-void initialize_plist(hid_t *file_id,
+void initialize_plist(char *path,
                       hid_t *fapl_id,
                       hid_t *fcpl_id,
                       hid_t *lcpl_id)
@@ -32,8 +33,9 @@ void initialize_plist(hid_t *file_id,
 
 void initialize_file(char *filename, hid_t *file_id, hid_t fapl, hid_t fcpl)
 {
-  if (!filename) {
+  if (filename == NULL) {
     fprintf(stderr, "Empty or other error in filename, please check\n");
+    return;
   }
 
   if (!H5Iis_valid(fapl) || !H5Iis_valid(fcpl)) {
@@ -57,8 +59,9 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
                            size_t dim,
                            hsize_t *frame_dim)
 {
-  hid_t dcpl;
-  hid_t dapl;
+  hid_t dcpl     = H5I_INVALID_HID;
+  hid_t dapl     = H5I_INVALID_HID;
+  hid_t datatype = H5I_INVALID_HID;
 
   if ((dcpl = H5Pcreate(H5P_DATASET_CREATE)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating dcpl\n");
@@ -70,7 +73,7 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
     }
     if (H5Pset_fill_time(dcpl, H5D_FILL_TIME_NEVER) < 0) {
       fprintf(stderr, "Error in H5Pset_fill_time\n");
-      return;
+      goto cleanup;
     }
   }
 
@@ -83,12 +86,12 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
 
     if (H5Pset_chunk_cache(dapl, PRIME_FOR_HASH,
                            NUM_CHUNKS_IN_CACHE * dtype * y * x, 1.0) < 0) {
-      fprintf(stderr, "Error in H5Pset)chunk_cache\n");
-      return;
+      fprintf(stderr, "Error in H5Pset_chunk_cache\n");
+      goto cleanup;
     }
   }
 
-  hid_t datatype = bufsize_to_datatype(dtype);
+  datatype = bufsize_to_datatype(dtype);
 
   if ((*merlin_dataset_id = H5Dcreate2(file, merlin_dataset_name, datatype,
                                        memspace, lcpl, dcpl, dapl)) ==
