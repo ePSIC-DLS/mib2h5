@@ -145,8 +145,24 @@ hid_t bufsize_to_datatype(int dtype)
     }
     default: {
       fprintf(stderr, "Error in datatype, please check input dtype\n");
-      return;
+      return H5I_INVALID_HID;
     }
   }
   return datatype;
+}
+
+unsigned long get_filesystem_block_size(const char *path)
+{
+  struct statvfs stat;
+  if (!path) {
+    fprintf(stderr, "Null pointer in get_filesystem_block_size\n");
+    return 1;
+  }
+
+  if (statvfs(path, &stat) != 0) {
+    fprintf(stderr, "statvfs failed\n");
+    return 1;
+  }
+
+  return stat.f_bsize;
 }
