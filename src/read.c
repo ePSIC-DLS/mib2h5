@@ -17,47 +17,59 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
 {
   if (mib_ptr == NULL || fb == NULL) {
     fprintf(stderr, "Missing input mib_ptr or fb in read_header\n");
-    return;
+    goto cleanup;
   }
   if (offset < 0) {
     fprintf(stderr, "offset is negative, please check input\n");
-    return;
+    goto cleanup;
   }
   if (fseek(mib_ptr, offset, SEEK_SET) != 0) {
     fprintf(stderr, "fseek error in read_header\n");
-    return;
+    goto cleanup;
   }
 
   char buf[HEADER_LOC_IN_BUF]     = {0};
   char headersize_str[HEADERSIZE] = {0};
   size_t status = fread(buf, sizeof(char), HEADER_LOC_IN_BUF, mib_ptr);
-  if (status != HEADER_LOC_IN_BF) {
+  if (status != HEADER_LOC_IN_BUF) {
     fprintf(stderr, "fread error in read_header\n");
-    return;
+    goto cleanup;
   }
   memcpy(headersize_str, buf + HEADER_LOC_IN_BUF - HEADERSIZE + 1,
          HEADERSIZE - 1);
   headersize_str[HEADERSIZE - 1] = '\0';
-  int headersize                 = strtol(headersize_str);
-  char *header                   = malloc(sizeof(char) * headersize);
-  MQ1_fields *mq1_header         = malloc(sizeof(MQ1_fields));
+  char *end_ptr;
+  long unsigned int headersize = strtol(headersize_str, &end_ptr, 10);
+  if (end_ptr == headersize_str) {
+    fprintf(stderr, "headersize strtol error in read_header, no digit found\n");
+    goto cleanup;
+  } else if (*end_ptr != '\0') {
+    fprintf(stderr,
+            "headersize strtol error in read_header, invalid character: %c\n",
+            *end_ptr);
+    goto cleanup;
+  }
+  char *header = malloc(sizeof(char) * headersize);
+  if (!header) {
+    fprintf(stderr, "malloc fail for header in read_header\n");
+    goto cleanup;
+  }
+  MQ1_fields *mq1_header = malloc(sizeof(MQ1_fields));
   if (!mq1_header) {
     fprintf(stderr, "malloc fail for mq1_header in read_header\n");
-    free(header);
-    header = NULL;
-    return;
+    goto cleanup;
   }
   *mq1_header = allocate_MQ1_fields(1);
 
   if (fseek(mib_ptr, offset, SEEK_SET) != 0) {
     fprintf(stderr, "fseek error in read_header\n");
-    return;
+    goto cleanup;
   }
 
   status = fread(header, sizeof(char), headersize, mib_ptr);
   if (status != headersize) {
     fprintf(stderr, "fread error in read_header\n");
-    return;
+    goto cleanup;
   }
 
   switch (headersize) {
@@ -66,7 +78,7 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
       parse_mq1_single(header, &mq1_single);
       if (fb->dac0 == NULL) {
         fprintf(stderr, "NULL dac pointer in read_header\n");
-        return;
+        goto cleanup;
       }
       memcpy(fb->dac0, &mq1_single.dac0, sizeof(dac_rx));
       fb->dac1 = NULL;
@@ -82,7 +94,7 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
       if (fb->dac0 == NULL || fb->dac1 == NULL || fb->dac2 == NULL ||
           fb->dac3 == NULL) {
         fprintf(stderr, "NULL dac pointer in read_header\n");
-        return;
+        goto cleanup;
       }
       memcpy(fb->dac0, &mq1_quad.dac0, sizeof(dac_rx));
       memcpy(fb->dac1, &mq1_quad.dac1, sizeof(dac_rx));
@@ -93,17 +105,21 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
       break;
     }
     default: {
-      deallocate_MQ1_fields(*mq1_header);
-      free(header);
-      header = NULL;
-      free(mq1_header);
-      mq1_header = NULL;
       fprintf(stderr, "headersize not 384 or 768\n");
-      return;
+      goto cleanup;
     }
   }
-  free(header);
-  header = NULL;
+
+cleanup:
+  if (header) {
+    free(header);
+    header = NULL;
+  }
+  if (mq1_header) {
+    free(mq1_header);
+    mq1_header = NULL;
+    deallocate_MQ1_fields(*mq1_header);
+  }
 }
 
 void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
