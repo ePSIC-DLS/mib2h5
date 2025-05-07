@@ -19,22 +19,22 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
   MQ1_fields *mq1_header;
   if (mib_ptr == NULL || fb == NULL) {
     fprintf(stderr, "Missing input mib_ptr or fb in read_header\n");
-    goto cleanup;
+    return;
   }
   if (offset < 0) {
     fprintf(stderr, "offset is negative, please check input\n");
-    goto cleanup;
+    return;
   }
   if (fseek(mib_ptr, offset, SEEK_SET) != 0) {
     fprintf(stderr, "fseek error in read_header\n");
-    goto cleanup;
+    return;
   }
   char buf[HEADER_LOC_IN_BUF]     = {0};
   char headersize_str[HEADERSIZE] = {0};
   size_t status = fread(buf, sizeof(char), HEADER_LOC_IN_BUF, mib_ptr);
   if (status != HEADER_LOC_IN_BUF) {
     fprintf(stderr, "fread error in read_header\n");
-    goto cleanup;
+    return;
   }
   memcpy(headersize_str, buf + HEADER_LOC_IN_BUF - HEADERSIZE + 1,
          HEADERSIZE - 1);
@@ -43,22 +43,26 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
   long unsigned int headersize = strtol(headersize_str, &end_ptr, 10);
   if (end_ptr == headersize_str) {
     fprintf(stderr, "headersize strtol error in read_header, no digit found\n");
-    goto cleanup;
+    return;
   } else if (*end_ptr != '\0') {
     fprintf(stderr,
             "headersize strtol error in read_header, invalid character: %c\n",
             *end_ptr);
-    goto cleanup;
+    return;
   }
   header = (char *) malloc(sizeof(char) * headersize);
   if (!header) {
     fprintf(stderr, "malloc fail for header in read_header\n");
-    goto cleanup;
+    return;
   }
   mq1_header = (MQ1_fields *) malloc(sizeof(MQ1_fields));
   if (!mq1_header) {
     fprintf(stderr, "malloc fail for mq1_header in read_header\n");
-    goto cleanup;
+    if (header) {
+      free(header);
+      header = NULL;
+    }
+    return;
   }
   *mq1_header = allocate_MQ1_fields(1);
 
