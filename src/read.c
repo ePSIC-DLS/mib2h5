@@ -64,6 +64,10 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
     case 384: {
       mq1s mq1_single;
       parse_mq1_single(header, &mq1_single);
+      if (fb->dac0 == NULL) {
+        fprintf(stderr, "NULL dac pointer in read_header\n");
+        return;
+      }
       memcpy(fb->dac0, &mq1_single.dac0, sizeof(dac_rx));
       fb->dac1 = NULL;
       fb->dac2 = NULL;
@@ -75,6 +79,11 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
     case 768: {
       mq1q mq1_quad;
       parse_mq1_quad(header, &mq1_quad);
+      if (fb->dac0 == NULL || fb->dac1 == NULL || fb->dac2 == NULL ||
+          fb->dac3 == NULL) {
+        fprintf(stderr, "NULL dac pointer in read_header\n");
+        return;
+      }
       memcpy(fb->dac0, &mq1_quad.dac0, sizeof(dac_rx));
       memcpy(fb->dac1, &mq1_quad.dac1, sizeof(dac_rx));
       memcpy(fb->dac2, &mq1_quad.dac2, sizeof(dac_rx));
