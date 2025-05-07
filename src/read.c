@@ -15,7 +15,18 @@
 
 void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
 {
-  fseek(mib_ptr, offset, SEEK_SET);
+  if (mib_ptr == NULL || fb == NULL) {
+    fprintf(stderr, "Missing input mib_ptr or fb in read_header\n");
+    return;
+  }
+  if (offset < 0) {
+    fprintf(stderr, "offset is negative, please check input\n");
+    return;
+  }
+  if (fseek(mib_ptr, offset, SEEK_SET) != 0) {
+    fprintf(stderr, "fseek error in read_header\n");
+    return;
+  }
 
   char buf[HEADER_LOC_IN_BUF]     = {0};
   char headersize_str[HEADERSIZE] = {0};
@@ -38,8 +49,16 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
   }
   *mq1_header = allocate_MQ1_fields(1);
 
-  fseek(mib_ptr, offset, SEEK_SET);
-  fread(header, sizeof(char), headersize, mib_ptr);
+  if (fseek(mib_ptr, offset, SEEK_SET) != 0) {
+    fprintf(stderr, "fseek error in read_header\n");
+    return;
+  }
+
+  status = fread(header, sizeof(char), headersize, mib_ptr);
+  if (status != headersize) {
+    fprintf(stderr, "fread error in read_header\n");
+    return;
+  }
 
   switch (headersize) {
     case 384: {
@@ -98,18 +117,22 @@ void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
   int detx = (int) *(fb->mq1_header->det_x);
   int dety = (int) *(fb->mq1_header->det_y);
 
-  // move mib_ptr to the correct place
-  fseek(mib_ptr, offset + headersize, SEEK_SET);
+  if (fseek(mib_ptr, offset + headersize, SEEK_SET) != 0) {
+    fprintf(stderr, "fseek error in read_frame\n");
+    return;
+  }
 
-  // write data into buffer
   uint8_t *raw_data = malloc(bufsize * detx * dety);
   if (!raw_data) {
     fprintf(stderr, "malloc failed for raw_data in read_frame\n");
     return;
   }
 
-  // TO-DO: add checks for corruption
-  fread(raw_data, sizeof(char), bufsize * detx * dety, mib_ptr);
+  size_t status = fread(raw_data, sizeof(char), bufsize * detx * dety, mib_ptr);
+  if (status != bufsize * detx * dety) {
+    fprintf(stderr, "fread error in read_frame\n");
+    return;
+  }
 
   for (int i = 0; i < dety; i++) {
     for (int j = 0; j < detx; j++) {
