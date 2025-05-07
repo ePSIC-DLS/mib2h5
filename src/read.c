@@ -168,7 +168,7 @@ void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
     return;
   }
 
-  size_t status = fread(raw_data, sizeof(char), bufsize * detx * dety, mib_ptr);
+  int status = fread(raw_data, sizeof(char), bufsize * detx * dety, mib_ptr);
   if (status != bufsize * detx * dety) {
     fprintf(stderr, "fread error in read_frame\n");
     return;
@@ -178,32 +178,22 @@ void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
     for (int j = 0; j < detx; j++) {
       size_t index       = (i * detx + j) * bufsize;
       uint8_t *raw_bytes = &raw_data[index];
-      uint64_t value     = 0;
 
       switch (bufsize) {
         case 1: {
-          value                         = raw_bytes[0];
-          ((uint8_t **) fb->rows)[i][j] = (uint8_t) value;
+          ((uint8_t **) fb->rows)[i][j] = raw_bytes[0];
           break;
         }
         case 2: {
-          value                          = (raw_bytes[0] << 8) | raw_bytes[1];
-          ((uint16_t **) fb->rows)[i][j] = (uint16_t) value;
+          ((uint16_t **) fb->rows)[i][j] = convert_uint16_be(raw_bytes);
           break;
         }
         case 4: {
-          value = (raw_bytes[0] << 24) | (raw_bytes[1] << 16) |
-                  (raw_bytes[2] << 8) | raw_bytes[3];
-          ((uint32_t **) fb->rows)[i][j] = (uint32_t) value;
+          ((uint32_t **) fb->rows)[i][j] = convert_uint32_be(raw_bytes);
           break;
         }
         case 8: {
-          value =
-            ((uint64_t) raw_bytes[0] << 56) | ((uint64_t) raw_bytes[1] << 48) |
-            ((uint64_t) raw_bytes[2] << 40) | ((uint64_t) raw_bytes[3] << 32) |
-            ((uint64_t) raw_bytes[4] << 24) | ((uint64_t) raw_bytes[5] << 16) |
-            ((uint64_t) raw_bytes[6] << 8) | ((uint64_t) raw_bytes[7]);
-          ((uint64_t **) fb->rows)[i][j] = value;
+          ((uint64_t **) fb->rows)[i][j] = convert_uint64_be(raw_bytes);
           break;
         }
         default: {
