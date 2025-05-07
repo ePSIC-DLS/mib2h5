@@ -117,6 +117,17 @@ void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
     return;
   }
 
+  if (fb->mq1_header == NULL) {
+    fprintf(stderr, "NULL pointer fb->mq1_header in read_frame\n");
+    return;
+  } else {
+    if (fb->mq1_header->header_bytes == NULL || fb->mq1_header->det_x == NULL ||
+        fb->mq1_header->det_y == NULL) {
+      fprintf(stderr, "NULL pointer inside fb->mq1_header in read_frame\n");
+      return;
+    }
+  }
+
   int headersize = *(fb->mq1_header->header_bytes);
 
   int bufsize = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
