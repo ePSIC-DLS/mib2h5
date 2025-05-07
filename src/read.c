@@ -15,6 +15,8 @@
 
 void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
 {
+  char *header;
+  MQ1_fields *mq1_header;
   if (mib_ptr == NULL || fb == NULL) {
     fprintf(stderr, "Missing input mib_ptr or fb in read_header\n");
     goto cleanup;
@@ -27,7 +29,6 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
     fprintf(stderr, "fseek error in read_header\n");
     goto cleanup;
   }
-
   char buf[HEADER_LOC_IN_BUF]     = {0};
   char headersize_str[HEADERSIZE] = {0};
   size_t status = fread(buf, sizeof(char), HEADER_LOC_IN_BUF, mib_ptr);
@@ -49,12 +50,12 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
             *end_ptr);
     goto cleanup;
   }
-  char *header = malloc(sizeof(char) * headersize);
+  *header = malloc(sizeof(char) * headersize);
   if (!header) {
     fprintf(stderr, "malloc fail for header in read_header\n");
     goto cleanup;
   }
-  MQ1_fields *mq1_header = malloc(sizeof(MQ1_fields));
+  *mq1_header = malloc(sizeof(MQ1_fields));
   if (!mq1_header) {
     fprintf(stderr, "malloc fail for mq1_header in read_header\n");
     goto cleanup;
