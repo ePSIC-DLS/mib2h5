@@ -133,6 +133,10 @@ void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
   int bufsize = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
                 (fb->mq1_header->pixel_depth[2] - '0');
   bufsize = bufsize / 8;
+  if (bufsize != 1 || bufsize != 2 || bufsize != 4 || bufsize != 8) {
+    fprintf(stderr, "not supported bufsize in read_frame\n");
+    return;
+  }
 
   int detx = (int) *(fb->mq1_header->det_x);
   int dety = (int) *(fb->mq1_header->det_y);
@@ -185,6 +189,10 @@ void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
             ((uint64_t) raw_bytes[6] << 8) | ((uint64_t) raw_bytes[7]);
           ((uint64_t **) fb->rows)[i][j] = value;
           break;
+        }
+        default: {
+          fprintf(stderr, "not supported bufsize\n");
+          return;
         }
       }
     }
