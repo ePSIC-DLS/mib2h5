@@ -50,12 +50,12 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
             *end_ptr);
     goto cleanup;
   }
-  *header = (char *) malloc(sizeof(char) * headersize);
+  header = (char *) malloc(sizeof(char) * headersize);
   if (!header) {
     fprintf(stderr, "malloc fail for header in read_header\n");
     goto cleanup;
   }
-  *mq1_header = (MQ1_fields *) malloc(sizeof(MQ1_fields));
+  mq1_header = (MQ1_fields *) malloc(sizeof(MQ1_fields));
   if (!mq1_header) {
     fprintf(stderr, "malloc fail for mq1_header in read_header\n");
     goto cleanup;
