@@ -116,9 +116,9 @@ cleanup:
     header = NULL;
   }
   if (mq1_header) {
+    deallocate_MQ1_fields(*mq1_header);
     free(mq1_header);
     mq1_header = NULL;
-    deallocate_MQ1_fields(*mq1_header);
   }
 }
 
