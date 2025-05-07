@@ -10,17 +10,26 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define HEADER_LOC_IN_BUF 16
+#define HEADERSIZE 6
+
 void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
 {
   fseek(mib_ptr, offset, SEEK_SET);
-  char buf[16]           = {0};
-  char headersize_str[6] = {0};
-  fread(buf, sizeof(char), 16, mib_ptr);
-  memcpy(headersize_str, buf + 11, 5);
-  headersize_str[5]      = '\0';
-  int headersize         = atoi(headersize_str);
-  char *header           = malloc(sizeof(char) * headersize);
-  MQ1_fields *mq1_header = malloc(sizeof(MQ1_fields));
+
+  char buf[HEADER_LOC_IN_BUF]     = {0};
+  char headersize_str[HEADERSIZE] = {0};
+  size_t status = fread(buf, sizeof(char), HEADER_LOC_IN_BUF, mib_ptr);
+  if (status != HEADER_LOC_IN_BF) {
+    fprintf(stderr, "fread error in read_header\n");
+    return;
+  }
+  memcpy(headersize_str, buf + HEADER_LOC_IN_BUF - HEADERSIZE + 1,
+         HEADERSIZE - 1);
+  headersize_str[HEADERSIZE - 1] = '\0';
+  int headersize                 = strtol(headersize_str);
+  char *header                   = malloc(sizeof(char) * headersize);
+  MQ1_fields *mq1_header         = malloc(sizeof(MQ1_fields));
   if (!mq1_header) {
     fprintf(stderr, "malloc fail for mq1_header in read_header\n");
     free(header);
