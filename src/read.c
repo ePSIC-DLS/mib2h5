@@ -133,7 +133,7 @@ void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
   int bufsize = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
                 (fb->mq1_header->pixel_depth[2] - '0');
   bufsize = bufsize / 8;
-  if (bufsize != 1 || bufsize != 2 || bufsize != 4 || bufsize != 8) {
+  if (bufsize != 1 && bufsize != 2 && bufsize != 4 && bufsize != 8) {
     fprintf(stderr, "not supported bufsize in read_frame\n");
     return;
   }
