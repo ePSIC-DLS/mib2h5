@@ -5,7 +5,6 @@
 #include "parser.h"
 #include "utils.h"
 
-#include <blosc.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
