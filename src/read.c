@@ -61,7 +61,7 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
   }
 
   switch (headersize) {
-    case 384: {
+    case MQ1_SINGLE_HEADER_BYTES: {
       mq1s mq1_single;
       parse_mq1_single(header, &mq1_single);
       if (fb->dac0 == NULL) {
@@ -76,7 +76,7 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
       fb->mq1_header = mq1_header;
       break;
     }
-    case 768: {
+    case MQ1_QUAD_HEADER_BYTES: {
       mq1q mq1_quad;
       parse_mq1_quad(header, &mq1_quad);
       if (fb->dac0 == NULL || fb->dac1 == NULL || fb->dac2 == NULL ||
