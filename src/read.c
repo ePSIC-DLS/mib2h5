@@ -111,6 +111,11 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
     }
     default: {
       fprintf(stderr, "headersize not 384 or 768\n");
+      if (mq1_header) {
+        deallocate_MQ1_fields(*mq1_header);
+        free(mq1_header);
+        mq1_header = NULL;
+      }
       goto cleanup;
     }
   }
@@ -119,11 +124,6 @@ cleanup:
   if (header) {
     free(header);
     header = NULL;
-  }
-  if (mq1_header) {
-    deallocate_MQ1_fields(*mq1_header);
-    free(mq1_header);
-    mq1_header = NULL;
   }
 }
 
