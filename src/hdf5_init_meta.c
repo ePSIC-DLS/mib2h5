@@ -66,7 +66,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
 
   header_id_type = H5Tcopy(H5T_C_S1);
   if (header_id_type < 0) {
-    fprintf(stderr, "H5Tcopt failed for header_id_type\n");
+    fprintf(stderr, "H5Tcopy failed for header_id_type\n");
     goto cleanup;
   }
   if (H5Tset_size(header_id_type, MQ1_CHAR_LEN_HEADER_ID) < 0) {
