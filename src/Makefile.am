@@ -15,4 +15,4 @@ mib2h5_SOURCES = main.c utils.c io_header.c parser.c framebuffer.c hdf5_init.c h
 #             -Wl,-rpath,$(BLOSCDIR)/lib64 \
 #             -Wl,-rpath,$(HBDIR)/build
 # Libraries
-# mib2h5_LDADD = -lhdf5 -lblosc -lblosc_filter
+mib2h5_LDADD = -lhdf5 @LIBCOMPRESSION@
