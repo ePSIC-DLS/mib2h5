@@ -193,8 +193,6 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   }
 
 cleanup:
-  if (H5Iis_valid(header_id_type))
-    H5Tclose(header_id_type);
   if (H5Iis_valid(threshold_type))
     H5Tclose(threshold_type);
   if (H5Iis_valid(extended_timestamp_type))
@@ -209,6 +207,8 @@ cleanup:
     H5Tclose(sensor_layout_type);
   if (H5Iis_valid(pixel_depth_type))
     H5Tclose(pixel_depth_type);
+  if (H5Iis_valid(header_id_type))
+    H5Tclose(header_id_type);
   if (H5Iis_valid(dapl))
     H5Pclose(dapl);
   if (H5Iis_valid(dcpl))
