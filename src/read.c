@@ -10,9 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define HEADER_LOC_IN_BUF 16
-#define HEADERSIZE 6
-
 void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
 {
   char *header;
@@ -29,16 +26,17 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
     fprintf(stderr, "fseek error in read_header\n");
     return;
   }
-  char buf[HEADER_LOC_IN_BUF]     = {0};
-  char headersize_str[HEADERSIZE] = {0};
-  size_t status = fread(buf, sizeof(char), HEADER_LOC_IN_BUF, mib_ptr);
-  if (status != HEADER_LOC_IN_BUF) {
+  char buf[MIB_HEADER_METADATA_BUF_SIZE]            = {0};
+  char headersize_str[MIB_HEADER_SIZE_FIELD_LENGTH] = {0};
+  size_t status =
+    fread(buf, sizeof(char), MIB_HEADER_METADATA_BUF_SIZE, mib_ptr);
+  if (status != MIB_HEADER_METADATA_BUF_SIZE) {
     fprintf(stderr, "fread error in read_header\n");
     return;
   }
-  memcpy(headersize_str, buf + HEADER_LOC_IN_BUF - HEADERSIZE + 1,
-         HEADERSIZE - 1);
-  headersize_str[HEADERSIZE - 1] = '\0';
+  memcpy(headersize_str, buf + MIB_HEADER_SIZE_FIELD_OFFSET + 1,
+         MIB_HEADER_SIZE_FIELD_LENGTH - 1);
+  headersize_str[MIB_HEADER_SIZE_FIELD_LENGTH - 1] = '\0';
   char *end_ptr;
   long unsigned int headersize = strtoul(headersize_str, &end_ptr, 10);
   if (end_ptr == headersize_str) {
