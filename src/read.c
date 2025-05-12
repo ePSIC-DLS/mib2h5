@@ -174,7 +174,7 @@ void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
   int status = fread(raw_data, sizeof(char), bufsize * detx * dety, mib_ptr);
   if (status != bufsize * detx * dety) {
     fprintf(stderr, "fread error in read_frame\n");
-    return;
+    goto cleanup;
   }
 
   for (int i = 0; i < dety; i++) {
@@ -201,11 +201,12 @@ void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
         }
         default: {
           fprintf(stderr, "not supported bufsize\n");
-          return;
+          goto cleanup;
         }
       }
     }
   }
+cleanup:
   free(raw_data);
   raw_data = NULL;
 }
