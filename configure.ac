@@ -1,10 +1,10 @@
 AC_INIT([mib2h5], [0.0.1], [https://github.com/ePSIC-DLS/mib2h5/issues], [mib2h5], [https://github.com/ePSIC-DLS/mib2h5])
-AM_INIT_AUTOMAKE([-Wall foreign -Werror tar-pax])
+AM_INIT_AUTOMAKE([-Wall foreign -Werror tar-pax dist-xz])
 
 # --- Build Type Options --
 AC_ARG_ENABLE([debug],
   AS_HELP_STRING([--enable-debug], [Enable debug build]),
-  [debug_build=$enableval], [debug_build=yes])
+  [debug_build=$enableval], [debug_build=no])
 
 AC_ARG_ENABLE([asan],
   AS_HELP_STRING([--enable-asan], [Enable AddressSanitizer build]),
