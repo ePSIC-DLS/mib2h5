@@ -1,4 +1,4 @@
-AC_INIT([mib2h5], [0.0.1], [https://github.com/ePSIC-DLS/mib2h5], [mib2h5],[https://github.com/ePSIC-DLS/mib2h5])
+AC_INIT([mib2h5], [0.0.1], [https://github.com/ePSIC-DLS/mib2h5/issues], [mib2h5], [https://github.com/ePSIC-DLS/mib2h5])
 AM_INIT_AUTOMAKE([-Wall foreign -Werror tar-pax])
 
 # --- Build Type Options --
