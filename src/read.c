@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
+void read_header(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
 {
   char *header;
   MQ1_fields *mq1_header;
@@ -125,7 +125,7 @@ cleanup:
   }
 }
 
-void read_frame(FILE *mib_ptr, long offset, framebuffer *fb)
+void read_frame(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
 {
   if (!mib_ptr || !fb) {
     fprintf(stderr, "Missing input in read_frame\n");
