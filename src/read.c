@@ -127,12 +127,14 @@ cleanup:
 
 void read_frame(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
 {
-  if (!mib_ptr || !fb) {
+  if (!mib_ptr || !fb || !fb->rows) {
     fprintf(stderr, "Missing input in read_frame\n");
     if (!mib_ptr)
       fprintf(stderr, "NO MIB_PTR\n");
     if (!fb)
       fprintf(stderr, "NO fb\n");
+    if (!fb->rows)
+      fprintf(stderr, "NO fb->rows\n");
     return;
   }
 
