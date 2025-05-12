@@ -40,7 +40,7 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
          HEADERSIZE - 1);
   headersize_str[HEADERSIZE - 1] = '\0';
   char *end_ptr;
-  long unsigned int headersize = strtol(headersize_str, &end_ptr, 10);
+  long unsigned int headersize = strtoul(headersize_str, &end_ptr, 10);
   if (end_ptr == headersize_str) {
     fprintf(stderr, "headersize strtol error in read_header, no digit found\n");
     return;
