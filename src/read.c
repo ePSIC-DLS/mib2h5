@@ -44,6 +44,15 @@ void read_header(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
             *end_ptr);
     return;
   }
+
+  if (headersize != MQ1_SINGLE_HEADER_BYTES ||
+      headersize != MQ1_QUAD_HEADER_BYTES) {
+    fprintf(
+      stderr,
+      "headersize not equal to either single or quad header byte size.\n");
+    return;
+  }
+
   header = (char *) malloc(sizeof(char) * headersize);
   if (!header) {
     fprintf(stderr, "malloc fail for header in read_header\n");
