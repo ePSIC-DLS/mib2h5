@@ -18,10 +18,6 @@ void read_header(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
     fprintf(stderr, "Missing input mib_ptr or fb in read_header\n");
     return;
   }
-  if (offset < 0) {
-    fprintf(stderr, "offset is negative, please check input\n");
-    return;
-  }
   if (fseek(mib_ptr, offset, SEEK_SET) != 0) {
     fprintf(stderr, "fseek error in read_header\n");
     return;
