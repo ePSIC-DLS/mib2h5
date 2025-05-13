@@ -114,14 +114,16 @@ cleanup:
 
 void read_frame(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
 {
-  if (!mib_ptr || !fb || !fb->rows) {
-    fprintf(stderr, "Missing input in read_frame\n");
-    if (!mib_ptr)
-      fprintf(stderr, "NO MIB_PTR\n");
-    if (!fb)
-      fprintf(stderr, "NO fb\n");
-    if (!fb->rows)
-      fprintf(stderr, "NO fb->rows\n");
+  if (!mib_ptr) {
+    fprintf(stderr, "NO MIB_PTR\n");
+    return;
+  }
+  if (!fb) {
+    fprintf(stderr, "NO fb\n");
+    return;
+  }
+  if (!fb->rows) {
+    fprintf(stderr, "NO fb->rows\n");
     return;
   }
 
@@ -130,7 +132,7 @@ void read_frame(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
     return;
   } else {
     if (fb->mq1_header->header_bytes == NULL || fb->mq1_header->det_x == NULL ||
-        fb->mq1_header->det_y == NULL) {
+        fb->mq1_header->det_y == NULL || fb->mq1_header->pixel_depth == NULL) {
       fprintf(stderr, "NULL pointer inside fb->mq1_header in read_frame\n");
       return;
     }
@@ -146,8 +148,8 @@ void read_frame(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
     return;
   }
 
-  int detx = (int) *(fb->mq1_header->det_x);
-  int dety = (int) *(fb->mq1_header->det_y);
+  int detx = *(fb->mq1_header->det_x);
+  int dety = *(fb->mq1_header->det_y);
 
   if (fseek(mib_ptr, offset + headersize, SEEK_SET) != 0) {
     fprintf(stderr, "fseek error in read_frame\n");
