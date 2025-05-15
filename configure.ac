@@ -97,46 +97,44 @@ AC_ARG_WITH([hdf5-blosc],
   [])
 
 AS_IF([test "x$enable_compression" != xno], [
-
   AC_MSG_NOTICE([Checking for Blosc compression support...])
-
   # --- If user gave paths, use them directly ---
-  AS_IF([test -n "$BLOSCDIR" && test -n "$HBDIR"], [
+  AS_IF([test -n "$BLOSCDIR"], [
+    CPPFLAGS="$CPPFLAGS -I$BLOSCDIR/include"
+    LDFLAGS="$LDFLAGS -L$BLOSCDIR/lib64 -Wl,-rpath=$BLOSCDIR/lib64"
 
-    CPPFLAGS="$CPPFLAGS -I$BLOSCDIR/include -I$HBDIR/src"
-    LDFLAGS="$LDFLAGS -L$BLOSCDIR/lib64 -L$HBDIR/build"
-    LDFLAGS="$LDFLAGS -Wl,-rpath=$BLOSCDIR/lib64 -Wl,-rpath=$HBDIR/build"
-
-    AC_CHECK_HEADER([blosc.h], [],
-      [AC_MSG_ERROR([blosc.h not found in $BLOSCDIR/include])])
-    AC_CHECK_LIB([blosc], [blosc_init], [],
-      [AC_MSG_ERROR([libblosc not found in $BLOSCDIR/lib64])])
-
-    AC_CHECK_HEADER([blosc_filter.h], [],
-      [AC_MSG_ERROR([blosc_filter.h not found in $HBDIR/src])])
-    AC_CHECK_LIB([blosc_filter], [register_blosc], [],
-      [AC_MSG_ERROR([libblosc_filter not found in $HBDIR/build])])
-
-    AC_DEFINE([HAVE_COMPRESSION], [1], [Define if compression is enabled])
-    AC_SUBST([LIBCOMPRESSION], ["-lblosc -lblosc_filter"])
-
+    AC_CHECK_HEADER([blosc.h], [
+      AC_CHECK_LIB([blosc], [blosc_init], [BLOSC_OK=yes],
+        [AC_MSG_ERROR([libblosc not found in $BLOSCDIR/lib64])])
+    ],
+    [AC_MSG_ERROR([blosc.h not found in $BLOSCDIR/include])])
   ], [
-
-    # --- No user path: try system-wide ---
     AC_CHECK_HEADER([blosc.h], [
       AC_CHECK_LIB([blosc], [blosc_init], [BLOSC_OK=yes])
     ])
+  ])
+
+  AS_IF([test -n "$HBDIR"], [
+    CPPFLAGS="$CPPFLAGS -I$HBDIR/src"
+    LDFLAGS="$LDFLAGS -L$HBDIR/build -Wl,-rpath=$HBDIR/build"
+
+    AC_CHECK_HEADER([blosc_filter.h], [
+      AC_CHECK_LIB([blosc_filter], [register_blosc], [HDF5_BLOSC_OK=yes],
+        [AC_MSG_ERROR([libblosc_filter not found in $HBDIR/build])])
+    ],
+    [AC_MSG_ERROR([blosc_filter.h not found in $HBDIR/src])])
+  ], [
     AC_CHECK_HEADER([blosc_filter.h], [
       AC_CHECK_LIB([blosc_filter], [register_blosc], [HDF5_BLOSC_OK=yes])
     ])
+  ])
 
-    AS_IF([test "x$BLOSC_OK" = xyes && test "x$HDF5_BLOSC_OK" = xyes], [
-      AC_DEFINE([HAVE_COMPRESSION], [1], [Define if compression is enabled])
-      AC_SUBST([LIBCOMPRESSION], ["-lblosc -lblosc_filter"])
-    ], [
-      AS_IF([test "x$enable_compression" != xcheck], [
-        AC_MSG_FAILURE([Compression requested but blosc and hdf5-blosc not found system-wide, and no --with-blosc or --with-hdf5-blosc given])
-      ])
+  AS_IF([test "x$BLOSC_OK" = xyes && test "x$HDF5_BLOSC_OK" = xyes], [
+    AC_DEFINE([HAVE_COMPRESSION], [1], [Define if compression is enabled])
+    AC_SUBST([LIBCOMPRESSION], ["-lblosc -lblosc_filter"])
+  ], [
+    AS_IF([test "x$enable_compression" != xcheck], [
+      AC_MSG_FAILURE([Compression requested but blosc and hdf5-blosc not found system-wide, and no --with-blosc and --with-hdf5-blosc given])
     ])
   ])
 ])
