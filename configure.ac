@@ -65,7 +65,7 @@ AC_ARG_WITH([hdf5-blosc],
   [HBDIR="$withval"],
   [])
 
-AS_IF([test "x$with_compression" != xno], [
+AS_IF([test "x$enable_compression" != xno], [
 
   AC_MSG_NOTICE([Checking for Blosc compression support...])
 
@@ -103,7 +103,7 @@ AS_IF([test "x$with_compression" != xno], [
       AC_DEFINE([HAVE_COMPRESSION], [1], [Define if compression is enabled])
       AC_SUBST([LIBCOMPRESSION], ["-lblosc -lblosc_filter"])
     ], [
-      AS_IF([test "x$with_compression" != xcheck], [
+      AS_IF([test "x$enable_compression" != xcheck], [
         AC_MSG_FAILURE([Compression requested but blosc and hdf5-blosc not found system-wide, and no --with-blosc or --with-hdf5-blosc given])
       ])
     ])
