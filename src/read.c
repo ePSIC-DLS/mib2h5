@@ -44,7 +44,7 @@ void read_header(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
     return;
   }
 
-  if (headersize != MQ1_SINGLE_HEADER_BYTES ||
+  if (headersize != MQ1_SINGLE_HEADER_BYTES &&
       headersize != MQ1_QUAD_HEADER_BYTES) {
     fprintf(
       stderr,
