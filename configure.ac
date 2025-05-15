@@ -20,33 +20,64 @@ AC_ARG_WITH([hdf5],
   [HDFDIR="$withval"],
   [])
 
-AS_IF([test -z "$HDFDIR"], [
-  AC_MSG_NOTICE([--with-hdf5 not provided, checking common HDF5 environment variables...])
-  AS_IF([test -n "$HDF5_ROOT"], [possible_hdf5_path="$HDF5_ROOT"])
-  AS_IF([test -z "$possible_hdf5_path" && test -n "$HDF5_HOME"], [possible_hdf5_path="$HDF5_HOME"])
-  AS_IF([test -z "$possible_hdf5_path" && test -n "$HDF5_DIR"], [possible_hdf5_path="$HDF5_DIR"])
+HDF5_OK=no
 
-  AS_IF([test -n "$possible_hdf5_path"], [
-    AC_MSG_NOTICE([Trying HDF5 from $possible_hdf5_path])
-    CPPFLAGS="$CPPFLAGS -I$possible_hdf5_path/include"
-    LDFLAGS="$LDFLAGS -L$possible_hdf5_path/lib -Wl,-rpath=$possible_hdf5_path/lib"
+AS_IF([test -n "$HDFDIR"], [
+  AC_MSG_NOTICE([Test HDFDIR provided])
+  CPPFLAGS="$CPPFLAGS -I$HDFDIR/include"
+  LDFLAGS="$LDFLAGS -L$HDFDIR/lib"
+
+  AC_CHECK_HEADER([hdf5.h], [
+    AC_CHECK_LIB([hdf5], [H5open], [
+      AC_DEFINE([HAVE_HDF5], [1], [Define if HDF5 is available])
+      HDF5_OK=yes
+    ], [
+      AC_MSG_NOTICE([libhdf5 not found on HDFDIR])
+      HDF5_OK=no
+    ])
+  ], [
+    AC_MSG_NOTICE([hdf5.h not found on HDFDIR])
+    HDF5_OK=no
+  ])
+])
+
+AS_IF([test -z "$HDFDIR" || test "x$HDF5_OK" != xyes], [
+  AC_MSG_NOTICE([--with-hdf5 not provided, checking common HDF5 environment variables...])
+  AS_IF([test -n "$HDF5_ROOT"], [HDFDIR="$HDF5_ROOT"])
+  AS_IF([test -z "$HDFDIR" && test -n "$HDF5_HOME"], [HDFDIR="$HDF5_HOME"])
+  AS_IF([test -z "$HDFDIR" && test -n "$HDF5_DIR"], [HDFDIR="$HDF5_DIR"])
+
+  AS_IF([test -n "$HDFDIR"], [
+    AC_MSG_NOTICE([Trying HDF5 from $HDFDIR])
+    CPPFLAGS="$CPPFLAGS -I$HDFDIR/include"
+    LDFLAGS="$LDFLAGS -L$HDFDIR/lib -Wl,-rpath=$HDFDIR/lib"
     AC_CHECK_HEADER([hdf5.h], [
       AC_CHECK_LIB([hdf5], [H5open], [
         AC_DEFINE([HAVE_HDF5], [1], [Define if HDF5 is available])
-        HDFDIR="$possible_hdf5_path"
+        HDF5_OK=yes
       ])
+    ])
+  ], [
+    AC_MSG_NOTICE([Trying system-wide HDF5 installation])
+    AC_CHECK_HEADER([hdf5.h], [
+      AC_CHECK_LIB([hdf5], [H5open], [
+        AC_DEFINE([HAVE_HDF5], [1], [Define if HDF5 is available])
+        HDF5_OK=yes
+      ], [
+        AC_MSG_NOTICE([libhdf5 not found system-wide])
+        HDF5_OK=no
+      ])
+    ], [
+      AC_MSG_ERROR([hdf5.h not found system-wide])
+      HDF5_OK=no
     ])
   ])
 ])
 
-# Final fallback: try system-wide
-AS_IF([test -z "$HDFDIR"], [
-  AC_MSG_NOTICE([Trying system-wide HDF5 installation])
-  AC_CHECK_HEADER([hdf5.h], [
-    AC_CHECK_LIB([hdf5], [H5open], [
-      AC_DEFINE([HAVE_HDF5], [1], [Define if system HDF5 is available])
-    ], [AC_MSG_ERROR([libhdf5 not found system-wide])])
-  ], [AC_MSG_ERROR([hdf5.h not found system-wide])])
+AS_IF([test "x$HDF5_OK" != xyes], [
+  AC_MSG_ERROR([HDF5 not found])
+], [
+  AC_MSG_NOTICE([HDF5 found in $HDFDIR])
 ])
 
 # ---------------- Compression Option ----------------
