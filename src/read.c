@@ -78,15 +78,6 @@ void read_header(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
         goto cleanup;
       }
       memcpy(fb->dac0, &mq1_single.dac0, sizeof(dac_rx));
-      if (fb->dac1)
-        free(fb->dac1);
-      fb->dac1 = NULL;
-      if (fb->dac2)
-        free(fb->dac2);
-      fb->dac2 = NULL;
-      if (fb->dac3)
-        free(fb->dac3);
-      fb->dac3 = NULL;
       fill_MQ1_single_fields(fb->mq1_header, 0, mq1_single);
       break;
     }
