@@ -13,9 +13,6 @@ void append_frame_to_dataset(hid_t dset, framebuffer *fb, int cbytes)
     fprintf(stderr, "Error in passing parameters in append_frame_to_dataset\n");
     return;
   }
-  // TO-DO: add checks for the member in fb
-
-  // unsigned int seq_num = *(fb->mq1_header->sequence_number);
   unsigned int detx = *(fb->mq1_header->det_x);
   unsigned int dety = *(fb->mq1_header->det_y);
   int bufsize       = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
