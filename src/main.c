@@ -1,5 +1,5 @@
 #include "append.h"
-#include "blosc_filter.h"
+#include "compress.h"
 #include "framebuffer.h"
 #include "hdf5_init.h"
 #include "hdf5_init_meta.h"
@@ -9,7 +9,6 @@
 #include "read.h"
 #include "utils.h"
 
-#include <blosc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,8 +17,8 @@
 // Declaration of Marco here, temporary
 
 #define MERLIN_DSET_NAME "MerlinData"
-#define COMPRESSION_LEVEL 0
-#define SHUFFLE 0
+#define COMPRESSION_LEVEL 9
+#define SHUFFLE 2
 #define BLOCKSIZE 0
 #define NUMINTERNALTHREADS 1
 /* BLOSC_BLOSCLZ blosclz
@@ -141,11 +140,11 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  int com = blosc_compname_to_compcode(COMPRESSOR);
+  hid_t dcpl_id =
+    dcpl_compress(DIM, frame_dim, COMPRESSION_LEVEL, SHUFFLE, COMPRESSOR);
   // printf("=== create frame dataset ===\n");
   create_merlin_dataset(&frame_dset_id, file_id, MERLIN_DSET_NAME, bufsize,
-                        memspace, lcpl_id, DIM, frame_dim, COMPRESSION_LEVEL,
-                        SHUFFLE, com);
+                        memspace, dcpl_id, lcpl_id, DIM, frame_dim);
   // printf("=== done create frame dataset ===\n");
 
   hid_t meta_handle[MQ1_FIELDS_NUM_FIELDS];
@@ -196,7 +195,8 @@ int main(int argc, char *argv[])
 
     deallocate_frame(frame_ptr);
 
-    printf("pointer position after loop %d: %ld\r", loop, ftell(mib_ptr));
+    printf("pointer position after loop %d: %ld,  cbytes: %d\r", loop,
+           ftell(mib_ptr), cbytes);
     fflush(stdout);
     loop++;
   }

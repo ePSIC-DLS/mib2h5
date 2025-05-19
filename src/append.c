@@ -21,7 +21,7 @@ void append_frame_to_dataset(hid_t dset, framebuffer *fb, int cbytes)
   int bufsize       = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
                 (fb->mq1_header->pixel_depth[2] - '0');
   bufsize = bufsize / 8;
-  /*
+
   hid_t datatype;
   switch (bufsize) {
     case 1: {
@@ -45,7 +45,6 @@ void append_frame_to_dataset(hid_t dset, framebuffer *fb, int cbytes)
       return;
     }
   }
-  */
 
   if (cbytes == 0) {
     cbytes = dety * detx * bufsize;
@@ -64,11 +63,11 @@ void append_frame_to_dataset(hid_t dset, framebuffer *fb, int cbytes)
     return;
   }
 
-  H5Sclose(filespace);
-  filespace = H5Dget_space(dset);
+  // H5Sclose(filespace);
+  // filespace = H5Dget_space(dset);
 
   hsize_t offset_chunk[3] = {frame_index, 0, 0};
-  uint32_t filter_mask    = (1 << 0);
+  uint32_t filter_mask    = 0;
 
   if (H5Dwrite_chunk(dset, H5P_DEFAULT, filter_mask, offset_chunk, cbytes,
                      fb->data) < 0) {
@@ -77,20 +76,23 @@ void append_frame_to_dataset(hid_t dset, framebuffer *fb, int cbytes)
   }
 
   /*
-    H5Sselect_hyperslab(filespace, H5S_SELECT_SET, start, NULL, count, NULL);
+  hsize_t start[3] = {frame_index, 0, 0};
+  hsize_t count[3] = {1, 1, 1};
+  hsize_t block[3] = {1, dety, detx};
+  H5Sselect_hyperslab(filespace, H5S_SELECT_SET, start, NULL, count, block);
 
-    hsize_t mem_dims[3] = {1, dety, detx};
-    hid_t memspace      = H5Screate_simple(3, mem_dims, NULL);
+  hsize_t mem_dims[3] = {1, dety, detx};
+  hid_t memspace      = H5Screate_simple(3, mem_dims, NULL);
 
-     fb->data is assumed to be contiguous in [dety][detx] row-major
+  // fb->data is assumed to be contiguous in [dety][detx] row-major
 
 
-    if (H5Dwrite(dset, datatype, memspace, filespace, H5P_DEFAULT, fb->data) <
-        0) {
-      fprintf(stderr, "Error writing frame to dataset\n");
-    }
+  if (H5Dwrite(dset, datatype, memspace, filespace, H5P_DEFAULT, fb->data) <
+      0) {
+    fprintf(stderr, "Error writing frame to dataset\n");
+  }
 
-    H5Sclose(memspace);
+  H5Sclose(memspace);
   */
   H5Sclose(filespace);
 }

@@ -24,7 +24,14 @@ typedef struct {
   unsigned int *counter;
   unsigned int *colour_mode;
   unsigned int *gain_mode;
-  float *threshold;
+  float *threshold0;
+  float *threshold1;
+  float *threshold2;
+  float *threshold3;
+  float *threshold4;
+  float *threshold5;
+  float *threshold6;
+  float *threshold7;
   char *header_extension_id;
   char *extended_timestamp;
   unsigned int *exposure_time_ns;

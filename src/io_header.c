@@ -216,10 +216,59 @@ MQ1_fields allocate_MQ1_fields(unsigned int nheaders)
   }
 
   /*threshold is float[8]*/
-  mq1_fields.threshold = (float *) malloc(
-    sizeof(float) * MQ1_FLOAT_LEN_THRESHOLD * mq1_fields.max_length);
-  if (mq1_fields.threshold == NULL) {
-    perror("Memory allocation error for threshold");
+  mq1_fields.threshold0 =
+    (float *) malloc(sizeof(float) * mq1_fields.max_length);
+  if (mq1_fields.threshold0 == NULL) {
+    perror("Memory allocation error for threshold0");
+    exit(1);
+  }
+
+  mq1_fields.threshold1 =
+    (float *) malloc(sizeof(float) * mq1_fields.max_length);
+  if (mq1_fields.threshold1 == NULL) {
+    perror("Memory allocation error for threshold0");
+    exit(1);
+  }
+
+  mq1_fields.threshold2 =
+    (float *) malloc(sizeof(float) * mq1_fields.max_length);
+  if (mq1_fields.threshold2 == NULL) {
+    perror("Memory allocation error for threshold0");
+    exit(1);
+  }
+
+  mq1_fields.threshold3 =
+    (float *) malloc(sizeof(float) * mq1_fields.max_length);
+  if (mq1_fields.threshold3 == NULL) {
+    perror("Memory allocation error for threshold0");
+    exit(1);
+  }
+
+  mq1_fields.threshold4 =
+    (float *) malloc(sizeof(float) * mq1_fields.max_length);
+  if (mq1_fields.threshold4 == NULL) {
+    perror("Memory allocation error for threshold0");
+    exit(1);
+  }
+
+  mq1_fields.threshold5 =
+    (float *) malloc(sizeof(float) * mq1_fields.max_length);
+  if (mq1_fields.threshold5 == NULL) {
+    perror("Memory allocation error for threshold0");
+    exit(1);
+  }
+
+  mq1_fields.threshold6 =
+    (float *) malloc(sizeof(float) * mq1_fields.max_length);
+  if (mq1_fields.threshold6 == NULL) {
+    perror("Memory allocation error for threshold0");
+    exit(1);
+  }
+
+  mq1_fields.threshold7 =
+    (float *) malloc(sizeof(float) * mq1_fields.max_length);
+  if (mq1_fields.threshold7 == NULL) {
+    perror("Memory allocation error for threshold0");
     exit(1);
   }
 
@@ -287,8 +336,22 @@ void deallocate_MQ1_fields(MQ1_fields mq1_fields)
   mq1_fields.colour_mode = NULL;
   free(mq1_fields.gain_mode);
   mq1_fields.gain_mode = NULL;
-  free(mq1_fields.threshold);
-  mq1_fields.threshold = NULL;
+  free(mq1_fields.threshold0);
+  mq1_fields.threshold0 = NULL;
+  free(mq1_fields.threshold1);
+  mq1_fields.threshold1 = NULL;
+  free(mq1_fields.threshold2);
+  mq1_fields.threshold2 = NULL;
+  free(mq1_fields.threshold3);
+  mq1_fields.threshold3 = NULL;
+  free(mq1_fields.threshold4);
+  mq1_fields.threshold4 = NULL;
+  free(mq1_fields.threshold5);
+  mq1_fields.threshold5 = NULL;
+  free(mq1_fields.threshold6);
+  mq1_fields.threshold6 = NULL;
+  free(mq1_fields.threshold7);
+  mq1_fields.threshold7 = NULL;
   free(mq1_fields.header_extension_id);
   mq1_fields.header_extension_id = NULL;
   free(mq1_fields.extended_timestamp);
@@ -338,10 +401,15 @@ void fill_MQ1_single_fields(MQ1_fields *mq1_field,
   mq1_field->colour_mode[index]     = mq1_h.colour_mode;
   mq1_field->gain_mode[index]       = mq1_h.gain_mode;
   /*threshold is float[8]*/
-  for (unsigned int i = 0; i < MQ1_FLOAT_LEN_THRESHOLD; ++i) {
-    mq1_field->threshold[index * MQ1_FLOAT_LEN_THRESHOLD + i] =
-      mq1_h.threshold[i];
-  }
+  unsigned int i               = -1;
+  mq1_field->threshold0[index] = mq1_h.threshold[++i];
+  mq1_field->threshold1[index] = mq1_h.threshold[++i];
+  mq1_field->threshold2[index] = mq1_h.threshold[++i];
+  mq1_field->threshold3[index] = mq1_h.threshold[++i];
+  mq1_field->threshold4[index] = mq1_h.threshold[++i];
+  mq1_field->threshold5[index] = mq1_h.threshold[++i];
+  mq1_field->threshold6[index] = mq1_h.threshold[++i];
+  mq1_field->threshold7[index] = mq1_h.threshold[++i];
   /*header_extension_id is char[5]*/
   snprintf(mq1_field->header_extension_id +
              index * MQ1_CHAR_LEN_HEADER_EXTENSION_ID,
@@ -391,10 +459,15 @@ void fill_MQ1_quad_fields(MQ1_fields *mq1_field, unsigned int index, mq1q mq1_h)
   mq1_field->colour_mode[index]     = mq1_h.colour_mode;
   mq1_field->gain_mode[index]       = mq1_h.gain_mode;
   /*threshold is float[8]*/
-  for (unsigned int i = 0; i < MQ1_FLOAT_LEN_THRESHOLD; ++i) {
-    mq1_field->threshold[index * MQ1_FLOAT_LEN_THRESHOLD + i] =
-      mq1_h.threshold[i];
-  }
+  unsigned int i               = -1;
+  mq1_field->threshold0[index] = mq1_h.threshold[++i];
+  mq1_field->threshold1[index] = mq1_h.threshold[++i];
+  mq1_field->threshold2[index] = mq1_h.threshold[++i];
+  mq1_field->threshold3[index] = mq1_h.threshold[++i];
+  mq1_field->threshold4[index] = mq1_h.threshold[++i];
+  mq1_field->threshold5[index] = mq1_h.threshold[++i];
+  mq1_field->threshold6[index] = mq1_h.threshold[++i];
+  mq1_field->threshold7[index] = mq1_h.threshold[++i];
   /*header_extension_id is char[5]*/
   snprintf(mq1_field->header_extension_id +
              index * MQ1_CHAR_LEN_HEADER_EXTENSION_ID,
@@ -435,12 +508,19 @@ info *mq1_fields_info(MQ1_fields *fields_struct)
   fields[12] = (info) {"counter", fields_struct->counter};
   fields[13] = (info) {"colour_mode", fields_struct->colour_mode};
   fields[14] = (info) {"gain_mode", fields_struct->gain_mode};
-  fields[15] = (info) {"threshold", fields_struct->threshold};
-  fields[16] =
+  fields[15] = (info) {"threshold0", fields_struct->threshold0};
+  fields[16] = (info) {"threshold1", fields_struct->threshold1};
+  fields[17] = (info) {"threshold2", fields_struct->threshold2};
+  fields[18] = (info) {"threshold3", fields_struct->threshold3};
+  fields[19] = (info) {"threshold4", fields_struct->threshold4};
+  fields[20] = (info) {"threshold5", fields_struct->threshold5};
+  fields[21] = (info) {"threshold6", fields_struct->threshold6};
+  fields[22] = (info) {"threshold7", fields_struct->threshold7};
+  fields[23] =
     (info) {"header_extension_id", fields_struct->header_extension_id};
-  fields[17] = (info) {"extended_timestamp", fields_struct->extended_timestamp};
-  fields[18] = (info) {"exposure_time_ns", fields_struct->exposure_time_ns};
-  fields[19] = (info) {"bit_depth", fields_struct->bit_depth};
+  fields[24] = (info) {"extended_timestamp", fields_struct->extended_timestamp};
+  fields[25] = (info) {"exposure_time_ns", fields_struct->exposure_time_ns};
+  fields[26] = (info) {"bit_depth", fields_struct->bit_depth};
 
   return fields;
 }

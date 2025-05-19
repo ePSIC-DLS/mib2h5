@@ -18,7 +18,6 @@
 #include "mib_header.h"
 #include "utils.h"
 
-#include <blosc.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -128,61 +127,6 @@ void allocate_frame_data(framebuffer *fb)
       free(buffer);
       return;
   }
-}
-
-int compress_frame(framebuffer *fb,
-                   unsigned int compression_level,
-                   unsigned int shuffle,
-                   char *compressor,
-                   size_t blocksize,
-                   int numinternalthreads)
-{
-  int bufsize = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
-                (fb->mq1_header->pixel_depth[2] - '0');
-  bufsize = bufsize / 8;
-
-  int detx = (int) *(fb->mq1_header->det_x);
-  int dety = (int) *(fb->mq1_header->det_y);
-
-  size_t nbytes   = dety * detx * bufsize;
-  size_t destsize = nbytes + BLOSC_MAX_OVERHEAD;
-  void *dest      = malloc(destsize);
-  if (!dest) {
-    fprintf(stderr, "Error in malloc for dest\n");
-    return -1;
-  }
-
-  int cbytes = blosc_compress_ctx(compression_level, shuffle, bufsize, nbytes,
-                                  fb->data, dest, destsize, compressor,
-                                  blocksize, numinternalthreads);
-  if (cbytes < 0) {
-    fprintf(stderr, "Error in blosc_compress\n");
-    free(dest);
-    return -1;
-  }
-  if (cbytes == 0) {
-    fprintf(stderr, "Blosc returned 0 bytes (uncompressible?). Forcing "
-                    "fallback to uncompressed write.\n");
-    cbytes = nbytes;
-    return cbytes;
-  }
-  // for showing compression ratio in each frame, profiling purposes
-  // if (cbytes != 0) {
-  //  printf("compression: %ld -> %d (%.1fx)\n", nbytes, cbytes, (1. * nbytes) /
-  //  cbytes);
-  //}
-
-  free(fb->data);
-  fb->data = malloc(destsize);
-  if (!fb->data) {
-    fprintf(stderr, "Error in malloc for fb->data\n");
-    free(dest);
-    return -1;
-  }
-
-  memcpy(fb->data, dest, cbytes);
-  free(dest);
-  return cbytes;
 }
 
 void deallocate_frame(framebuffer *fb)

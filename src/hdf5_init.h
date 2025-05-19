@@ -18,11 +18,9 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
                            char *merlin_dataset_name,
                            int dtype,
                            hid_t memspace,
+                           hid_t dcpl,
                            hid_t lcpl,
                            size_t dim,
-                           hsize_t *frame_dim,
-                           unsigned int compression_level,
-                           unsigned int shuffle,
-                           unsigned int compressor);
+                           hsize_t *frame_dim);
 
 #endif

@@ -55,16 +55,6 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
     fprintf(stderr, "malloc fail for header in read_header\n");
     return;
   }
-  mq1_header = (MQ1_fields *) malloc(sizeof(MQ1_fields));
-  if (!mq1_header) {
-    fprintf(stderr, "malloc fail for mq1_header in read_header\n");
-    if (header) {
-      free(header);
-      header = NULL;
-    }
-    return;
-  }
-  *mq1_header = allocate_MQ1_fields(1);
 
   if (fseek(mib_ptr, offset, SEEK_SET) != 0) {
     fprintf(stderr, "fseek error in read_header\n");
@@ -89,8 +79,7 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
       fb->dac1 = NULL;
       fb->dac2 = NULL;
       fb->dac3 = NULL;
-      fill_MQ1_single_fields(mq1_header, 0, mq1_single);
-      fb->mq1_header = mq1_header;
+      fill_MQ1_single_fields(fb->mq1_header, 0, mq1_single);
       break;
     }
     case MQ1_QUAD_HEADER_BYTES: {
@@ -105,17 +94,11 @@ void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
       memcpy(fb->dac1, &mq1_quad.dac1, sizeof(dac_rx));
       memcpy(fb->dac2, &mq1_quad.dac2, sizeof(dac_rx));
       memcpy(fb->dac3, &mq1_quad.dac3, sizeof(dac_rx));
-      fill_MQ1_quad_fields(mq1_header, 0, mq1_quad);
-      fb->mq1_header = mq1_header;
+      fill_MQ1_quad_fields(fb->mq1_header, 0, mq1_quad);
       break;
     }
     default: {
       fprintf(stderr, "headersize not 384 or 768\n");
-      if (mq1_header) {
-        deallocate_MQ1_fields(*mq1_header);
-        free(mq1_header);
-        mq1_header = NULL;
-      }
       goto cleanup;
     }
   }
