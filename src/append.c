@@ -21,31 +21,6 @@ void append_frame_to_dataset(hid_t dset, framebuffer *fb, int cbytes)
   int bufsize       = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
                 (fb->mq1_header->pixel_depth[2] - '0');
   bufsize = bufsize / 8;
-  /*
-  hid_t datatype;
-  switch (bufsize) {
-    case 1: {
-      datatype = H5T_STD_U8LE;
-      break;
-    }
-    case 2: {
-      datatype = H5T_STD_U16LE;
-      break;
-    }
-    case 4: {
-      datatype = H5T_STD_U32LE;
-      break;
-    }
-    case 8: {
-      datatype = H5T_STD_U64LE;
-      break;
-    }
-    default: {
-      fprintf(stderr, "bufsize error in append_frame_to_dataset\n");
-      return;
-    }
-  }
-  */
 
   if (cbytes == 0) {
     cbytes = dety * detx * bufsize;
@@ -78,22 +53,6 @@ void append_frame_to_dataset(hid_t dset, framebuffer *fb, int cbytes)
     return;
   }
 
-  /*
-    H5Sselect_hyperslab(filespace, H5S_SELECT_SET, start, NULL, count, NULL);
-
-    hsize_t mem_dims[3] = {1, dety, detx};
-    hid_t memspace      = H5Screate_simple(3, mem_dims, NULL);
-
-     fb->data is assumed to be contiguous in [dety][detx] row-major
-
-
-    if (H5Dwrite(dset, datatype, memspace, filespace, H5P_DEFAULT, fb->data) <
-        0) {
-      fprintf(stderr, "Error writing frame to dataset\n");
-    }
-
-    H5Sclose(memspace);
-  */
   H5Sclose(filespace);
 }
 
@@ -117,7 +76,6 @@ void append_meta_to_dataset(hid_t *meta_handle, framebuffer *fb)
   hsize_t count[1]   = {1};
   hsize_t mem_dim[1] = {1};
 
-  //	size_t num_fields = sizeof(meta_handle) / sizeof(meta_handle[0]);
   for (size_t i = 0; i < MQ1_FIELDS_NUM_FIELDS; i++) {
     datatype  = H5Dget_type(meta_handle[i]);
     filespace = H5Dget_space(meta_handle[i]);
