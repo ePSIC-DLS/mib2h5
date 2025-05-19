@@ -33,51 +33,72 @@ AS_IF([test -n "$HDFDIR"], [
       HDF5_OK=yes
     ], [
       AC_MSG_NOTICE([libhdf5 not found on HDFDIR])
+      AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HDFDIR/include||g"`])
+      AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$HDFDIR/lib||g"`])
+      $as_unset ac_cv_header_hdf5_h
       HDF5_OK=no
     ])
   ], [
     AC_MSG_NOTICE([hdf5.h not found on HDFDIR])
+    AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HDFDIR/include||g"`])
+    AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$HDFDIR/lib||g"`])
+    $as_unset ac_cv_header_hdf5_h
     HDF5_OK=no
   ])
 ])
 
-AS_IF([test -z "$HDFDIR" || test "x$HDF5_OK" != xyes], [
-  AC_MSG_NOTICE([--with-hdf5 not provided, checking common HDF5 environment variables...])
-  AS_IF([test -n "$HDF5_ROOT"], [HDFDIR="$HDF5_ROOT"])
-  AS_IF([test -z "$HDFDIR" && test -n "$HDF5_HOME"], [HDFDIR="$HDF5_HOME"])
-  AS_IF([test -z "$HDFDIR" && test -n "$HDF5_DIR"], [HDFDIR="$HDF5_DIR"])
-
-  AS_IF([test -n "$HDFDIR"], [
-    AC_MSG_NOTICE([Trying HDF5 from $HDFDIR])
-    CPPFLAGS="$CPPFLAGS -I$HDFDIR/include"
-    LDFLAGS="$LDFLAGS -L$HDFDIR/lib -Wl,-rpath=$HDFDIR/lib"
-    AC_CHECK_HEADER([hdf5.h], [
-      AC_CHECK_LIB([hdf5], [H5open], [
-        AC_DEFINE([HAVE_HDF5], [1], [Define if HDF5 is available])
-        HDF5_OK=yes
-      ])
+AS_IF([test "x$HDF5_OK" != xyes], [
+  AC_MSG_NOTICE([Trying system-wide HDF5 installation])
+  AC_CHECK_HEADER([hdf5.h], [
+    AC_CHECK_LIB([hdf5], [H5open], [
+      AC_DEFINE([HAVE_HDF5], [1], [Define if HDF5 is available])
+      HDF5_OK=yes
+      AC_MSG_NOTICE([HDF5 found in system path])
+    ], [
+      AC_MSG_NOTICE([libhdf5 not found system-wide])
+      HDF5_OK=no
+      $as_unset ac_cv_header_hdf5_h
     ])
   ], [
-    AC_MSG_NOTICE([Trying system-wide HDF5 installation])
-    AC_CHECK_HEADER([hdf5.h], [
-      AC_CHECK_LIB([hdf5], [H5open], [
-        AC_DEFINE([HAVE_HDF5], [1], [Define if HDF5 is available])
-        HDF5_OK=yes
-      ], [
-        AC_MSG_NOTICE([libhdf5 not found system-wide])
-        HDF5_OK=no
-      ])
-    ], [
-      AC_MSG_ERROR([hdf5.h not found system-wide])
-      HDF5_OK=no
-    ])
+    AC_MSG_NOTICE([hdf5.h not found system-wide])
+    HDF5_OK=no
+    $as_unset ac_cv_header_hdf5_h
   ])
 ])
 
+if test "x$HDF5_OK" != xyes; then
+  AC_MSG_NOTICE([--with-hdf5 not provided, checking common HDF5 environment variables...])
+  for var in HDF5_ROOT HDF5_HOME HDF5_DIR; do
+    eval dir=\$$var
+    if test -n "$dir"; then
+      AC_MSG_NOTICE([Trying $var at $dir])
+      CPPFLAGS="$CPPFLAGS -I$dir/include"
+      LDFLAGS="$LDFLAGS -L$dir/lib -Wl,-rpath=$dir/lib"
+      AC_CHECK_HEADER([hdf5.h], [
+        AC_CHECK_LIB([hdf5], [H5open], [
+          AC_DEFINE([HAVE_HDF5], [1], [Define if HDF5 is available])
+          HDF5_OK=yes
+          HDFDIR="$dir"
+          AC_MSG_NOTICE([HDF5 found in $HDFDIR])
+        ], [
+          AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$dir/include||g"`])
+          AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$dir/lib||g; s|-Wl,-rpath=$dir/lib||g"`])
+          HDF5_OK=no
+          $as_unset ac_cv_header_hdf5_h
+        ])
+      ], [
+        AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$dir/include||g"`])
+        AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$dir/lib||g; s|-Wl,-rpath=$dir/lib||g"`])
+        HDF5_OK=no
+        $as_unset ac_cv_header_hdf5_h
+      ])
+      test "x$HDF5_OK" = xyes && break
+    fi
+  done
+fi
+
 AS_IF([test "x$HDF5_OK" != xyes], [
   AC_MSG_ERROR([HDF5 not found])
-], [
-  AC_MSG_NOTICE([HDF5 found in $HDFDIR])
 ])
 
 # ---------------- Compression Option ----------------
