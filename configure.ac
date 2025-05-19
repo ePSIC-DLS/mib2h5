@@ -118,21 +118,34 @@ AC_ARG_WITH([hdf5-blosc],
   [])
 
 AS_IF([test "x$enable_compression" != xno], [
+
   AC_MSG_NOTICE([Checking for Blosc compression support...])
+
   # --- If user gave paths, use them directly ---
   AS_IF([test -n "$BLOSCDIR"], [
     CPPFLAGS="$CPPFLAGS -I$BLOSCDIR/include"
     LDFLAGS="$LDFLAGS -L$BLOSCDIR/lib64 -Wl,-rpath=$BLOSCDIR/lib64"
 
     AC_CHECK_HEADER([blosc.h], [
-      AC_CHECK_LIB([blosc], [blosc_init], [BLOSC_OK=yes],
-        [AC_MSG_ERROR([libblosc not found in $BLOSCDIR/lib64])])
-    ],
-    [AC_MSG_ERROR([blosc.h not found in $BLOSCDIR/include])])
-  ], [
-    AC_CHECK_HEADER([blosc.h], [
-      AC_CHECK_LIB([blosc], [blosc_init], [BLOSC_OK=yes])
+      AC_CHECK_LIB([blosc], [blosc_init], [BLOSC_OK=yes], [
+        AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$BLOSCDIR/include||g"`])
+        AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$BLOSCDIR/lib64||g; s|-Wl,-rpath=$BLOSCDIR/lib64||g"`])
+        AC_MSG_NOTICE([libblosc not found in $BLOSCDIR/lib64])
+        BLOSC_OK=no
+      ])
+    ], [
+      AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$BLOSCDIR/include||g"`])
+      AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$BLOSCDIR/lib64||g; s|-Wl,-rpath=$BLOSCDIR/lib64||g"`])
+      AC_MSG_NOTICE([blosc.h not found in $BLOSCDIR/include])
+      BLOSC_OK=no
     ])
+  ])
+
+  AS_IF([test "x$BLOSC_OK" != xyes], [
+    AC_MSG_NOTICE([Falling back on system path for blosc])
+    AC_CHECK_HEADER([blosc.h], [
+      AC_CHECK_LIB([blosc], [blosc_init], [BLOSC_OK=yes], [BLOSC_OK=no])
+    ], [BLOSC_OK=no])
   ])
 
   AS_IF([test -n "$HBDIR"], [
@@ -140,13 +153,24 @@ AS_IF([test "x$enable_compression" != xno], [
     LDFLAGS="$LDFLAGS -L$HBDIR/build -Wl,-rpath=$HBDIR/build"
 
     AC_CHECK_HEADER([blosc_filter.h], [
-      AC_CHECK_LIB([blosc_filter], [register_blosc], [HDF5_BLOSC_OK=yes],
-        [AC_MSG_ERROR([libblosc_filter not found in $HBDIR/build])])
-    ],
-    [AC_MSG_ERROR([blosc_filter.h not found in $HBDIR/src])])
-  ], [
+      AC_CHECK_LIB([blosc_filter], [register_blosc], [HDF5_BLOSC_OK=yes], [
+        AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HBDIR/src||g"`])
+        AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/build||g; s|-Wl,-rpath=$HBDIR/build||g"`])
+        AC_MSG_NOTICE([libblosc_filter not found in $HBDIR/build])
+        HDF5_BLOSC_OK=no
+      ])
+    ], [
+      AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HBDIR/src||g"`])
+      AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/build||g; s|-Wl,-rpath=$HBDIR/build||g"`])
+      AC_MSG_NOTICE([blosc_filter.h not found in $HBDIR/src])
+      HDF5_BLOSC_OK=no
+    ])
+  ])
+
+  AS_IF([test "x$HDF5_BLOSC_OK" != xyes], [
+    AC_MSG_NOTICE([Falling back on system path for hdf5-blosc])
     AC_CHECK_HEADER([blosc_filter.h], [
-      AC_CHECK_LIB([blosc_filter], [register_blosc], [HDF5_BLOSC_OK=yes])
+      AC_CHECK_LIB([blosc_filter], [register_blosc], [HDF5_BLOSC_OK=yes], [HDF5_BLOSC_OK=no])
     ])
   ])
 
