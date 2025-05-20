@@ -21,31 +21,31 @@ void append_frame_to_dataset(hid_t dset, framebuffer *fb, int cbytes)
   int bufsize       = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
                 (fb->mq1_header->pixel_depth[2] - '0');
   bufsize = bufsize / 8;
-
-  hid_t datatype;
-  switch (bufsize) {
-    case 1: {
-      datatype = H5T_STD_U8LE;
-      break;
+  /*
+    hid_t datatype;
+    switch (bufsize) {
+      case 1: {
+        datatype = H5T_STD_U8LE;
+        break;
+      }
+      case 2: {
+        datatype = H5T_STD_U16LE;
+        break;
+      }
+      case 4: {
+        datatype = H5T_STD_U32LE;
+        break;
+      }
+      case 8: {
+        datatype = H5T_STD_U64LE;
+        break;
+      }
+      default: {
+        fprintf(stderr, "bufsize error in append_frame_to_dataset\n");
+        return;
+      }
     }
-    case 2: {
-      datatype = H5T_STD_U16LE;
-      break;
-    }
-    case 4: {
-      datatype = H5T_STD_U32LE;
-      break;
-    }
-    case 8: {
-      datatype = H5T_STD_U64LE;
-      break;
-    }
-    default: {
-      fprintf(stderr, "bufsize error in append_frame_to_dataset\n");
-      return;
-    }
-  }
-
+  */
   if (cbytes == 0) {
     cbytes = dety * detx * bufsize;
     printf("cbytes == 0\n");

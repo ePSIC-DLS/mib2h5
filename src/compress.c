@@ -97,9 +97,9 @@ int compress_frame(framebuffer *fb,
     return -1;
   }
 
-  cbytes = blosc_compress_ctx(compression_level, shuffle, bufsize, nbytes,
-                              fb->data, dest, destsize, compressor, blocksize,
-                              numinternalthreads);
+  int cbytes = blosc_compress_ctx(compression_level, shuffle, bufsize, nbytes,
+                                  fb->data, dest, destsize, compressor,
+                                  blocksize, numinternalthreads);
 
   if (cbytes < 0) {
     fprintf(stderr, "Error in blosc_compress\n");

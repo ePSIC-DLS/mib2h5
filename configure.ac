@@ -1,5 +1,6 @@
 AC_INIT([mib2h5], [0.0.1], [https://github.com/ePSIC-DLS/mib2h5/issues], [mib2h5], [https://github.com/ePSIC-DLS/mib2h5])
 AM_INIT_AUTOMAKE([-Wall foreign -Werror tar-pax dist-xz])
+AC_USE_SYSTEM_EXTENSIONS
 AC_PROG_CC
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_CONFIG_HEADERS([config.h])
@@ -120,7 +121,7 @@ AC_ARG_WITH([hdf5-blosc],
 AS_IF([test "x$enable_compression" != xno], [
 
   AC_MSG_NOTICE([Checking for Blosc compression support...])
-
+dnl [
   # --- If user gave paths, use them directly ---
   AS_IF([test -n "$BLOSCDIR"], [
     CPPFLAGS="$CPPFLAGS -I$BLOSCDIR/include"
@@ -154,14 +155,14 @@ AS_IF([test "x$enable_compression" != xno], [
 
     AC_CHECK_HEADER([blosc_filter.h], [
       AC_CHECK_LIB([blosc_filter], [register_blosc], [HDF5_BLOSC_OK=yes], [
-        AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HBDIR/src||g"`])
-        AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/build||g; s|-Wl,-rpath=$HBDIR/build||g"`])
+        AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HBDIR/include||g"`])
+        AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/lib||g; s|-Wl,-rpath=$HBDIR/lib||g"`])
         AC_MSG_NOTICE([libblosc_filter not found in $HBDIR/build])
         HDF5_BLOSC_OK=no
       ])
     ], [
-      AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HBDIR/src||g"`])
-      AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/build||g; s|-Wl,-rpath=$HBDIR/build||g"`])
+      AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HBDIR/include||g"`])
+      AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/lib||g; s|-Wl,-rpath=$HBDIR/lib||g"`])
       AC_MSG_NOTICE([blosc_filter.h not found in $HBDIR/src])
       HDF5_BLOSC_OK=no
     ])
