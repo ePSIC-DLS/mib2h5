@@ -1,13 +1,13 @@
 // clang-format Language: C
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <errno.h>
 #include <hdf5.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifndef UTILS_H
-#define UTILS_H
 
 static inline uint16_t convert_uint16_be(const uint8_t *bytes)
 {
@@ -39,6 +39,9 @@ static inline void *xmalloc_debug(
   }
   return ptr;
 }
+
+#define XMALLOC(size, var)                                                     \
+  xmalloc_debug((size), (var), __func__, __FILE__, __LINE__)
 
 const char *only_file_name(const char *absolute_file_path);
 

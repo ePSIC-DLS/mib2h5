@@ -113,187 +113,63 @@ MQ1_fields allocate_MQ1_fields(unsigned int nheaders)
 
   mq1_fields.max_length = nheaders;
 
-  mq1_fields.header_id = (char *) malloc(sizeof(char) * MQ1_CHAR_LEN_HEADER_ID *
-                                         mq1_fields.max_length);
-  if (mq1_fields.header_id == NULL) {
-    perror("Memory allocation error for header id");
-    exit(1);
-  }
-
+  mq1_fields.header_id = XMALLOC(
+    sizeof(char) * MQ1_CHAR_LEN_HEADER_ID * mq1_fields.max_length, "header_id");
   mq1_fields.sequence_number =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.sequence_number == NULL) {
-    perror("Memory allocation error for sequence number");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "sequence_number");
   mq1_fields.header_bytes =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.header_bytes == NULL) {
-    perror("Memory allocation error for header bytes");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "header_bytes");
   mq1_fields.num_chips =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.num_chips == NULL) {
-    perror("Memory allocation error for num chips");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "num_chips");
   mq1_fields.det_x =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.det_x == NULL) {
-    perror("Memory allocation error for det x");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "det_x");
   mq1_fields.det_y =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.det_y == NULL) {
-    perror("Memory allocation error for det y");
-    exit(1);
-  }
-
-  /*pixel_depth is char[4]*/
-  mq1_fields.pixel_depth = (char *) malloc(
-    sizeof(char) * MQ1_CHAR_LEN_PIXEL_DEPTH * mq1_fields.max_length);
-  if (mq1_fields.pixel_depth == NULL) {
-    perror("Memory allocation error for pixel depth");
-    exit(1);
-  }
-
-  /*sensor_layout is char[7]*/
-  mq1_fields.sensor_layout = (char *) malloc(
-    sizeof(char) * MQ1_CHAR_LEN_SENSOR_LAYOUT * mq1_fields.max_length);
-  if (mq1_fields.sensor_layout == NULL) {
-    perror("Memory allocation error for sensor layout");
-    exit(1);
-  }
-
-  /*chip_select is char[3]*/
-  mq1_fields.chip_select = (char *) malloc(
-    sizeof(char) * MQ1_CHAR_LEN_CHIP_SELECT * mq1_fields.max_length);
-  if (mq1_fields.chip_select == NULL) {
-    perror("Memory allocation error for chip select");
-    exit(1);
-  }
-
-  /*timestamp is char[27]*/
-  mq1_fields.timestamp = (char *) malloc(sizeof(char) * MQ1_CHAR_LEN_TIMESTAMP *
-                                         mq1_fields.max_length);
-  if (mq1_fields.timestamp == NULL) {
-    perror("Memory allocation error for timestamp");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "det_y");
+  mq1_fields.pixel_depth =
+    XMALLOC(sizeof(char) * MQ1_CHAR_LEN_PIXEL_DEPTH * mq1_fields.max_length,
+            "pixel_depth");
+  mq1_fields.sensor_layout =
+    XMALLOC(sizeof(char) * MQ1_CHAR_LEN_SENSOR_LAYOUT * mq1_fields.max_length,
+            "sensor_layout");
+  mq1_fields.chip_select =
+    XMALLOC(sizeof(char) * MQ1_CHAR_LEN_CHIP_SELECT * mq1_fields.max_length,
+            "chip_select");
+  mq1_fields.timestamp = XMALLOC(
+    sizeof(char) * MQ1_CHAR_LEN_TIMESTAMP * mq1_fields.max_length, "timestamp");
   mq1_fields.exposure_time_s =
-    (double *) malloc(sizeof(double) * mq1_fields.max_length);
-  if (mq1_fields.exposure_time_s == NULL) {
-    perror("Memory allocation error for exposure time s");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(double) * mq1_fields.max_length, "exposure_time_s");
   mq1_fields.counter =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.counter == NULL) {
-    perror("Memory allocation error for counter");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "counter");
   mq1_fields.colour_mode =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.colour_mode == NULL) {
-    perror("Memory allocation error for colour mode");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "colour_mode");
   mq1_fields.gain_mode =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.gain_mode == NULL) {
-    perror("Memory allocation error for gain mode");
-    exit(1);
-  }
-
-  /*threshold is float[8]*/
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "gain_mode");
   mq1_fields.threshold0 =
-    (float *) malloc(sizeof(float) * mq1_fields.max_length);
-  if (mq1_fields.threshold0 == NULL) {
-    perror("Memory allocation error for threshold0");
-    exit(1);
-  }
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold0");
   mq1_fields.threshold1 =
-    (float *) malloc(sizeof(float) * mq1_fields.max_length);
-  if (mq1_fields.threshold1 == NULL) {
-    perror("Memory allocation error for threshold1");
-    exit(1);
-  }
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold1");
   mq1_fields.threshold2 =
-    (float *) malloc(sizeof(float) * mq1_fields.max_length);
-  if (mq1_fields.threshold2 == NULL) {
-    perror("Memory allocation error for threshold2");
-    exit(1);
-  }
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold2");
   mq1_fields.threshold3 =
-    (float *) malloc(sizeof(float) * mq1_fields.max_length);
-  if (mq1_fields.threshold3 == NULL) {
-    perror("Memory allocation error for threshold3");
-    exit(1);
-  }
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold3");
   mq1_fields.threshold4 =
-    (float *) malloc(sizeof(float) * mq1_fields.max_length);
-  if (mq1_fields.threshold4 == NULL) {
-    perror("Memory allocation error for threshold4");
-    exit(1);
-  }
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold4");
   mq1_fields.threshold5 =
-    (float *) malloc(sizeof(float) * mq1_fields.max_length);
-  if (mq1_fields.threshold5 == NULL) {
-    perror("Memory allocation error for threshold5");
-    exit(1);
-  }
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold5");
   mq1_fields.threshold6 =
-    (float *) malloc(sizeof(float) * mq1_fields.max_length);
-  if (mq1_fields.threshold6 == NULL) {
-    perror("Memory allocation error for threshold6");
-    exit(1);
-  }
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold6");
   mq1_fields.threshold7 =
-    (float *) malloc(sizeof(float) * mq1_fields.max_length);
-  if (mq1_fields.threshold7 == NULL) {
-    perror("Memory allocation error for threshold7");
-    exit(1);
-  }
-
-  /*header_extension_id is char[5]*/
-  mq1_fields.header_extension_id = (char *) malloc(
-    sizeof(char) * MQ1_CHAR_LEN_HEADER_EXTENSION_ID * mq1_fields.max_length);
-  if (mq1_fields.header_extension_id == NULL) {
-    perror("Memory allocation error for header extension id");
-    exit(1);
-  }
-
-  /*header_extension_id is char[31]*/
-  mq1_fields.extended_timestamp = (char *) malloc(
-    sizeof(char) * MQ1_CHAR_LEN_EXTENDED_TIMESTAMP * mq1_fields.max_length);
-  if (mq1_fields.extended_timestamp == NULL) {
-    perror("Memory allocation error for extended timestamp");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold7");
+  mq1_fields.header_extension_id = XMALLOC(
+    sizeof(char) * MQ1_CHAR_LEN_HEADER_EXTENSION_ID * mq1_fields.max_length,
+    "header_extension_id");
+  mq1_fields.extended_timestamp = XMALLOC(
+    sizeof(char) * MQ1_CHAR_LEN_EXTENDED_TIMESTAMP * mq1_fields.max_length,
+    "extended_timestamp");
   mq1_fields.exposure_time_ns =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.exposure_time_ns == NULL) {
-    perror("Memory allocation error for exposure time ns");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "exposure_time_ns");
   mq1_fields.bit_depth =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.bit_depth == NULL) {
-    perror("Memory allocation error for bit depth");
-    exit(1);
-  }
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "bit_depth");
 
   return mq1_fields;
 }
