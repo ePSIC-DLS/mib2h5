@@ -149,19 +149,19 @@ AS_IF([test "x$enable_compression" != xno], [
   ])
 
   AS_IF([test -n "$HBDIR"], [
-    CPPFLAGS="$CPPFLAGS -I$HBDIR/src"
-    LDFLAGS="$LDFLAGS -L$HBDIR/build -Wl,-rpath=$HBDIR/build"
+    CPPFLAGS="$CPPFLAGS -I$HBDIR/include"
+    LDFLAGS="$LDFLAGS -L$HBDIR/lib -Wl,-rpath=$HBDIR/lib"
 
     AC_CHECK_HEADER([blosc_filter.h], [
       AC_CHECK_LIB([blosc_filter], [register_blosc], [HDF5_BLOSC_OK=yes], [
-        AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HBDIR/src||g"`])
-        AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/build||g; s|-Wl,-rpath=$HBDIR/build||g"`])
+        AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HBDIR/include||g"`])
+        AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/lib||g; s|-Wl,-rpath=$HBDIR/lib||g"`])
         AC_MSG_NOTICE([libblosc_filter not found in $HBDIR/build])
         HDF5_BLOSC_OK=no
       ])
     ], [
-      AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HBDIR/src||g"`])
-      AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/build||g; s|-Wl,-rpath=$HBDIR/build||g"`])
+      AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HBDIR/include||g"`])
+      AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/lib||g; s|-Wl,-rpath=$HBDIR/lib||g"`])
       AC_MSG_NOTICE([blosc_filter.h not found in $HBDIR/src])
       HDF5_BLOSC_OK=no
     ])
