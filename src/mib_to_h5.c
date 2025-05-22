@@ -106,6 +106,7 @@ int mib_to_h5(char *filename,
   int bufsize = (pixel_depth[1] - '0') * 10 + (pixel_depth[2] - '0');
   bufsize     = bufsize / 8;
 
+  unsigned int num_of_frame = num_of_headers(mib_ptr, (bufsize * (*det_y) * (*det_x)) + (*header_bytes));
   // === end ===
 
   printf("+++ declaring variables done +++\n\n");
@@ -188,8 +189,10 @@ int mib_to_h5(char *filename,
 
     deallocate_frame(frame_ptr);
 
-    printf("pointer position after loop %d: %ld,  cbytes: %d\r", loop,
-           ftell(mib_ptr), cbytes);
+    unsigned int frame_size = bufsize * (*det_y) * (*det_x);
+
+    printf("Progress %0.2f%%  compression ratio: %0.3f/1.000\r", (double)loop*100/num_of_frame,
+            (double) cbytes/frame_size);
     fflush(stdout);
     loop++;
   }
