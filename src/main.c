@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
   char *merlin_dset_name = "MerlinData";
   char *compressor       = "blosclz";
   int compression_level  = 9;
-  int shuffle            = 0;
+  int shuffle            = 2;
 
   while ((opt = getopt(argc, argv, "i:o:d:c:s:l:")) != -1) {
     switch (opt) {

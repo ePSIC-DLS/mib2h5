@@ -16,7 +16,6 @@
 void read_header(FILE *mib_ptr, long offset, framebuffer *fb)
 {
   char *header;
-  MQ1_fields *mq1_header;
   if (mib_ptr == NULL || fb == NULL) {
     fprintf(stderr, "Missing input mib_ptr or fb in read_header\n");
     return;

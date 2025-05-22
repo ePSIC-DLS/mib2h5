@@ -143,7 +143,7 @@ int mib_to_h5(char *filename,
   hid_t dcpl_id =
     dcpl_compress(DIM, frame_dim, compression_level, shuffle, compressor);
   create_merlin_dataset(&frame_dset_id, file_id, merlin_dset_name, bufsize,
-                        memspace, dcpl_id, lcpl_id, DIM, frame_dim);
+                        memspace, dcpl_id, lcpl_id, frame_dim);
 
   hid_t meta_handle[MQ1_FIELDS_NUM_FIELDS];
   hid_t dac_handle[DAC_NUM_FIELDS * 4];

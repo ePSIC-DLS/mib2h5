@@ -59,7 +59,6 @@ void create_merlin_dataset(hid_t *merlin_dataset_id,
                            hid_t memspace,
                            hid_t dcpl,
                            hid_t lcpl,
-                           size_t dim,
                            hsize_t *frame_dim)
 {
   hid_t dapl     = H5I_INVALID_HID;

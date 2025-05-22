@@ -187,10 +187,7 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
       fprintf(stderr, "Error creating dataset : %s\n", dataset_path);
       meta_handle[i] = -1;
       continue;
-    } else {
-      printf("dataset created: %s\n", dataset_path);
     }
-
     meta_handle[i] = dataset;
   }
 
