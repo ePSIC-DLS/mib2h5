@@ -156,7 +156,6 @@ int mib_to_h5(char *filename,
   end                         = clock();
   double time_initialize_hdf5 = (double) (end - begin) / CLOCKS_PER_SEC;
   printf("+++ Time to init hdf5: %02f +++\n", time_initialize_hdf5);
-
   // === start appending ===
   begin = clock();
   /* Check if it is EOF each time
