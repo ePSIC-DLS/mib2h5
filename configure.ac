@@ -150,7 +150,7 @@ AS_IF([test "x$enable_compression" != xno], [
       AC_MSG_NOTICE([libblosc not found in $BLOSC_LIBDIR])
       BLOSC_OK=no
       $as_unset ac_cv_lib_blosc_blosc_init
-      $as_unset_ac_cv_header_blosc_h
+      $as_unset ac_cv_header_blosc_h
     ])
   ], [
     AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$BLOSCDIR/include||g"`])
@@ -178,6 +178,7 @@ AS_IF([test "x$enable_compression" != xno], [
         AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/build||g; s|-Wl,-rpath,$HBDIR/build||g"`])
         AC_MSG_NOTICE([libblosc_filter not found in $HBDIR/build])
         HDF5_BLOSC_OK=no
+        $as_unset ac_cv_lib_blosc_filter_register_blosc
         $as_unset ac_cv_header_blosc_filter_h
       ])
     ], [
