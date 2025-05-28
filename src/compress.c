@@ -48,11 +48,11 @@ hid_t dcpl_compress(size_t dim,
       return H5I_INVALID_HID;
     }
     cd_values[0] = 0;
-    cd_values[1] = 0;                 // compression_level;
-    cd_values[2] = 0;                 // shuffle;
-    cd_values[3] = 0;                 // blocksize
-    cd_values[4] = compression_level; // unused
-    cd_values[5] = shuffle;           // unused
+    cd_values[1] = 0; // unused;
+    cd_values[2] = 0; // unused;
+    cd_values[3] = 0; // blocksize
+    cd_values[4] = compression_level;
+    cd_values[5] = shuffle;
     cd_values[6] = blosc_compname_to_compcode(compressor);
     if (H5Pset_filter(dcpl, FILTER_BLOSC, H5Z_FLAG_OPTIONAL, 7, cd_values) <
         0) {
