@@ -270,15 +270,14 @@ void fill_MQ1_single_fields(MQ1_fields *mq1_field,
   mq1_field->colour_mode[index]     = mq1_h.colour_mode;
   mq1_field->gain_mode[index]       = mq1_h.gain_mode;
   /*threshold is float[8]*/
-  unsigned int i               = -1;
-  mq1_field->threshold0[index] = mq1_h.threshold[++i];
-  mq1_field->threshold1[index] = mq1_h.threshold[++i];
-  mq1_field->threshold2[index] = mq1_h.threshold[++i];
-  mq1_field->threshold3[index] = mq1_h.threshold[++i];
-  mq1_field->threshold4[index] = mq1_h.threshold[++i];
-  mq1_field->threshold5[index] = mq1_h.threshold[++i];
-  mq1_field->threshold6[index] = mq1_h.threshold[++i];
-  mq1_field->threshold7[index] = mq1_h.threshold[++i];
+  mq1_field->threshold0[index] = mq1_h.threshold[0];
+  mq1_field->threshold1[index] = mq1_h.threshold[1];
+  mq1_field->threshold2[index] = mq1_h.threshold[2];
+  mq1_field->threshold3[index] = mq1_h.threshold[3];
+  mq1_field->threshold4[index] = mq1_h.threshold[4];
+  mq1_field->threshold5[index] = mq1_h.threshold[5];
+  mq1_field->threshold6[index] = mq1_h.threshold[6];
+  mq1_field->threshold7[index] = mq1_h.threshold[7];
   /*header_extension_id is char[5]*/
   snprintf(mq1_field->header_extension_id +
              index * MQ1_CHAR_LEN_HEADER_EXTENSION_ID,
@@ -328,15 +327,14 @@ void fill_MQ1_quad_fields(MQ1_fields *mq1_field, unsigned int index, mq1q mq1_h)
   mq1_field->colour_mode[index]     = mq1_h.colour_mode;
   mq1_field->gain_mode[index]       = mq1_h.gain_mode;
   /*threshold is float[8]*/
-  unsigned int i               = -1;
-  mq1_field->threshold0[index] = mq1_h.threshold[++i];
-  mq1_field->threshold1[index] = mq1_h.threshold[++i];
-  mq1_field->threshold2[index] = mq1_h.threshold[++i];
-  mq1_field->threshold3[index] = mq1_h.threshold[++i];
-  mq1_field->threshold4[index] = mq1_h.threshold[++i];
-  mq1_field->threshold5[index] = mq1_h.threshold[++i];
-  mq1_field->threshold6[index] = mq1_h.threshold[++i];
-  mq1_field->threshold7[index] = mq1_h.threshold[++i];
+  mq1_field->threshold0[index] = mq1_h.threshold[0];
+  mq1_field->threshold1[index] = mq1_h.threshold[1];
+  mq1_field->threshold2[index] = mq1_h.threshold[2];
+  mq1_field->threshold3[index] = mq1_h.threshold[3];
+  mq1_field->threshold4[index] = mq1_h.threshold[4];
+  mq1_field->threshold5[index] = mq1_h.threshold[5];
+  mq1_field->threshold6[index] = mq1_h.threshold[6];
+  mq1_field->threshold7[index] = mq1_h.threshold[7];
   /*header_extension_id is char[5]*/
   snprintf(mq1_field->header_extension_id +
              index * MQ1_CHAR_LEN_HEADER_EXTENSION_ID,
