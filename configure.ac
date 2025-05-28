@@ -146,7 +146,7 @@ AS_IF([test "x$enable_compression" != xno], [
   AC_CHECK_HEADER([blosc.h], [
     AC_CHECK_LIB([blosc], [blosc_init], [BLOSC_OK=yes], [
       AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$BLOSCDIR/include||g"`])
-      AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$BLOSC_LIBDIR||g; s|-Wl,-rpath=$BLOSC_LIBDIR||g"`])
+      AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$BLOSC_LIBDIR||g; s|-Wl,-rpath,$BLOSC_LIBDIR||g"`])
       AC_MSG_NOTICE([libblosc not found in $BLOSC_LIBDIR])
       BLOSC_OK=no
       $as_unset ac_cv_lib_blosc_blosc_init
@@ -154,7 +154,7 @@ AS_IF([test "x$enable_compression" != xno], [
     ])
   ], [
     AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$BLOSCDIR/include||g"`])
-    AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$BLOSC_LIBDIR||g; s|-Wl,-rpath=$BLOSC_LIBDIR||g"`])
+    AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$BLOSC_LIBDIR||g; s|-Wl,-rpath,$BLOSC_LIBDIR||g"`])
     AC_MSG_NOTICE([blosc.h not found in $BLOSCDIR/include])
     BLOSC_OK=no
     $as_unset ac_cv_header_blosc_h
