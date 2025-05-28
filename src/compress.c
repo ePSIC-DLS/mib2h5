@@ -37,19 +37,17 @@ hid_t dcpl_compress(size_t dim,
     char *version = (char *) malloc(sizeof(char) * 512);
     if (version == NULL) {
       fprintf(stderr, "malloc for version failed\n");
-      free(version);
       return H5I_INVALID_HID;
     }
     char *date = (char *) malloc(sizeof(char) * 512);
     if (date == NULL) {
       fprintf(stderr, "malloc for date failed\n");
       free(version);
-      free(date);
       return H5I_INVALID_HID;
     }
     cd_values[0] = 0;
-    cd_values[1] = 0; // unused;
-    cd_values[2] = 0; // unused;
+    cd_values[1] = 0; // unused
+    cd_values[2] = 0; // unused
     cd_values[3] = 0; // blocksize
     cd_values[4] = compression_level;
     cd_values[5] = shuffle;
@@ -57,10 +55,12 @@ hid_t dcpl_compress(size_t dim,
     if (H5Pset_filter(dcpl, FILTER_BLOSC, H5Z_FLAG_OPTIONAL, 7, cd_values) <
         0) {
       fprintf(stderr, "Error in H5Pset_filter\n");
+      H5Pclose(dcpl);
       return H5I_INVALID_HID;
     }
     if (register_blosc(&version, &date) < 0) {
       fprintf(stderr, "Error in register_blosc\n");
+      H5Pclose(dcpl);
       free(version);
       free(date);
       return H5I_INVALID_HID;
