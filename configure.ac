@@ -1,4 +1,4 @@
-AC_PREREQ([2.69])
+AC_PREREQ([2.64])
 AC_INIT([mib2h5], [0.0.1], [https://github.com/ePSIC-DLS/mib2h5/issues], [mib2h5], [https://github.com/ePSIC-DLS/mib2h5])
 AM_INIT_AUTOMAKE([-Wall foreign -Werror tar-pax dist-xz])
 AC_USE_SYSTEM_EXTENSIONS
