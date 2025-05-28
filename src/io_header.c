@@ -113,13 +113,6 @@ MQ1_fields allocate_MQ1_fields(unsigned int nheaders)
 
   mq1_fields.max_length = nheaders;
 
-  mq1_fields.header_id = (char *) malloc(sizeof(char) * MQ1_CHAR_LEN_HEADER_ID *
-                                         mq1_fields.max_length);
-  if (mq1_fields.header_id == NULL) {
-    perror("Memory allocation error for header id");
-    exit(1);
-  }
-
   mq1_fields.sequence_number =
     (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
   if (mq1_fields.sequence_number == NULL) {
@@ -259,8 +252,6 @@ MQ1_fields allocate_MQ1_fields(unsigned int nheaders)
 /* ensure all allocated memory is free */
 void deallocate_MQ1_fields(MQ1_fields mq1_fields)
 {
-  free(mq1_fields.header_id);
-  mq1_fields.header_id = NULL;
   free(mq1_fields.sequence_number);
   mq1_fields.sequence_number = NULL;
   free(mq1_fields.header_bytes);
@@ -318,9 +309,6 @@ void fill_MQ1_single_fields(MQ1_fields *mq1_field,
   mq1_field->num_chips[index]       = mq1_h.num_chips;
   mq1_field->det_x[index]           = mq1_h.det_x;
   mq1_field->det_y[index]           = mq1_h.det_y;
-  /*header_id is char[4]*/
-  snprintf(mq1_field->header_id + index * MQ1_CHAR_LEN_HEADER_ID,
-           MQ1_CHAR_LEN_HEADER_ID, "%s", mq1_h.header_id);
   /*pixel_depth is char[4]*/
   snprintf(mq1_field->pixel_depth + index * MQ1_CHAR_LEN_PIXEL_DEPTH,
            MQ1_CHAR_LEN_PIXEL_DEPTH, "%s", mq1_h.pixel_depth);
@@ -371,9 +359,6 @@ void fill_MQ1_quad_fields(MQ1_fields *mq1_field, unsigned int index, mq1q mq1_h)
   mq1_field->num_chips[index]       = mq1_h.num_chips;
   mq1_field->det_x[index]           = mq1_h.det_x;
   mq1_field->det_y[index]           = mq1_h.det_y;
-  /*header_id is char[4]*/
-  snprintf(mq1_field->header_id + index * MQ1_CHAR_LEN_HEADER_ID,
-           MQ1_CHAR_LEN_HEADER_ID, "%s", mq1_h.header_id);
   /*pixel_depth is char[4]*/
   snprintf(mq1_field->pixel_depth + index * MQ1_CHAR_LEN_PIXEL_DEPTH,
            MQ1_CHAR_LEN_PIXEL_DEPTH, "%s", mq1_h.pixel_depth);
@@ -420,27 +405,26 @@ info *mq1_fields_info(MQ1_fields *fields_struct)
   if (!fields)
     return NULL;
 
-  fields[0]  = (info) {"header_id", fields_struct->header_id};
-  fields[1]  = (info) {"max_length", &fields_struct->max_length};
-  fields[2]  = (info) {"sequence_number", fields_struct->sequence_number};
-  fields[3]  = (info) {"header_bytes", fields_struct->header_bytes};
-  fields[4]  = (info) {"num_chips", fields_struct->num_chips};
-  fields[5]  = (info) {"det_x", fields_struct->det_x};
-  fields[6]  = (info) {"det_y", fields_struct->det_y};
-  fields[7]  = (info) {"pixel_depth", fields_struct->pixel_depth};
-  fields[8]  = (info) {"sensor_layout", fields_struct->sensor_layout};
-  fields[9]  = (info) {"chip_select", fields_struct->chip_select};
-  fields[10] = (info) {"timestamp", fields_struct->timestamp};
-  fields[11] = (info) {"exposure_time_s", fields_struct->exposure_time_s};
-  fields[12] = (info) {"counter", fields_struct->counter};
-  fields[13] = (info) {"colour_mode", fields_struct->colour_mode};
-  fields[14] = (info) {"gain_mode", fields_struct->gain_mode};
-  fields[15] = (info) {"threshold", fields_struct->threshold};
-  fields[16] =
+  fields[0]  = (info) {"max_length", &fields_struct->max_length};
+  fields[1]  = (info) {"sequence_number", fields_struct->sequence_number};
+  fields[2]  = (info) {"header_bytes", fields_struct->header_bytes};
+  fields[3]  = (info) {"num_chips", fields_struct->num_chips};
+  fields[4]  = (info) {"det_x", fields_struct->det_x};
+  fields[5]  = (info) {"det_y", fields_struct->det_y};
+  fields[6]  = (info) {"pixel_depth", fields_struct->pixel_depth};
+  fields[7]  = (info) {"sensor_layout", fields_struct->sensor_layout};
+  fields[8]  = (info) {"chip_select", fields_struct->chip_select};
+  fields[9]  = (info) {"timestamp", fields_struct->timestamp};
+  fields[10] = (info) {"exposure_time_s", fields_struct->exposure_time_s};
+  fields[11] = (info) {"counter", fields_struct->counter};
+  fields[12] = (info) {"colour_mode", fields_struct->colour_mode};
+  fields[13] = (info) {"gain_mode", fields_struct->gain_mode};
+  fields[14] = (info) {"threshold", fields_struct->threshold};
+  fields[15] =
     (info) {"header_extension_id", fields_struct->header_extension_id};
-  fields[17] = (info) {"extended_timestamp", fields_struct->extended_timestamp};
-  fields[18] = (info) {"exposure_time_ns", fields_struct->exposure_time_ns};
-  fields[19] = (info) {"bit_depth", fields_struct->bit_depth};
+  fields[16] = (info) {"extended_timestamp", fields_struct->extended_timestamp};
+  fields[17] = (info) {"exposure_time_ns", fields_struct->exposure_time_ns};
+  fields[18] = (info) {"bit_depth", fields_struct->bit_depth};
 
   return fields;
 }

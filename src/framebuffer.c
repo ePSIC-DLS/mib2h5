@@ -1,4 +1,4 @@
-/* These are functions of the struct framebuffer declared
+/* These are the memory allocation functions of he struct framebuffer declared
  * in framebuffer.h
  *
  * allocate_frame_header only allocates mq1_header and dacs in framebuffer
@@ -8,14 +8,13 @@
  *
  * Please also call deallocate_frame for freeing the memory. deallocate_frame
  * frees both header and data
+ *
+ * compress_frame is used for compressing the data
  */
 
 #include "framebuffer.h"
-#include "io_header.h"
 #include "macros.h"
-#include "mib_header.h"
 #include "utils.h"
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,13 +28,14 @@ void allocate_frame_header(framebuffer *fb)
             "Error in malloc for mq1_header in allocate_frame_header\n");
     return;
   }
-  *(fb->mq1_header) = allocate_MQ1_fields(1);
-  fb->dac0          = (dac_rx *) malloc(sizeof(dac_rx));
+  fb->mq1_header = allocate_MQ1_fields(1);
+  fb->dac0       = (dac_rx *) malloc(sizeof(dac_rx));
   if (!fb->dac0) {
     fprintf(stderr, "Error in malloc for dac0 in allocate_frame_header\n");
     return;
   }
-  fb->dac1 = (dac_rx *) malloc(sizeof(dac_rx));
+  fb->mq1_header = allocate_MQ1_fields(1);
+  fb->dac1       = (dac_rx *) malloc(sizeof(dac_rx));
   if (!fb->dac1) {
     fprintf(stderr, "Error in malloc for dac1 in allocate_frame_header\n");
     return;
@@ -66,9 +66,8 @@ void allocate_frame_data(framebuffer *fb)
     fprintf(stderr, "Error in malloc for fb->rows in allocate_frame_data\n");
     return;
   }
-  void *data = NULL;
-  fb->rows   = buffer;
-
+  void *data - NULL;
+  fb->rows = buffer;
   switch (bufsize) {
     case 1: {
       data = malloc(sizeof(uint8_t) * detx * dety);
@@ -112,8 +111,8 @@ void allocate_frame_data(framebuffer *fb)
         fprintf(stderr, "malloc failed for data in read_frame");
         return;
       }
-      fb->data = data;
-      for (int i = 0; i < (int) dety; i++) {
+      fb->data = data for (int i = 0; i < (int) dety; i++)
+      {
         buffer[i] = (uint64_t *) data + i * detx;
       }
       break;
@@ -125,6 +124,65 @@ void allocate_frame_data(framebuffer *fb)
       free(buffer);
       return;
   }
+}
+
+/* This is to compress the data inside framebuffer->data
+ * The function will return the size of the data after compression
+ * which is from blosc_compress_ctx
+ */
+int compress_frame(framebuffer fb *,
+                   unsigned int compression_level,
+                   unsigned int shuffle,
+                   char *compressor,
+                   size_t blocksize,
+                   int numinternalthreads)
+{
+  int bufsize = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
+                (fb->mq1_header->pixel_depth[2] - '0');
+  bufsize = bufsize / 8;
+
+  int detx = (int) *(fb->mq1_header->det_x);
+  int dety = (int) *(fb->mq1_header->det_y);
+
+  size_t nbytes   = dety * detx * bufsize;
+  size_t destsize = nbytes + BLOSC_MAX_OVERHEAD;
+  void *dest      = malloc(destsize);
+  if (!dest) {
+    fprintf(stderr, "Error in malloc for dest\n");
+    return -1;
+  }
+
+  int cbytes = blosc_compress_ctx(compression_level, shuffle, bufsize, nbytes,
+                                  fb->data, dest, destsize, compressor,
+                                  blocksize, numinternalthreads);
+  if (cbytes < 0) {
+    fprintf(stderr, "Error in blosc_compress\n");
+    free(dest);
+    return -1;
+  }
+  if (cbytes == 0) {
+    fprintf(stderr, "Blosc returned 0 bytes (uncompressible?). Forcing "
+                    "fallback to uncompressed write.\n");
+    cbytes = nbytes;
+    return cbytes;
+  }
+  // for showing compression ratio in each frame, profiling purposes
+  // if (cbytes != 0) {
+  //  printf("compression: %ld -> %d (%.1fx)\n", nbytes, cbytes, (1. * nbytes) /
+  //  cbytes);
+  //}
+
+  free(fb->data);
+  fb->data = malloc(destsize);
+  if (!fb->data) {
+    fprintf(stderr, "Error in malloc for fb->data\n");
+    free(dest);
+    return -1;
+  }
+
+  memcpy(fb->data, dest, cbytes);
+  free(dest);
+  return cbytes;
 }
 
 void deallocate_frame(framebuffer *fb)
@@ -146,7 +204,7 @@ void deallocate_frame(framebuffer *fb)
   if (fb->dac3)
     free(fb->dac3);
   if (fb->mq1_header) {
-    deallocate_MQ1_fields(*(fb->mq1_header));
+    deallocate_MQ1_fields(fb->mq1_header);
     free(fb->mq1_header);
     fb->mq1_header = NULL;
   }

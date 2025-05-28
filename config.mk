@@ -1,6 +1,7 @@
 # === Directories ===
 SRCDIR := src
 OBJDIR := obj
+INCDIR := include
 HDFDIR ?= $(HDF5_ROOT)
 
 BUILD ?= debug
@@ -23,7 +24,7 @@ else
 	$(error Unknown BUILD type: $(BUILD))
 endif
 
-CFLAGS += -I$(SRCDIR) -I$(HDFDIR)/include
+CFLAGS += -I$(SRCDIR) -I$(INCDIR) -I$(HDFDIR)/include
 LDFLAGS += -L$(HDFDIR)/lib -lhdf5
 
 # === Sources ===

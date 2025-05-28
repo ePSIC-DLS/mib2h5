@@ -9,7 +9,6 @@
 #define IO_HEADER_H
 
 typedef struct {
-  char *header_id;
   unsigned int max_length;
   unsigned int *sequence_number;
   unsigned int *header_bytes;
