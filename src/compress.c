@@ -97,9 +97,9 @@ int compress_frame(framebuffer *fb,
     return -1;
   }
 
-  cbytes = blosc_compress_ctx(compression_level, shuffle, bufsize, nbytes,
-                              fb->data, dest, destsize, compressor, blocksize,
-                              numinternalthreads);
+  int cbytes = blosc_compress_ctx(compression_level, shuffle, bufsize, nbytes,
+                                  fb->data, dest, destsize, compressor,
+                                  blocksize, numinternalthreads);
 
   if (cbytes < 0) {
     fprintf(stderr, "Error in blosc_compress\n");
@@ -110,23 +110,20 @@ int compress_frame(framebuffer *fb,
     fprintf(stderr, "Blosc returned 0 bytes (uncompressible?). Forcing "
                     "fallback to uncompressed write.\n");
     cbytes = nbytes;
+    free(dest);
     return cbytes;
   }
-  // for showing compression ratio in each frame, profiling purposes
-  // if (cbytes != 0) {
-  //  printf("compression: %ld -> %d (%.1fx)\n", nbytes, cbytes, (1. * nbytes) /
-  //  cbytes);
-  //}
 
-  free(fb->data);
-  fb->data = malloc(destsize);
-  if (!fb->data) {
-    fprintf(stderr, "Error in malloc for fb->data\n");
+  void *temp = realloc(fb->data, destsize);
+  if (temp) {
+    fb->data = temp;
+    memcpy(fb->data, dest, cbytes);
+  } else {
+    fprintf(stderr,
+            "Error in realloc for fb->data, fall back on the original data\n");
     free(dest);
-    return -1;
+    return nbytes;
   }
-
-  memcpy(fb->data, dest, cbytes);
   free(dest);
   return cbytes;
 #else
