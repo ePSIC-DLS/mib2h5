@@ -38,19 +38,18 @@ AS_IF([test -n "$HDFDIR"], [
       AC_MSG_NOTICE([libhdf5 not found on HDFDIR])
       AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HDFDIR/include||g"`])
       AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$HDFDIR/lib||g"`])
-      $as_unset ac_cv_header_hdf5_h
       HDF5_OK=no
     ])
   ], [
     AC_MSG_NOTICE([hdf5.h not found on HDFDIR])
     AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HDFDIR/include||g"`])
     AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$HDFDIR/lib||g"`])
-    $as_unset ac_cv_header_hdf5_h
     HDF5_OK=no
   ])
 ])
 
 AS_IF([test "x$HDF5_OK" != xyes], [
+  AS_UNSET([ac_cv_header_hdf5_h])
   AC_MSG_NOTICE([Trying system-wide HDF5 installation])
   AC_CHECK_HEADER([hdf5.h], [
     AC_CHECK_LIB([hdf5], [H5open], [
@@ -60,12 +59,10 @@ AS_IF([test "x$HDF5_OK" != xyes], [
     ], [
       AC_MSG_NOTICE([libhdf5 not found system-wide])
       HDF5_OK=no
-      $as_unset ac_cv_header_hdf5_h
     ])
   ], [
     AC_MSG_NOTICE([hdf5.h not found system-wide])
     HDF5_OK=no
-    $as_unset ac_cv_header_hdf5_h
   ])
 ])
 
@@ -74,6 +71,7 @@ if test "x$HDF5_OK" != xyes; then
   for var in HDF5_ROOT HDF5_HOME HDF5_DIR; do
     eval dir=\$$var
     if test -n "$dir"; then
+      AS_UNSET([ac_cv_header_hdf5_h])
       AC_MSG_NOTICE([Trying $var at $dir])
       CPPFLAGS="$CPPFLAGS -I$dir/include"
       LDFLAGS="$LDFLAGS -L$dir/lib -Wl,-rpath,$dir/lib"
@@ -87,13 +85,11 @@ if test "x$HDF5_OK" != xyes; then
           AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$dir/include||g"`])
           AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$dir/lib||g; s|-Wl,-rpath,$dir/lib||g"`])
           HDF5_OK=no
-          $as_unset ac_cv_header_hdf5_h
         ])
       ], [
         AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$dir/include||g"`])
         AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$dir/lib||g; s|-Wl,-rpath,$dir/lib||g"`])
         HDF5_OK=no
-        $as_unset ac_cv_header_hdf5_h
       ])
       test "x$HDF5_OK" = xyes && break
     fi
@@ -149,19 +145,18 @@ AS_IF([test "x$enable_compression" != xno], [
       AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$BLOSC_LIBDIR||g; s|-Wl,-rpath,$BLOSC_LIBDIR||g"`])
       AC_MSG_NOTICE([libblosc not found in $BLOSC_LIBDIR])
       BLOSC_OK=no
-      $as_unset ac_cv_lib_blosc_blosc_init
-      $as_unset ac_cv_header_blosc_h
     ])
   ], [
     AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$BLOSCDIR/include||g"`])
     AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$BLOSC_LIBDIR||g; s|-Wl,-rpath,$BLOSC_LIBDIR||g"`])
     AC_MSG_NOTICE([blosc.h not found in $BLOSCDIR/include])
     BLOSC_OK=no
-    $as_unset ac_cv_header_blosc_h
   ])
 
 
   AS_IF([test "x$BLOSC_OK" != xyes], [
+    AS_UNSET([ac_cv_lib_blosc_blosc_init])
+    AS_UNSET([ac_cv_header_blosc_h])
     AC_MSG_NOTICE([Falling back on system path for blosc])
     AC_CHECK_HEADER([blosc.h], [
       AC_CHECK_LIB([blosc], [blosc_init], [BLOSC_OK=yes], [BLOSC_OK=no])
@@ -178,19 +173,18 @@ AS_IF([test "x$enable_compression" != xno], [
         AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/build||g; s|-Wl,-rpath,$HBDIR/build||g"`])
         AC_MSG_NOTICE([libblosc_filter not found in $HBDIR/build])
         HDF5_BLOSC_OK=no
-        $as_unset ac_cv_lib_blosc_filter_register_blosc
-        $as_unset ac_cv_header_blosc_filter_h
       ])
     ], [
       AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HBDIR/src||g"`])
       AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-$HBDIR/build||g; s|-Wl,-rpath,$HBDIR/build||g"`])
       AC_MSG_NOTICE([blosc_filter.h not found in $HBDIR/src])
       HDF5_BLOSC_OK=no
-      $as_unset ac_cv_header_blosc_filter_h
     ])
   ])
 
   AS_IF([test "x$HDF5_BLOSC_OK" != xyes], [
+    AS_UNSET([ac_cv_lib_blosc_filter_register_blosc])
+    AS_UNSET([ac_cv_header_blosc_filter_h])
     AC_MSG_NOTICE([Falling back on system path for hdf5-blosc])
     AC_CHECK_HEADER([blosc_filter.h], [
       AC_CHECK_LIB([blosc_filter], [register_blosc], [HDF5_BLOSC_OK=yes], [HDF5_BLOSC_OK=no])
