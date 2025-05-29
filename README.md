@@ -273,6 +273,16 @@ Contribution is very welcomed. Please use the [issue
 page](https://github.com/ePSIC-DLS/mib2h5/issues) to report any bug and missing
 feature.
 
+### Maintainers
+
+- Timothy Poon (@ptim0626)
+
+### Contributors
+
+- Teo Ching (@teoching0705)
+- Yousef Moazzam (@yousefmoazzam)
+- Timothy Poon (@ptim0626)
+
 ## Licence
 
 MIT
