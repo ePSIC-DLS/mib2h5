@@ -78,11 +78,28 @@ void append_meta_to_dataset(hid_t *meta_handle, framebuffer *fb)
   hsize_t start[1];
   hsize_t count[1]   = {1};
   hsize_t mem_dim[1] = {1};
+  int rank           = 0;
+  herr_t status;
 
   for (size_t i = 0; i < MQ1_FIELDS_NUM_FIELDS; i++) {
-    datatype  = H5Dget_type(meta_handle[i]);
+    datatype = H5Dget_type(meta_handle[i]);
+    if (datatype < 0) {
+      fprintf(stderr, "Error in H5Dget_type in append_meta_to_dataset\n");
+      return;
+    }
     filespace = H5Dget_space(meta_handle[i]);
-    H5Sget_simple_extent_dims(filespace, dim, NULL);
+    if (filespace == H5I_INVALID_HID) {
+      fprintf(stderr, "Error in H5Dget_space in append_meta_to_dataset\n");
+      H5Tclose(datatype);
+      return;
+    }
+    rank = H5Sget_simple_extent_dims(filespace, dim, NULL);
+    if (rank < 0) {
+      fprintf(stderr,
+              "Error in H5Sget_simple_extent_dims in append_meta_to_dataset\n");
+      H5Tclose(datatype);
+      return;
+    }
     frame_index = dim[0];
     new_dim[0]  = dim[0] + 1;
 
@@ -97,10 +114,24 @@ void append_meta_to_dataset(hid_t *meta_handle, framebuffer *fb)
     // update filespace as the dimension is extented
     H5Sclose(filespace);
     filespace = H5Dget_space(meta_handle[i]);
-    start[0]  = frame_index;
-    H5Sselect_hyperslab(filespace, H5S_SELECT_SET, start, NULL, count, NULL);
+    if (filespace == H5I_INVALID_HID) {
+      fprintf(stderr, "Error in H5Dget_space in append_meta_to_dataset\n");
+      return;
+    }
+
+    start[0] = frame_index;
+    status =
+      H5Sselect_hyperslab(filespace, H5S_SELECT_SET, start, NULL, count, NULL);
+    if (status < 0) {
+      fprintf(stderr, "Error H5Sselect_hyperslab in append_meta_to_dataset\n");
+      return;
+    }
 
     memspace = H5Screate_simple(1, mem_dim, NULL);
+    if (memspace < 0) {
+      fprintf(stderr, "Error H5Screate_simple in append_meta_to_dataset\n");
+      return;
+    }
 
     if (H5Dwrite(meta_handle[i], datatype, memspace, filespace, H5P_DEFAULT,
                  mq1_iter[i].data) < 0) {
@@ -164,13 +195,31 @@ void append_dac_to_dataset(unsigned int num_chips,
   hsize_t start[1];
   hsize_t count[1]   = {1};
   hsize_t mem_dim[1] = {1};
+  int rank           = 0;
+  herr_t status;
 
   for (size_t i = 0; i < (size_t) num_chips; i++) {
     for (size_t j = 0; j < DAC_NUM_FIELDS; j++) {
-      ind       = i * DAC_NUM_FIELDS + j;
-      datatype  = H5Dget_type(dac_handle[ind]);
+      ind      = i * DAC_NUM_FIELDS + j;
+      datatype = H5Dget_type(dac_handle[ind]);
+      if (datatype < 0) {
+        fprintf(stderr, "Error in H5Dget_type in append_meta_to_dataset\n");
+        return;
+      }
       filespace = H5Dget_space(dac_handle[ind]);
-      H5Sget_simple_extent_dims(filespace, dim, NULL);
+      if (filespace == H5I_INVALID_HID) {
+        fprintf(stderr, "Error in H5Dget_space in append_meta_to_dataset\n");
+        H5Tclose(datatype);
+        return;
+      }
+      rank = H5Sget_simple_extent_dims(filespace, dim, NULL);
+      if (rank < 0) {
+        fprintf(
+          stderr,
+          "Error in H5Sget_simple_extent_dims in append_meta_to_dataset\n");
+        H5Tclose(datatype);
+        return;
+      }
       frame_index = dim[0];
       new_dim[0]  = dim[0] + 1;
 
@@ -186,11 +235,25 @@ void append_dac_to_dataset(unsigned int num_chips,
       // Close and update the filespace as the dimension has extended
       H5Sclose(filespace);
       filespace = H5Dget_space(dac_handle[ind]);
+      if (filespace == H5I_INVALID_HID) {
+        fprintf(stderr, "Error in H5Dget_space in append_meta_to_dataset\n");
+        H5Tclose(datatype);
+        return;
+      }
 
       start[0] = frame_index;
-      H5Sselect_hyperslab(filespace, H5S_SELECT_SET, start, NULL, count, NULL);
+      status   = H5Sselect_hyperslab(filespace, H5S_SELECT_SET, start, NULL,
+                                     count, NULL);
+      if (status < 0) {
+        fprintf(stderr, "Error H5Sselect_hyperslab in append_dac_to_dataset\n");
+        return;
+      }
 
       memspace = H5Screate_simple(1, mem_dim, NULL);
+      if (memspace == H5I_INVALID_HID) {
+        fprintf(stderr, "Error H5Screate_simple in append_dac_to_dataset\n");
+        return;
+      }
 
       if (H5Dwrite(dac_handle[ind], datatype, memspace, filespace, H5P_DEFAULT,
                    d_array[i][j].data) < 0) {
