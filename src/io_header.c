@@ -113,145 +113,63 @@ MQ1_fields allocate_MQ1_fields(unsigned int nheaders)
 
   mq1_fields.max_length = nheaders;
 
-  mq1_fields.header_id = (char *) malloc(sizeof(char) * MQ1_CHAR_LEN_HEADER_ID *
-                                         mq1_fields.max_length);
-  if (mq1_fields.header_id == NULL) {
-    perror("Memory allocation error for header id");
-    exit(1);
-  }
-
+  mq1_fields.header_id = XMALLOC(
+    sizeof(char) * MQ1_CHAR_LEN_HEADER_ID * mq1_fields.max_length, "header_id");
   mq1_fields.sequence_number =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.sequence_number == NULL) {
-    perror("Memory allocation error for sequence number");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "sequence_number");
   mq1_fields.header_bytes =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.header_bytes == NULL) {
-    perror("Memory allocation error for header bytes");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "header_bytes");
   mq1_fields.num_chips =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.num_chips == NULL) {
-    perror("Memory allocation error for num chips");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "num_chips");
   mq1_fields.det_x =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.det_x == NULL) {
-    perror("Memory allocation error for det x");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "det_x");
   mq1_fields.det_y =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.det_y == NULL) {
-    perror("Memory allocation error for det y");
-    exit(1);
-  }
-
-  /*pixel_depth is char[4]*/
-  mq1_fields.pixel_depth = (char *) malloc(
-    sizeof(char) * MQ1_CHAR_LEN_PIXEL_DEPTH * mq1_fields.max_length);
-  if (mq1_fields.pixel_depth == NULL) {
-    perror("Memory allocation error for pixel depth");
-    exit(1);
-  }
-
-  /*sensor_layout is char[7]*/
-  mq1_fields.sensor_layout = (char *) malloc(
-    sizeof(char) * MQ1_CHAR_LEN_SENSOR_LAYOUT * mq1_fields.max_length);
-  if (mq1_fields.sensor_layout == NULL) {
-    perror("Memory allocation error for sensor layout");
-    exit(1);
-  }
-
-  /*chip_select is char[3]*/
-  mq1_fields.chip_select = (char *) malloc(
-    sizeof(char) * MQ1_CHAR_LEN_CHIP_SELECT * mq1_fields.max_length);
-  if (mq1_fields.chip_select == NULL) {
-    perror("Memory allocation error for chip select");
-    exit(1);
-  }
-
-  /*timestamp is char[27]*/
-  mq1_fields.timestamp = (char *) malloc(sizeof(char) * MQ1_CHAR_LEN_TIMESTAMP *
-                                         mq1_fields.max_length);
-  if (mq1_fields.timestamp == NULL) {
-    perror("Memory allocation error for timestamp");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "det_y");
+  mq1_fields.pixel_depth =
+    XMALLOC(sizeof(char) * MQ1_CHAR_LEN_PIXEL_DEPTH * mq1_fields.max_length,
+            "pixel_depth");
+  mq1_fields.sensor_layout =
+    XMALLOC(sizeof(char) * MQ1_CHAR_LEN_SENSOR_LAYOUT * mq1_fields.max_length,
+            "sensor_layout");
+  mq1_fields.chip_select =
+    XMALLOC(sizeof(char) * MQ1_CHAR_LEN_CHIP_SELECT * mq1_fields.max_length,
+            "chip_select");
+  mq1_fields.timestamp = XMALLOC(
+    sizeof(char) * MQ1_CHAR_LEN_TIMESTAMP * mq1_fields.max_length, "timestamp");
   mq1_fields.exposure_time_s =
-    (double *) malloc(sizeof(double) * mq1_fields.max_length);
-  if (mq1_fields.exposure_time_s == NULL) {
-    perror("Memory allocation error for exposure time s");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(double) * mq1_fields.max_length, "exposure_time_s");
   mq1_fields.counter =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.counter == NULL) {
-    perror("Memory allocation error for counter");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "counter");
   mq1_fields.colour_mode =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.colour_mode == NULL) {
-    perror("Memory allocation error for colour mode");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "colour_mode");
   mq1_fields.gain_mode =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.gain_mode == NULL) {
-    perror("Memory allocation error for gain mode");
-    exit(1);
-  }
-
-  /*threshold is float[8]*/
-  mq1_fields.threshold = (float *) malloc(
-    sizeof(float) * MQ1_FLOAT_LEN_THRESHOLD * mq1_fields.max_length);
-  if (mq1_fields.threshold == NULL) {
-    perror("Memory allocation error for threshold");
-    exit(1);
-  }
-
-  /*header_extension_id is char[5]*/
-  mq1_fields.header_extension_id = (char *) malloc(
-    sizeof(char) * MQ1_CHAR_LEN_HEADER_EXTENSION_ID * mq1_fields.max_length);
-  if (mq1_fields.header_extension_id == NULL) {
-    perror("Memory allocation error for header extension id");
-    exit(1);
-  }
-
-  /*header_extension_id is char[31]*/
-  mq1_fields.extended_timestamp = (char *) malloc(
-    sizeof(char) * MQ1_CHAR_LEN_EXTENDED_TIMESTAMP * mq1_fields.max_length);
-  if (mq1_fields.extended_timestamp == NULL) {
-    perror("Memory allocation error for extended timestamp");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "gain_mode");
+  mq1_fields.threshold0 =
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold0");
+  mq1_fields.threshold1 =
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold1");
+  mq1_fields.threshold2 =
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold2");
+  mq1_fields.threshold3 =
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold3");
+  mq1_fields.threshold4 =
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold4");
+  mq1_fields.threshold5 =
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold5");
+  mq1_fields.threshold6 =
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold6");
+  mq1_fields.threshold7 =
+    XMALLOC(sizeof(float) * mq1_fields.max_length, "threshold7");
+  mq1_fields.header_extension_id = XMALLOC(
+    sizeof(char) * MQ1_CHAR_LEN_HEADER_EXTENSION_ID * mq1_fields.max_length,
+    "header_extension_id");
+  mq1_fields.extended_timestamp = XMALLOC(
+    sizeof(char) * MQ1_CHAR_LEN_EXTENDED_TIMESTAMP * mq1_fields.max_length,
+    "extended_timestamp");
   mq1_fields.exposure_time_ns =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.exposure_time_ns == NULL) {
-    perror("Memory allocation error for exposure time ns");
-    exit(1);
-  }
-
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "exposure_time_ns");
   mq1_fields.bit_depth =
-    (unsigned int *) malloc(sizeof(unsigned int) * mq1_fields.max_length);
-  if (mq1_fields.bit_depth == NULL) {
-    perror("Memory allocation error for bit depth");
-    exit(1);
-  }
+    XMALLOC(sizeof(unsigned int) * mq1_fields.max_length, "bit_depth");
 
   return mq1_fields;
 }
@@ -287,8 +205,22 @@ void deallocate_MQ1_fields(MQ1_fields mq1_fields)
   mq1_fields.colour_mode = NULL;
   free(mq1_fields.gain_mode);
   mq1_fields.gain_mode = NULL;
-  free(mq1_fields.threshold);
-  mq1_fields.threshold = NULL;
+  free(mq1_fields.threshold0);
+  mq1_fields.threshold0 = NULL;
+  free(mq1_fields.threshold1);
+  mq1_fields.threshold1 = NULL;
+  free(mq1_fields.threshold2);
+  mq1_fields.threshold2 = NULL;
+  free(mq1_fields.threshold3);
+  mq1_fields.threshold3 = NULL;
+  free(mq1_fields.threshold4);
+  mq1_fields.threshold4 = NULL;
+  free(mq1_fields.threshold5);
+  mq1_fields.threshold5 = NULL;
+  free(mq1_fields.threshold6);
+  mq1_fields.threshold6 = NULL;
+  free(mq1_fields.threshold7);
+  mq1_fields.threshold7 = NULL;
   free(mq1_fields.header_extension_id);
   mq1_fields.header_extension_id = NULL;
   free(mq1_fields.extended_timestamp);
@@ -338,10 +270,14 @@ void fill_MQ1_single_fields(MQ1_fields *mq1_field,
   mq1_field->colour_mode[index]     = mq1_h.colour_mode;
   mq1_field->gain_mode[index]       = mq1_h.gain_mode;
   /*threshold is float[8]*/
-  for (unsigned int i = 0; i < MQ1_FLOAT_LEN_THRESHOLD; ++i) {
-    mq1_field->threshold[index * MQ1_FLOAT_LEN_THRESHOLD + i] =
-      mq1_h.threshold[i];
-  }
+  mq1_field->threshold0[index] = mq1_h.threshold[0];
+  mq1_field->threshold1[index] = mq1_h.threshold[1];
+  mq1_field->threshold2[index] = mq1_h.threshold[2];
+  mq1_field->threshold3[index] = mq1_h.threshold[3];
+  mq1_field->threshold4[index] = mq1_h.threshold[4];
+  mq1_field->threshold5[index] = mq1_h.threshold[5];
+  mq1_field->threshold6[index] = mq1_h.threshold[6];
+  mq1_field->threshold7[index] = mq1_h.threshold[7];
   /*header_extension_id is char[5]*/
   snprintf(mq1_field->header_extension_id +
              index * MQ1_CHAR_LEN_HEADER_EXTENSION_ID,
@@ -391,10 +327,14 @@ void fill_MQ1_quad_fields(MQ1_fields *mq1_field, unsigned int index, mq1q mq1_h)
   mq1_field->colour_mode[index]     = mq1_h.colour_mode;
   mq1_field->gain_mode[index]       = mq1_h.gain_mode;
   /*threshold is float[8]*/
-  for (unsigned int i = 0; i < MQ1_FLOAT_LEN_THRESHOLD; ++i) {
-    mq1_field->threshold[index * MQ1_FLOAT_LEN_THRESHOLD + i] =
-      mq1_h.threshold[i];
-  }
+  mq1_field->threshold0[index] = mq1_h.threshold[0];
+  mq1_field->threshold1[index] = mq1_h.threshold[1];
+  mq1_field->threshold2[index] = mq1_h.threshold[2];
+  mq1_field->threshold3[index] = mq1_h.threshold[3];
+  mq1_field->threshold4[index] = mq1_h.threshold[4];
+  mq1_field->threshold5[index] = mq1_h.threshold[5];
+  mq1_field->threshold6[index] = mq1_h.threshold[6];
+  mq1_field->threshold7[index] = mq1_h.threshold[7];
   /*header_extension_id is char[5]*/
   snprintf(mq1_field->header_extension_id +
              index * MQ1_CHAR_LEN_HEADER_EXTENSION_ID,
@@ -435,12 +375,19 @@ info *mq1_fields_info(MQ1_fields *fields_struct)
   fields[12] = (info) {"counter", fields_struct->counter};
   fields[13] = (info) {"colour_mode", fields_struct->colour_mode};
   fields[14] = (info) {"gain_mode", fields_struct->gain_mode};
-  fields[15] = (info) {"threshold", fields_struct->threshold};
-  fields[16] =
+  fields[15] = (info) {"threshold0", fields_struct->threshold0};
+  fields[16] = (info) {"threshold1", fields_struct->threshold1};
+  fields[17] = (info) {"threshold2", fields_struct->threshold2};
+  fields[18] = (info) {"threshold3", fields_struct->threshold3};
+  fields[19] = (info) {"threshold4", fields_struct->threshold4};
+  fields[20] = (info) {"threshold5", fields_struct->threshold5};
+  fields[21] = (info) {"threshold6", fields_struct->threshold6};
+  fields[22] = (info) {"threshold7", fields_struct->threshold7};
+  fields[23] =
     (info) {"header_extension_id", fields_struct->header_extension_id};
-  fields[17] = (info) {"extended_timestamp", fields_struct->extended_timestamp};
-  fields[18] = (info) {"exposure_time_ns", fields_struct->exposure_time_ns};
-  fields[19] = (info) {"bit_depth", fields_struct->bit_depth};
+  fields[24] = (info) {"extended_timestamp", fields_struct->extended_timestamp};
+  fields[25] = (info) {"exposure_time_ns", fields_struct->exposure_time_ns};
+  fields[26] = (info) {"bit_depth", fields_struct->bit_depth};
 
   return fields;
 }

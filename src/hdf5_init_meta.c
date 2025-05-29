@@ -15,8 +15,6 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   hid_t timestamp_type           = H5I_INVALID_HID;
   hid_t header_extension_id_type = H5I_INVALID_HID;
   hid_t extended_timestamp_type  = H5I_INVALID_HID;
-  hsize_t threshold_dims[1]      = {MQ1_FLOAT_LEN_THRESHOLD};
-  hid_t threshold_type           = H5I_INVALID_HID;
   hid_t dataspace                = H5I_INVALID_HID;
   hid_t dcpl                     = H5I_INVALID_HID;
   hid_t dapl                     = H5I_INVALID_HID;
@@ -136,12 +134,6 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     goto cleanup;
   }
 
-  threshold_type = H5Tarray_create(H5T_NATIVE_FLOAT, 1, threshold_dims);
-  if (threshold_type < 0) {
-    fprintf(stderr, "H5Tarray_create failed for thresholds\n");
-    goto cleanup;
-  }
-
   struct {
     const char *name;
     hid_t type;
@@ -161,7 +153,14 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
     {"counter", H5T_NATIVE_UINT},
     {"colour_mode", H5T_NATIVE_UINT},
     {"gain_mode", H5T_NATIVE_UINT},
-    {"threshold", threshold_type},
+    {"threshold0", H5T_NATIVE_FLOAT},
+    {"threshold1", H5T_NATIVE_FLOAT},
+    {"threshold2", H5T_NATIVE_FLOAT},
+    {"threshold3", H5T_NATIVE_FLOAT},
+    {"threshold4", H5T_NATIVE_FLOAT},
+    {"threshold5", H5T_NATIVE_FLOAT},
+    {"threshold6", H5T_NATIVE_FLOAT},
+    {"threshold7", H5T_NATIVE_FLOAT},
     {"header_extension_id", header_extension_id_type},
     {"extended_timestamp", extended_timestamp_type},
     {"exposure_time_ns", H5T_NATIVE_UINT},
@@ -193,8 +192,6 @@ void create_meta_mq1_fields_dataset(hid_t file, hid_t lcpl, hid_t *meta_handle)
   }
 
 cleanup:
-  if (H5Iis_valid(threshold_type))
-    H5Tclose(threshold_type);
   if (H5Iis_valid(extended_timestamp_type))
     H5Tclose(extended_timestamp_type);
   if (H5Iis_valid(header_extension_id_type))

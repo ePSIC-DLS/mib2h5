@@ -1,10 +1,13 @@
 // clang-format Language: C
+#ifndef UTILS_H
+#define UTILS_H
+
+#include <errno.h>
 #include <hdf5.h>
 #include <stdint.h>
 #include <stdio.h>
-
-#ifndef UTILS_H
-#define UTILS_H
+#include <stdlib.h>
+#include <string.h>
 
 static inline uint16_t convert_uint16_be(const uint8_t *bytes)
 {
@@ -24,6 +27,21 @@ static inline uint64_t convert_uint64_be(const uint8_t *bytes)
          ((uint64_t) bytes[4] << 24) | ((uint64_t) bytes[5] << 16) |
          ((uint64_t) bytes[6] << 8) | bytes[7];
 }
+
+static inline void *xmalloc_debug(
+  size_t size, const char *var, const char *func, const char *file, int line)
+{
+  void *ptr = malloc(size);
+  if (!ptr) {
+    fprintf(stderr, "[ERROR] malloc error for %s: %s (at %s:%d in %s)\n", var,
+            strerror(errno), file, line, func);
+    exit(1);
+  }
+  return ptr;
+}
+
+#define XMALLOC(size, var)                                                     \
+  xmalloc_debug((size), (var), __func__, __FILE__, __LINE__)
 
 const char *only_file_name(const char *absolute_file_path);
 
