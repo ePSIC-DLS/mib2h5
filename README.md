@@ -267,6 +267,12 @@ convert(
 For detailed parameter descriptions, refer to the header file `mib2h5.h` or the
 Python docstrings.
 
+## Contributing
+
+Contribution is very welcomed. Please use the [issue
+page](https://github.com/ePSIC-DLS/mib2h5/issues) to report any bug and missing
+feature.
+
 ## Licence
 
 MIT
