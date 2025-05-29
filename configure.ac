@@ -1,3 +1,5 @@
+# 2.64 is needed for AS_VAR_SET
+# check https://lists.gnu.org/archive/html/autotools-announce/2009-07/msg00000.html for detail
 AC_PREREQ([2.64])
 AC_INIT([mib2h5], [0.0.1], [https://github.com/ePSIC-DLS/mib2h5/issues], [mib2h5], [https://github.com/ePSIC-DLS/mib2h5])
 AM_INIT_AUTOMAKE([-Wall foreign -Werror tar-pax dist-xz])
