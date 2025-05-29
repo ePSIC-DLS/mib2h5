@@ -94,7 +94,7 @@ void append_meta_to_dataset(hid_t *meta_handle, framebuffer *fb)
       H5Sclose(filespace);
       return;
     }
-
+    // update filespace as the dimension is extented
     H5Sclose(filespace);
     filespace = H5Dget_space(meta_handle[i]);
     start[0]  = frame_index;
