@@ -61,6 +61,7 @@ void append_frame_to_dataset(hid_t dset, framebuffer *fb, int cbytes)
 
 void append_meta_to_dataset(hid_t *meta_handle, framebuffer *fb)
 {
+  // meta_handle and mq1_iter will be free outside this
   if (meta_handle == NULL) {
     fprintf(stderr, "meta_handle is NULL in append_meta_to_dataset\n");
     return;
@@ -149,6 +150,7 @@ void append_dac_to_dataset(unsigned int num_chips,
                            hid_t *dac_handle,
                            framebuffer *fb)
 {
+  // dac_handle and d_array will be freed outside this
   hid_t datatype, filespace, memspace;
   info *d_array[4];
   size_t ind = 0;
