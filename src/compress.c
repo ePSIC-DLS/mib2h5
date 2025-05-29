@@ -27,21 +27,25 @@ hid_t dcpl_compress(size_t dim,
   } else {
     if (H5Pset_chunk(dcpl, dim, frame_dim) < 0) {
       fprintf(stderr, "Error in H5Pset_chunk\n");
+      H5Pclose(dcpl);
       return H5I_INVALID_HID;
     }
     if (H5Pset_fill_time(dcpl, H5D_FILL_TIME_NEVER) < 0) {
       fprintf(stderr, "Error in H5Pset_fill_time\n");
+      H5Pclose(dcpl);
       return H5I_INVALID_HID;
     }
 #ifdef HAVE_COMPRESSION
     char *version = (char *) malloc(sizeof(char) * 512);
     if (version == NULL) {
       fprintf(stderr, "malloc for version failed\n");
+      H5Pclose(dcpl);
       return H5I_INVALID_HID;
     }
     char *date = (char *) malloc(sizeof(char) * 512);
     if (date == NULL) {
       fprintf(stderr, "malloc for date failed\n");
+      H5Pclose(dcpl);
       free(version);
       return H5I_INVALID_HID;
     }
