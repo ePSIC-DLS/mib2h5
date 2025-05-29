@@ -183,6 +183,7 @@ void append_dac_to_dataset(unsigned int num_chips,
         continue;
       }
 
+      // Close and update the filespace as the dimension has extended
       H5Sclose(filespace);
       filespace = H5Dget_space(dac_handle[ind]);
 
