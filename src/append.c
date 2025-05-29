@@ -26,8 +26,18 @@ void append_frame_to_dataset(hid_t dset, framebuffer *fb, int cbytes)
   }
 
   hid_t filespace = H5Dget_space(dset);
+  if (filespace == H5I_INVALID_HID) {
+    fprintf(stderr, "Error in H5Dget_space in append_frame_to_dataset\n");
+    return;
+  }
   hsize_t dims[3];
-  H5Sget_simple_extent_dims(filespace, dims, NULL);
+  int rank = H5Sget_simple_extent_dims(filespace, dims, NULL);
+  if (rank < 0) {
+    fprintf(stderr,
+            "Error in H5Sget_simple_extent_dims in append_frame_to_dataset\n");
+    H5Sclose(filespace);
+    return;
+  }
 
   hsize_t frame_index = dims[0];
 
