@@ -73,7 +73,7 @@ void allocate_frame_data(framebuffer *fb)
     case 1: {
       data = malloc(sizeof(uint8_t) * detx * dety);
       if (!data) {
-        fprintf(stderr, "malloc failed for data in read_frame");
+        fprintf(stderr, "malloc failed for data in allocate_frame_data\n");
         return;
       }
       fb->data = data;
@@ -85,7 +85,7 @@ void allocate_frame_data(framebuffer *fb)
     case 2: {
       data = malloc(sizeof(uint16_t) * detx * dety);
       if (!data) {
-        fprintf(stderr, "malloc failed for data in read_frame");
+        fprintf(stderr, "malloc failed for data in allocate_frame_data\n");
         return;
       }
       fb->data = data;
@@ -97,7 +97,7 @@ void allocate_frame_data(framebuffer *fb)
     case 4: {
       data = malloc(sizeof(uint32_t) * detx * dety);
       if (!data) {
-        fprintf(stderr, "malloc failed for data in read_frame");
+        fprintf(stderr, "malloc failed for data in allocate_frame_data\n");
         return;
       }
       fb->data = data;
@@ -109,7 +109,7 @@ void allocate_frame_data(framebuffer *fb)
     case 8: {
       data = malloc(sizeof(uint64_t) * detx * dety);
       if (!data) {
-        fprintf(stderr, "malloc failed for data in read_frame");
+        fprintf(stderr, "malloc failed for data in allocate_frame_data\n");
         return;
       }
       fb->data = data;
