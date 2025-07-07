@@ -64,6 +64,8 @@ void allocate_frame_data(framebuffer *fb)
   void **buffer = malloc(sizeof(void *) * dety);
   if (!buffer) {
     fprintf(stderr, "Error in malloc for fb->rows in allocate_frame_data\n");
+    fb->rows = NULL;
+    fb->data = NULL;
     return;
   }
   void *data = NULL;
@@ -74,6 +76,9 @@ void allocate_frame_data(framebuffer *fb)
       data = malloc(sizeof(uint8_t) * detx * dety);
       if (!data) {
         fprintf(stderr, "malloc failed for data in allocate_frame_data\n");
+        free(buffer);
+        fb->rows = NULL;
+        fb->data = NULL;
         return;
       }
       fb->data = data;
@@ -86,6 +91,9 @@ void allocate_frame_data(framebuffer *fb)
       data = malloc(sizeof(uint16_t) * detx * dety);
       if (!data) {
         fprintf(stderr, "malloc failed for data in allocate_frame_data\n");
+        free(buffer);
+        fb->rows = NULL;
+        fb->data = NULL;
         return;
       }
       fb->data = data;
@@ -98,6 +106,9 @@ void allocate_frame_data(framebuffer *fb)
       data = malloc(sizeof(uint32_t) * detx * dety);
       if (!data) {
         fprintf(stderr, "malloc failed for data in allocate_frame_data\n");
+        free(buffer);
+        fb->rows = NULL;
+        fb->data = NULL;
         return;
       }
       fb->data = data;
@@ -110,6 +121,9 @@ void allocate_frame_data(framebuffer *fb)
       data = malloc(sizeof(uint64_t) * detx * dety);
       if (!data) {
         fprintf(stderr, "malloc failed for data in allocate_frame_data\n");
+        free(buffer);
+        fb->rows = NULL;
+        fb->data = NULL;
         return;
       }
       fb->data = data;
@@ -119,10 +133,10 @@ void allocate_frame_data(framebuffer *fb)
       break;
     }
     default:
-      printf("Unsupported pixel depth, single bit will be implemented later\n");
-      if (data)
-        free(data);
+      fprintf(stderr, "Unsupported pixel depth in allocate_frame_data\n");
       free(buffer);
+      fb->rows = NULL;
+      fb->data = NULL;
       return;
   }
 }
