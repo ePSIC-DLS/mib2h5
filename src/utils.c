@@ -3,12 +3,54 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h> // for strcasecmp
 #include <sys/statvfs.h>
 
 const char *only_file_name(const char *absolute_file_path)
 {
   const char *rslash = strrchr(absolute_file_path, '/');
   return (rslash != NULL) ? rslash + 1 : absolute_file_path;
+}
+
+char *create_output_filename(const char *input_path, const char *output_dir)
+{
+  // get base filename from path
+  const char *base_name = only_file_name(input_path);
+  if (!base_name) {
+    return NULL;
+  }
+
+  // check if filename ends with .mib (case-insensitive)
+  size_t base_len     = strlen(base_name);
+  const char *dot_mib = NULL;
+  if (base_len > 4) {
+    // check for .mib or .MIB at the end
+    if (strcasecmp(base_name + base_len - 4, ".mib") == 0) {
+      dot_mib = base_name + base_len - 4;
+    }
+  }
+
+  // calculate output filename length
+  size_t name_len = dot_mib ? (size_t) (dot_mib - base_name) : base_len;
+  // +1 for '/', +4 for '.h5\0'
+  size_t output_len = strlen(output_dir) + 1 + name_len + 4;
+
+  char *output_file = malloc(output_len);
+  if (!output_file) {
+    return NULL;
+  }
+
+  // build output filename
+  if (dot_mib) {
+    // copy basename without .mib, then append .h5
+    snprintf(output_file, output_len, "%s/%.*s.h5", output_dir, (int) name_len,
+             base_name);
+  } else {
+    // no .mib extension, just append .h5
+    sprintf(output_file, "%s/%s.h5", output_dir, base_name);
+  }
+
+  return output_file;
 }
 
 unsigned int num_of_headers(FILE *mib_ptr, const unsigned int stride)

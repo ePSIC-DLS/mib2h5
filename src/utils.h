@@ -45,6 +45,8 @@ static inline void *xmalloc_debug(
 
 const char *only_file_name(const char *absolute_file_path);
 
+char *create_output_filename(const char *input_path, const char *output_dir);
+
 unsigned int num_of_headers(FILE *mib_ptr, const unsigned int stride);
 
 void header_meta_from_first(FILE *mib_ptr,
