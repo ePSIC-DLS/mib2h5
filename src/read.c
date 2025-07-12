@@ -135,8 +135,6 @@ void read_frame(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
     }
   }
 
-  int headersize = *(fb->mq1_header->header_bytes);
-
   int bufsize = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
                 (fb->mq1_header->pixel_depth[2] - '0');
   bufsize = bufsize / 8;
