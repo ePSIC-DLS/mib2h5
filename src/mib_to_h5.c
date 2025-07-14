@@ -190,7 +190,7 @@ int mib_to_h5(const char *filename,
 
     // read frame header and data
     read_header(mib_ptr, offset, &fb);
-    read_frame(mib_ptr, offset + header_bytes, &fb);
+    read_frame(mib_ptr, offset, &fb);
 
     // append frame data to dataset
     append_frame_to_dataset(merlin_dataset_id, &fb, cbytes);
