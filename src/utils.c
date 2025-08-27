@@ -213,3 +213,32 @@ unsigned long get_filesystem_block_size(const char *path)
 
   return stat.f_bsize;
 }
+
+int directory_exists(const char *dir_path)
+{
+  // check for NULL or empty path
+  if (!dir_path || *dir_path == '\0') {
+    fprintf(stderr, "Error: Directory path is empty or NULL\n");
+    return -1;
+  }
+
+  // check if path exists and get its stats
+  struct stat dir_stat;
+  if (stat(dir_path, &dir_stat) != 0) {
+    if (errno == ENOENT) {
+      fprintf(stderr, "Error: Directory '%s' does not exist\n", dir_path);
+    } else {
+      fprintf(stderr, "Error: Cannot access directory '%s': %s (errno=%d)\n",
+              dir_path, strerror(errno), errno);
+    }
+    return -1;
+  }
+
+  // verify it's actually a directory
+  if (!S_ISDIR(dir_stat.st_mode)) {
+    fprintf(stderr, "Error: '%s' exists but is not a directory\n", dir_path);
+    return -1;
+  }
+
+  return 0;
+}

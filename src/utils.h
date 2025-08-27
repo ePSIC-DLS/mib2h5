@@ -61,4 +61,6 @@ hid_t bufsize_to_datatype(int dtype);
 
 unsigned long get_filesystem_block_size(const char *path);
 
+int directory_exists(const char *dir_path);
+
 #endif
