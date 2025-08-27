@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void initialize_plist(char *path,
+void initialize_plist(char *output_dir,
                       hid_t *fapl_id,
                       hid_t *fcpl_id,
                       hid_t *lcpl_id)
@@ -14,7 +14,7 @@ void initialize_plist(char *path,
     fprintf(stderr, "Error in creating fcpl in create_file\n");
     return;
   }
-  unsigned long f_blocksize = get_filesystem_block_size(path);
+  unsigned long f_blocksize = get_filesystem_block_size(output_dir);
   printf("block size of filesystem: %ld\n", f_blocksize);
   if ((*fapl_id = H5Pcreate(H5P_FILE_ACCESS)) == H5I_INVALID_HID) {
     fprintf(stderr, "Error in creating fapl in create_file\n");

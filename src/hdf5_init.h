@@ -5,7 +5,7 @@
 #ifndef HDF5_INIT_H
 #define HDF5_INIT_H
 
-void initialize_plist(char *path,
+void initialize_plist(char *output_dir,
                       hid_t *fapl_id,
                       hid_t *fcpl_id,
                       hid_t *lcpl_id);

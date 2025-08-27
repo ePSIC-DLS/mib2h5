@@ -107,8 +107,13 @@ int mib_to_h5(const char *filename,
     goto cleanup;
   }
 
+  // validate output directory exists
+  if (directory_exists(output_directory) != 0) {
+    goto cleanup;
+  }
+
   // initialise HDF5 property lists
-  initialize_plist(output_file, &fapl_id, &fcpl_id, &lcpl_id);
+  initialize_plist(output_directory, &fapl_id, &fcpl_id, &lcpl_id);
 
   // create HDF5 file
   initialize_file(output_file, &file_id, fapl_id, fcpl_id);
