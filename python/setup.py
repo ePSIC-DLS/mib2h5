@@ -1,10 +1,11 @@
-from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
-from Cython.Build import cythonize
-from pathlib import Path
 import os
 import subprocess
+from pathlib import Path
 from subprocess import CalledProcessError
+
+from Cython.Build import cythonize
+from setuptools import Extension, setup
+from setuptools.command.build_ext import build_ext
 
 
 class AutotoolsError(Exception):
@@ -130,8 +131,8 @@ def _find_hdf5_paths():
 
     # verify hdf5 header exists
     if not _check_header_exists(hdf5_include, "hdf5.h"):
-        msg = (f"HDF5 header not found at '{hdf5_include}'. Please verify your "
-                "HDF5 installation.")
+        msg = (f"HDF5 header not found at '{hdf5_include}'. Please verify "
+                "your HDF5 installation.")
         raise FileNotFoundError(msg)
 
     return hdf5_include, hdf5_lib
