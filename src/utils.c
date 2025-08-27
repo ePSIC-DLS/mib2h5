@@ -206,7 +206,8 @@ unsigned long get_filesystem_block_size(const char *path)
   }
 
   if (statvfs(path, &stat) != 0) {
-    fprintf(stderr, "statvfs failed\n");
+    fprintf(stderr, "statvfs failed for '%s': %s (errno=%d)\n", path,
+            strerror(errno), errno);
     return 1;
   }
 
