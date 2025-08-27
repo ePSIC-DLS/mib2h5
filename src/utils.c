@@ -1,10 +1,14 @@
 #include "utils.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h> // for strcasecmp
+#include <sys/stat.h>
 #include <sys/statvfs.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 const char *only_file_name(const char *absolute_file_path)
 {
@@ -47,7 +51,7 @@ char *create_output_filename(const char *input_path, const char *output_dir)
              base_name);
   } else {
     // no .mib extension, just append .h5
-    sprintf(output_file, "%s/%s.h5", output_dir, base_name);
+    snprintf(output_file, output_len, "%s/%s.h5", output_dir, base_name);
   }
 
   return output_file;
