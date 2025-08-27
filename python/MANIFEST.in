@@ -1,0 +1,18 @@
+# include C source files from parent directory
+include ../src/*.c
+include ../src/*.h
+include ../configure.ac
+include ../Makefile.am
+include ../Makefile.in
+include ../aclocal.m4
+
+# include Cython source
+include src/mib2h5/_wrapper.pyx
+
+# exclude compiled/cached files
+global-exclude *.o
+global-exclude *.so
+global-exclude __pycache__
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *~
