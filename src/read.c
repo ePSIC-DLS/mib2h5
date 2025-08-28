@@ -135,8 +135,6 @@ void read_frame(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
     }
   }
 
-  int headersize = *(fb->mq1_header->header_bytes);
-
   int bufsize = (fb->mq1_header->pixel_depth[1] - '0') * 10 +
                 (fb->mq1_header->pixel_depth[2] - '0');
   bufsize = bufsize / 8;
@@ -145,10 +143,11 @@ void read_frame(FILE *mib_ptr, unsigned long offset, framebuffer *fb)
     return;
   }
 
-  int detx = *(fb->mq1_header->det_x);
-  int dety = *(fb->mq1_header->det_y);
+  int detx                  = *(fb->mq1_header->det_x);
+  int dety                  = *(fb->mq1_header->det_y);
+  unsigned int header_bytes = *(fb->mq1_header->header_bytes);
 
-  if (fseek(mib_ptr, offset + headersize, SEEK_SET) != 0) {
+  if (fseek(mib_ptr, offset + header_bytes, SEEK_SET) != 0) {
     fprintf(stderr, "fseek error in read_frame\n");
     return;
   }

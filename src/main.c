@@ -1,5 +1,5 @@
 #include "config.h"
-// #include "mib_to_h5.h"
+#include "mib_to_h5.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -48,10 +48,8 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  printf("%s\n", input_mib);
-  //  int status = mib_to_h5(input_mib, output_directory, merlin_dset_name,
-  //                         compressor, shuffle, compression_level);
+  int status = mib_to_h5(input_mib, output_directory, merlin_dset_name,
+                         compressor, shuffle, compression_level);
 
-  //  return status;
-  return 0;
+  return status;
 }

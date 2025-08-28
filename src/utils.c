@@ -1,14 +1,60 @@
 #include "utils.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h> // for strcasecmp
+#include <sys/stat.h>
 #include <sys/statvfs.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 const char *only_file_name(const char *absolute_file_path)
 {
   const char *rslash = strrchr(absolute_file_path, '/');
   return (rslash != NULL) ? rslash + 1 : absolute_file_path;
+}
+
+char *create_output_filename(const char *input_path, const char *output_dir)
+{
+  // get base filename from path
+  const char *base_name = only_file_name(input_path);
+  if (!base_name) {
+    return NULL;
+  }
+
+  // check if filename ends with .mib (case-insensitive)
+  size_t base_len     = strlen(base_name);
+  const char *dot_mib = NULL;
+  if (base_len > 4) {
+    // check for .mib or .MIB at the end
+    if (strcasecmp(base_name + base_len - 4, ".mib") == 0) {
+      dot_mib = base_name + base_len - 4;
+    }
+  }
+
+  // calculate output filename length
+  size_t name_len = dot_mib ? (size_t) (dot_mib - base_name) : base_len;
+  // +1 for '/', +4 for '.h5\0'
+  size_t output_len = strlen(output_dir) + 1 + name_len + 4;
+
+  char *output_file = malloc(output_len);
+  if (!output_file) {
+    return NULL;
+  }
+
+  // build output filename
+  if (dot_mib) {
+    // copy basename without .mib, then append .h5
+    snprintf(output_file, output_len, "%s/%.*s.h5", output_dir, (int) name_len,
+             base_name);
+  } else {
+    // no .mib extension, just append .h5
+    snprintf(output_file, output_len, "%s/%s.h5", output_dir, base_name);
+  }
+
+  return output_file;
 }
 
 unsigned int num_of_headers(FILE *mib_ptr, const unsigned int stride)
@@ -160,9 +206,39 @@ unsigned long get_filesystem_block_size(const char *path)
   }
 
   if (statvfs(path, &stat) != 0) {
-    fprintf(stderr, "statvfs failed\n");
+    fprintf(stderr, "statvfs failed for '%s': %s (errno=%d)\n", path,
+            strerror(errno), errno);
     return 1;
   }
 
   return stat.f_bsize;
+}
+
+int directory_exists(const char *dir_path)
+{
+  // check for NULL or empty path
+  if (!dir_path || *dir_path == '\0') {
+    fprintf(stderr, "Error: Directory path is empty or NULL\n");
+    return -1;
+  }
+
+  // check if path exists and get its stats
+  struct stat dir_stat;
+  if (stat(dir_path, &dir_stat) != 0) {
+    if (errno == ENOENT) {
+      fprintf(stderr, "Error: Directory '%s' does not exist\n", dir_path);
+    } else {
+      fprintf(stderr, "Error: Cannot access directory '%s': %s (errno=%d)\n",
+              dir_path, strerror(errno), errno);
+    }
+    return -1;
+  }
+
+  // verify it's actually a directory
+  if (!S_ISDIR(dir_stat.st_mode)) {
+    fprintf(stderr, "Error: '%s' exists but is not a directory\n", dir_path);
+    return -1;
+  }
+
+  return 0;
 }
