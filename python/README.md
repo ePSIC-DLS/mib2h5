@@ -48,42 +48,63 @@ python -m pip install .
 python -m pip install -e .
 ```
 
-## Examples
+## Usage
 
-### Basic Example
+### Command-line Interface
+
+This is the same as in `mib2h5`, see the usage [here](../README.md).
+
+### Python API
+
+#### Basic Example
 
 ```python
 from mib2h5 import convert
 
-try:
-    convert("input.mib")
-except (ValueError, RuntimeError):
-    print("Conversion failed.")
-else:
-    print("Conversion successful!")
+# Convert a single file
+convert("input.mib")
+
+# Convert with custom output directory
+convert("input.mib", output_dir="/path/to/output")
 ```
 
-### Advanced Example
+#### Advanced Example
 
 ```python
 from mib2h5 import convert
 
+# Convert multiple files
+files = ["file1.mib", "file2.mib", "file3.mib"]
+convert(
+    files,
+    output_dir="/path/to/output",
+    include_metadata=True,
+    dataset_key="/rawdata",
+    use_compression=True
+)
+
+# Handle errors for multiple files
 try:
-    convert(
-        ["file1.mib", "file2.mib", "file3.mib"],
-        output_dir="/path/to/output",
-        include_metadata=True,
-        dataset_key="/rawdata",
-        metadata_key="/meta",
-        use_compression=True,
-        reshape_to="10x10",
-        report_progress=True,
-        timeout_seconds=300
-    )
-except (ValueError, RuntimeError):
-    print("Conversion failed.")
-else:
-    print("Conversion successful!")
+    convert(files, output_dir="/path/to/output")
+except RuntimeError as e:
+    print(f"Some files failed to convert:\n{e}")
+```
+
+#### Compression Control
+
+Compression is controlled via environment variables when
+`use_compression=True`:
+
+```python
+import os
+from mib2h5 import convert
+
+# Set compression parameters
+os.environ['MIB2H5_SHUFFLE'] = '2'           # 0-2, default: 2
+os.environ['MIB2H5_COMPRESSION_LEVEL'] = '5' # 0-9, default: 9
+
+# Convert with compression
+convert("input.mib", use_compression=True)
 ```
 
 ## API Reference
@@ -96,7 +117,7 @@ convert(
     dataset_key="/data",
     metadata_key="/metadata",
     use_compression=False,
-    reshape_to=None,
+    reshape_dims=None,
     report_progress=True,
     timeout_seconds=900
 )
@@ -107,12 +128,24 @@ convert(
 - `input_files`: Path to input MIB file(s) (string or list of strings)
 - `output_dir`: Directory for output HDF5 file(s) (default: current directory)
 - `include_metadata`: Whether to include metadata in HDF5 file (default: True)
-- `dataset_key`: HDF5 dataset key for frames (default: "/data")
-- `metadata_key`: HDF5 group key for metadata (default: "/metadata")
-- `use_compression`: Enable compression (default: False)
-- `reshape_to`: Reshape dimensions string like "10x10" (default: None)
+- `dataset_key`: HDF5 dataset path for frames (default: "/data")
+- `metadata_key`: HDF5 group path for metadata (default: "/metadata")
+*[Not yet implemented]*
+- `use_compression`: Enable Blosc compression if available (default: False)
+- `reshape_dims`: Reshape dimensions string like "10x10" (default: None)
+*[Not yet implemented]*
 - `report_progress`: Report conversion progress (default: True)
-- `timeout_seconds`: Timeout in seconds (default: 900)
+*[Not yet implemented]*
+- `timeout_seconds`: Timeout in seconds, 0 for no limit (default: 900)
+*[Not yet implemented]*
+
+### Notes
+
+- When converting multiple files, the function continues processing remaining
+files even if some fail
+- All errors are collected and reported together at the end
+- Compression settings are controlled via environment variables
+`MIB2H5_SHUFFLE` and `MIB2H5_COMPRESSION_LEVEL`
 
 ## Licence
 
