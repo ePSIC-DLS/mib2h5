@@ -12,10 +12,30 @@ Quantum Detector to HDF5 format (`.h5`).
 ### Prerequisites
 
 - Python >= 3.10
-- Cython >= 3.0
 - HDF5 library (1.10.4 or newer)
+- Cython >= 3.0 - only required when building from source
 
-### pip
+### Via pip
+
+```bash
+python -m pip install mib2h5
+```
+
+### Via conda
+
+```bash
+conda install -c conda-forge mib2h5
+```
+
+### Via pipx
+
+You can use `pipx` to install only the command-line tool `mib2h5`:
+
+```bash
+pipx install mib2h5
+```
+
+### Building from Source
 
 ```bash
 # Set HDF5 location (if not in standard system paths)
@@ -28,30 +48,71 @@ python -m pip install .
 python -m pip install -e .
 ```
 
-## Usage
+## Examples
+
+### Basic Example
 
 ```python
-import mib2h5
+from mib2h5 import convert
 
-# Convert a MIB file to HDF5
-mib2h5.convert(
-    filename="input.mib",
-    output_directory="./output/",
-    merlin_dset_name="data",
-    compressor="blosclz",
-    shuffle=2,
-    compression_level=9
+try:
+    convert("input.mib")
+except (ValueError, RuntimeError):
+    print("Conversion failed.")
+else:
+    print("Conversion successful!")
+```
+
+### Advanced Example
+
+```python
+from mib2h5 import convert
+
+try:
+    convert(
+        ["file1.mib", "file2.mib", "file3.mib"],
+        output_dir="/path/to/output",
+        include_metadata=True,
+        dataset_key="/rawdata",
+        metadata_key="/meta",
+        use_compression=True,
+        reshape_to="10x10",
+        report_progress=True,
+        timeout_seconds=300
+    )
+except (ValueError, RuntimeError):
+    print("Conversion failed.")
+else:
+    print("Conversion successful!")
+```
+
+## API Reference
+
+```python
+convert(
+    input_files,
+    output_dir=None,
+    include_metadata=True,
+    dataset_key="/data",
+    metadata_key="/metadata",
+    use_compression=False,
+    reshape_to=None,
+    report_progress=True,
+    timeout_seconds=900
 )
 ```
 
-## Parameters
+### Parameters
 
-- `filename`: Path to input MIB file (required)
-- `output_directory`: Directory for output HDF5 file (default: "./")
-- `merlin_dset_name`: Name of dataset in HDF5 file (default: "MerlinData")
-- `compressor`: Compression algorithm (default: "blosclz", use "" to disable)
-- `shuffle`: Shuffle filter setting 0-2 (default: 2)
-- `compression_level`: Compression level 0-9 (default: 9)
+- `input_files`: Path to input MIB file(s) (string or list of strings)
+- `output_dir`: Directory for output HDF5 file(s) (default: current directory)
+- `include_metadata`: Whether to include metadata in HDF5 file (default: True)
+- `dataset_key`: HDF5 dataset key for frames (default: "/data")
+- `metadata_key`: HDF5 group key for metadata (default: "/metadata")
+- `use_compression`: Enable compression (default: False)
+- `reshape_to`: Reshape dimensions string like "10x10" (default: None)
+- `report_progress`: Report conversion progress (default: True)
+- `timeout_seconds`: Timeout in seconds (default: 900)
 
 ## Licence
 

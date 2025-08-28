@@ -109,21 +109,7 @@ Run `./configure --help` for all available options.
 
 ### Python
 
-#### Prerequisites
-
-- Python (3.9 or newer)
-
-#### Via pip
-
-```bash
-python -m pip install mib2h5
-```
-
-#### Via conda
-
-```bash
-conda install -c conda-forge mib2h5
-```
+For Python installation and usage, please refer to the [Python wrapper documentation](python/README.md).
 
 ## Usage
 
@@ -260,45 +246,6 @@ int main() {
 }
 ```
 
-### Python API Examples
-
-#### Basic Python Example
-
-```python
-from mib2h5 import convert
-
-# Basic conversion
-try:
-    convert("input.mib")
-except (ValueError, RuntimeError):
-    print("Conversion failed.")
-else:
-    print("Conversion successful!")
-```
-
-#### Advanced Python Example
-
-```python
-from mib2h5 import convert
-
-try:
-    convert(
-        ["file1.mib", "file2.mib", "file3.mib"],
-        output_dir="/path/to/output",
-        include_metadata=True,
-        dataset_key="/rawdata",
-        metadata_key="/meta",
-        use_compression=True,
-        reshape_dims="10x10",
-        report_progress=True,
-        timeout_seconds=300
-    )
-except (ValueError, RuntimeError):
-    print("Conversion failed.")
-else:
-    print("Conversion successful!")
-```
-
 ## API Reference
 
 ### C API
@@ -320,24 +267,8 @@ int mib_to_h5(
 const char* mib_to_h5_last_error(void);
 ```
 
-### Python API
-
-```python
-convert(
-    input_files,
-    output_dir=None,
-    include_metadata=True,
-    dataset_key="/data",
-    metadata_key="/metadata",
-    use_compression=False,
-    reshape_dims=None,
-    report_progress=True,
-    timeout_seconds=900
-)
-```
-
-For detailed parameter descriptions, refer to the header file `mib2h5.h` or the
-Python docstrings.
+For the Python API reference and detailed parameter descriptions, see the
+[Python wrapper documentation](python/README.md).
 
 ## Contributing
 
