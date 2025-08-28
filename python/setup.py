@@ -75,13 +75,16 @@ class ConfigureBuildExt(build_ext):
 
     def _get_configure_args(self):
         """Get configure command arguments."""
-        hdf5_root = os.environ.get("HDF5_ROOT")
-        if hdf5_root:
-            hdf5_path = Path(hdf5_root).resolve()
-            if not hdf5_path.exists():
-                msg = f"HDF5_ROOT path does not exist: {hdf5_path}"
-                raise AutotoolsError(msg)
-            return ["./configure", f"--with-hdf5={hdf5_path}"]
+        # check hdf5 environment variables in order of priority
+        for env_var in ("HDF5_ROOT", "HDF5_HOME", "HDF5_DIR"):
+            hdf5_path_str = os.environ.get(env_var)
+            if hdf5_path_str:
+                hdf5_path = Path(hdf5_path_str).resolve()
+                if not hdf5_path.exists():
+                    msg = f"{env_var} path does not exist: {hdf5_path}"
+                    raise AutotoolsError(msg)
+                print(f"Using {env_var}={hdf5_path} for configure")
+                return ["./configure", f"--with-hdf5={hdf5_path}"]
         return ["./configure"]
 
     @property
@@ -110,11 +113,21 @@ def _get_library_path(root_path, lib_name="lib"):
 
 def _find_hdf5_paths():
     """Find HDF5 include and library paths."""
-    hdf5_root_env = os.environ.get("HDF5_ROOT")
+    # check hdf5 environment variables in order of priority
+    hdf5_root = None
+    for env_var in ("HDF5_ROOT", "HDF5_HOME", "HDF5_DIR"):
+        hdf5_path_str = os.environ.get(env_var)
+        if hdf5_path_str:
+            hdf5_root = Path(hdf5_path_str).resolve()
+            if hdf5_root.exists():
+                print(f"Using {env_var}={hdf5_root} for HDF5")
+                break
+            else:
+                print(f"Warning: {env_var} is set but path doesn't exist: "
+                      f"{hdf5_root}")
+                hdf5_root = None
 
-    if hdf5_root_env:
-        hdf5_root = Path(hdf5_root_env).resolve()
-    else:
+    if not hdf5_root:
         # try default paths
         for default_path in ("/usr", "/usr/local"):
             candidate = Path(default_path)
@@ -122,8 +135,9 @@ def _find_hdf5_paths():
                 hdf5_root = candidate
                 break
         else:
-            msg = ("HDF5 not found in default locations. Please set HDF5_ROOT "
-                   "environment variable to your HDF5 installation.")
+            msg = ("HDF5 not found in default locations. Please set one of "
+                   "HDF5_ROOT, HDF5_HOME, or HDF5_DIR environment variables "
+                   "to your HDF5 installation.")
             raise FileNotFoundError(msg)
 
     hdf5_include = hdf5_root / "include"
