@@ -20,74 +20,131 @@ cdef extern from "mib_to_h5.h":
                               unsigned int shuffle,
                               unsigned int compression_level)
 
-def convert(str filename,
-            str output_directory=DEFAULT_OUTPUT_DIRECTORY,
-            str merlin_dset_name=DEFAULT_DATASET_NAME,
-            str compressor=DEFAULT_COMPRESSOR,
-            int shuffle=DEFAULT_SHUFFLE,
-            int compression_level=DEFAULT_COMPRESSION_LEVEL):
+def convert(input_files,
+            output_dir=DEFAULT_OUTPUT_DIRECTORY,
+            bint include_metadata=DEFAULT_INCLUDE_METADATA,
+            str dataset_key=DEFAULT_DATASET_KEY,
+            str metadata_key=DEFAULT_METADATA_KEY,
+            bint use_compression=DEFAULT_USE_COMPRESSION,
+            reshape_dims=DEFAULT_RESHAPE_DIMS,
+            bint report_progress=DEFAULT_REPORT_PROGRESS,
+            int timeout_seconds=DEFAULT_TIMEOUT_SECONDS):
     """
-    Convert a MIB file to HDF5 format.
+    Convert MIB file(s) to HDF5 file(s).
 
     Parameters
     ----------
-    filename : str
-        Path to the input MIB file
-    output_directory : str, optional
-        Directory where the output HDF5 file will be saved (default: "./")
-    merlin_dset_name : str, optional
-        Name of the dataset in the HDF5 file (default: "MerlinData")
-    compressor : str, optional
-        Compression algorithm to use (default: "blosclz")
-    shuffle : int, optional
-        Shuffle filter setting (default: 2)
-    compression_level : int, optional
-        Compression level 0-9 (default: 9)
+    input_files : str or list of str
+        Path(s) to the input MIB file(s)
+    output_dir : str, optional
+        Directory where the output HDF5 file(s) will be saved (default:
+        current directory)
+    include_metadata : bool, optional
+        Whether to include metadata in the HDF5 file (default: True)
+    dataset_key : str, optional
+        HDF5 dataset key for frames (default: "/data")
+    metadata_key : str, optional
+        HDF5 group path for metadata (default: "/metadata")
+    use_compression : bool, optional
+        Enable Blosc compression if available (default: False)
+        Note: Blosc compression settings can be controlled via
+        environment variables:
+            - MIB2H5_SHUFFLE (0-2, default: 2)
+            - MIB2H5_COMPRESSION_LEVEL (0-9, default: 9)
+    reshape_dims : str, optional
+        Reshape dimensions string like "10x10" (default: None)
+    report_progress : bool, optional
+        Report conversion progress (default: True)
+    timeout_seconds : int, optional
+        Timeout in seconds, 0 for no limit (default: 900)
 
     Returns
     -------
-    int
-        0 on success, negative value on error
+    None
 
     Raises
     ------
     ValueError
         If required parameters are missing or invalid
     RuntimeError
-        If the conversion fails
+        If the conversion fails for any file
     """
-    if not filename:
-        raise ValueError("Input filename cannot be empty.")
+    # ensure input_files is a list
+    if isinstance(input_files, str):
+        files = [input_files]
+    else:
+        files = list(input_files)
 
-    if not output_directory:
-        raise ValueError("Output directory cannot be empty.")
+    if not files:
+        raise ValueError("No input files provided")
 
-    if not merlin_dset_name:
-        raise ValueError("Dataset name cannot be empty.")
+    if not dataset_key:
+        raise ValueError("Dataset key cannot be empty")
 
-    if shuffle < 0 or shuffle > 2:
-        raise ValueError("Shuffle must be 0, 1, or 2.")
+    if timeout_seconds < 0:
+        raise ValueError("Timeout must be non-negative")
 
-    if compression_level < 0 or compression_level > 9:
-        raise ValueError("Compression level must be between 0 and 9.")
+    # prepare output directory
+    cdef bytes b_output_dir = output_dir.encode() if output_dir else b"./"
+    cdef bytes b_dataset_key = dataset_key.encode()
 
-    # encode strings to bytes
-    cdef bytes b_filename = filename.encode()
-    cdef bytes b_output_directory = output_directory.encode()
-    cdef bytes b_merlin_dset_name = merlin_dset_name.encode()
-    cdef bytes b_compressor = compressor.encode() if compressor else b""
+    # determine compressor string based on use_compression
+    cdef bytes b_compressor = b"blosclz" if use_compression else b""
 
-    # call the C function
-    cdef int result = mib_to_h5(
-        b_filename,
-        b_output_directory,
-        b_merlin_dset_name,
-        b_compressor,
-        shuffle,
-        compression_level
-    )
+    # use default values for shuffle and compression_level
+    # these may be overridden by environment variables if provided
+    cdef unsigned int shuffle = 2 if use_compression else 0
+    cdef unsigned int compression_level = 9 if use_compression else 0
 
-    if result != 0:
-        raise RuntimeError(f"Conversion failed with error code: {result}")
+    # track errors for reporting
+    errors = []
+    successful = []
 
-    return result
+    # process each file
+    cdef bytes b_filename
+    cdef int result
+
+    for filename in files:
+        if not filename:
+            errors.append((filename, "Empty filename"))
+            continue
+
+        # encode filename
+        b_filename = filename.encode()
+
+        # call the C function for single file
+        result = mib_to_h5_single_file(
+            b_filename,
+            b_output_dir,
+            b_dataset_key,
+            include_metadata,
+            b_compressor,
+            shuffle,
+            compression_level
+        )
+
+        if result == 0:
+            successful.append(filename)
+        else:
+            errors.append((filename,
+                           f"Conversion failed with error code: {result}")
+                          )
+
+
+    # report succeeded and failed files if there is error
+    if errors:
+        error_messages = []
+        for filename, msg in errors:
+            error_messages.append(f"{filename}: {msg}")
+
+        error_report = "\n".join(error_messages)
+
+        if successful:
+            success_msg = f"Successfully converted {len(successful)} file(s)"
+            failure_msg = (f"Failed to convert {len(errors)} "
+                           f"file(s):\n{error_report}")
+            raise RuntimeError(f"{success_msg}\n{failure_msg}")
+        else:
+            msg = (f"Failed to convert all {len(errors)} "
+                   f"file(s):\n{error_report}")
+            raise RuntimeError(msg)
