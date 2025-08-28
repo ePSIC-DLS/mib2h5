@@ -1,5 +1,13 @@
 # cython: language_level=3
 
+from .constants import (
+    DEFAULT_COMPRESSION_LEVEL,
+    DEFAULT_COMPRESSOR,
+    DEFAULT_DATASET_NAME,
+    DEFAULT_OUTPUT_DIRECTORY,
+    DEFAULT_SHUFFLE,
+)
+
 cdef extern from "mib_to_h5.h":
     int mib_to_h5(const char *filename,
                   const char *output_directory,
@@ -9,11 +17,11 @@ cdef extern from "mib_to_h5.h":
                   unsigned int compression_level)
 
 def convert(str filename,
-            str output_directory="./",
-            str merlin_dset_name="MerlinData",
-            str compressor="blosclz",
-            int shuffle=2,
-            int compression_level=9):
+            str output_directory=DEFAULT_OUTPUT_DIRECTORY,
+            str merlin_dset_name=DEFAULT_DATASET_NAME,
+            str compressor=DEFAULT_COMPRESSOR,
+            int shuffle=DEFAULT_SHUFFLE,
+            int compression_level=DEFAULT_COMPRESSION_LEVEL):
     """
     Convert a MIB file to HDF5 format.
 
