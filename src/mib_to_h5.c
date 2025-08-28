@@ -5,6 +5,7 @@
 #include "hdf5_init.h"
 #include "hdf5_init_meta.h"
 #include "macros.h"
+#include "mib2h5.h"
 #include "parser.h"
 #include "read.h"
 #include "utils.h"
@@ -15,12 +16,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-int mib_to_h5(const char *filename,
-              const char *output_directory,
-              const char *merlin_dset_name,
-              const char *compressor,
-              unsigned int shuffle,
-              unsigned int compression_level)
+int mib_to_h5_single_file(const char *filename,
+                          const char *output_directory,
+                          const char *dataset_key,
+                          bool include_metadata,
+                          const char *compressor,
+                          unsigned int shuffle,
+                          unsigned int compression_level)
 {
   FILE *mib_ptr                            = NULL;
   char *output_file                        = NULL;
@@ -38,7 +40,7 @@ int mib_to_h5(const char *filename,
   int ret                                  = -1;
 
   // validate inputs
-  if (!filename || !output_directory || !merlin_dset_name) {
+  if (!filename || !output_directory || !dataset_key) {
     fprintf(stderr, "Error: Missing required parameters\n");
     return -1;
   }
@@ -157,24 +159,26 @@ int mib_to_h5(const char *filename,
   }
 
   // create main dataset
-  create_merlin_dataset(&merlin_dataset_id, file_id, merlin_dset_name, dtype,
-                        dcpl, lcpl_id, frame_dim);
+  create_merlin_dataset(&merlin_dataset_id, file_id, dataset_key, dtype, dcpl,
+                        lcpl_id, frame_dim);
   if (merlin_dataset_id < 0) {
     fprintf(stderr, "Error: Cannot create main dataset\n");
     goto cleanup;
   }
 
-  // create metadata datasets
-  create_meta_mq1_fields_dataset(file_id, lcpl_id, meta_handle);
+  // create metadata datasets if requested
+  if (include_metadata) {
+    create_meta_mq1_fields_dataset(file_id, lcpl_id, meta_handle);
 
-  // create DAC datasets
-  size_t dac_size = sizeof(hid_t) * DAC_NUM_FIELDS * num_chips;
-  dac_handle      = malloc(dac_size);
-  if (!dac_handle) {
-    fprintf(stderr, "Error: Cannot allocate memory for DAC handles\n");
-    goto cleanup;
+    // create DAC datasets
+    size_t dac_size = sizeof(hid_t) * DAC_NUM_FIELDS * num_chips;
+    dac_handle      = malloc(dac_size);
+    if (!dac_handle) {
+      fprintf(stderr, "Error: Cannot allocate memory for DAC handles\n");
+      goto cleanup;
+    }
+    create_dac_dataset(num_chips, file_id, lcpl_id, dac_handle);
   }
-  create_dac_dataset(num_chips, file_id, lcpl_id, dac_handle);
 
   // allocate framebuffer
   allocate_frame_header(&fb);
@@ -200,11 +204,13 @@ int mib_to_h5(const char *filename,
     // append frame data to dataset
     append_frame_to_dataset(merlin_dataset_id, &fb, cbytes);
 
-    // append metadata
-    append_meta_to_dataset(meta_handle, &fb);
+    // append metadata if requested
+    if (include_metadata) {
+      append_meta_to_dataset(meta_handle, &fb);
 
-    // append DAC data
-    append_dac_to_dataset(num_chips, dac_handle, &fb);
+      // append DAC data
+      append_dac_to_dataset(num_chips, dac_handle, &fb);
+    }
 
     // progress indicator
     if ((i + 1) % 100 == 0 || i == num_frames - 1) {
@@ -261,4 +267,94 @@ cleanup:
     free(output_file);
 
   return ret;
+}
+
+int mib_to_h5(const char **input_files,
+              int num_input_files,
+              const char *output_dir,
+              bool include_metadata,
+              const char *dataset_key,
+              const char *metadata_key,
+              bool use_compression,
+              const char *reshape_dims,
+              bool report_progress,
+              unsigned int timeout_seconds)
+{
+  // validate inputs
+  if (!input_files || num_input_files <= 0) {
+    fprintf(stderr, "Error: No input files specified\n");
+    return -1;
+  }
+
+  // set defaults for optional parameters
+  const char *actual_output_dir  = output_dir ? output_dir : "./";
+  const char *actual_dataset_key = dataset_key ? dataset_key : "/data";
+
+  // handle unimplemented features with user messages
+  if (metadata_key) {
+    // TODO: implement custom metadata key support
+    fprintf(stderr, "Note: metadata_key parameter not yet implemented, using "
+                    "default /metadata\n");
+  }
+
+  if (reshape_dims) {
+    // TODO: implement reshape dimensions support
+    fprintf(stderr, "Note: reshape_dims not yet implemented\n");
+  }
+
+  if (report_progress) {
+    // TODO: implement progress reporting
+    fprintf(stderr, "Note: report_progress not yet implemented\n");
+  }
+
+  if (timeout_seconds > 0) {
+    // TODO: implement timeout handling
+    fprintf(stderr, "Note: timeout_seconds not yet implemented\n");
+  }
+
+  // determine compression settings
+  const char *compressor         = NULL;
+  unsigned int shuffle           = 0;
+  unsigned int compression_level = 0;
+
+  if (use_compression) {
+    compressor = "blosclz";
+
+    // check environment variables for compression settings
+    const char *shuffle_env = getenv("MIB2H5_SHUFFLE");
+    const char *level_env   = getenv("MIB2H5_COMPRESSION_LEVEL");
+
+    shuffle           = shuffle_env ? (unsigned int) atoi(shuffle_env) : 2;
+    compression_level = level_env ? (unsigned int) atoi(level_env) : 9;
+  }
+
+  // process each input file
+  int total_errors = 0;
+  for (int i = 0; i < num_input_files; ++i) {
+    if (!input_files[i]) {
+      fprintf(stderr, "Error: NULL input file at index %d\n", i);
+      total_errors++;
+      continue;
+    }
+
+    printf("Processing file %d of %d: %s\n", i + 1, num_input_files,
+           input_files[i]);
+
+    int result = mib_to_h5_single_file(input_files[i], actual_output_dir,
+                                       actual_dataset_key, include_metadata,
+                                       compressor, shuffle, compression_level);
+
+    if (result != 0) {
+      fprintf(stderr, "Error: Failed to convert %s\n", input_files[i]);
+      total_errors++;
+      // continue processing other files instead of stopping
+    }
+  }
+
+  return total_errors > 0 ? -1 : 0;
+}
+
+const char *mib_to_h5_last_error(void)
+{
+  return "Error handling not yet implemented";
 }

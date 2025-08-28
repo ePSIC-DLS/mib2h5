@@ -49,15 +49,15 @@ Below shows the hierarchy of the resulting HDF5 file:
 - GCC compiler (7.4 or newer, older versions may work)
 - HDF5 development libraries (1.10.4 or newer)
 - Make (3.82 or newer)
+- GNU Autotools (autoconf >= 2.64, automake) - only required when building
+the latest version
 
 #### Building from Source
 
 ```bash
-# Clone the repository
-git clone git@github.com:ePSIC-DLS/mib2h5.git
-cd mib2h5
-
-# Configure and build
+# Download and extract the release tarball
+tar xzf mib2h5-X.Y.Z.tar.gz
+cd mib2h5-X.Y.Z
 ./configure --prefix=/path/to/install
 make
 make install
@@ -65,23 +65,51 @@ make install
 
 Without `--prefix`, the library will be installed to `/usr/local`.
 
+#### Building the Latest Version
+
+For the latest version:
+
+```bash
+git clone git@github.com:ePSIC-DLS/mib2h5.git
+cd mib2h5
+
+# Generate configure script (requires GNU Autotools)
+autoreconf -i
+
+# Then follow the standard build process
+./configure --prefix=/path/to/install
+make
+make install
+```
+
+#### Configuration Options
+
+The configure script supports several options:
+
+##### HDF5 Location
+
+- `--with-hdf5=/path/to/hdf5`
+- It also recognises the environment variables `HDF5_ROOT`, `HDF5_HOME`
+and `HDF5_DIR`
+
+##### Compression Support
+
+- `--enable-compression`: Enable Blosc compression (requires
+[c-blosc](https://github.com/Blosc/c-blosc) and
+[hdf5-blosc](https://github.com/Blosc/hdf5-blosc))
+- `--with-blosc=/path/to/blosc`
+- `--with-hdf5-blosc=/path/to/hdf5-blosc`
+
+##### Build Variants
+
+- `--enable-debug`: Debug build with symbols and static analysis
+- `--enable-asan`: For memory debugging
+
+Run `./configure --help` for all available options.
+
 ### Python
 
-#### Prerequisites
-
-- Python (3.9 or newer)
-
-#### Via pip
-
-```bash
-python -m pip install mib2h5
-```
-
-#### Via conda
-
-```bash
-conda install -c conda-forge mib2h5
-```
+For Python installation and usage, please refer to the [Python wrapper documentation](python/README.md).
 
 ## Usage
 
@@ -110,18 +138,48 @@ This will create `file1.h5`, `file2.h5` and `file3.h5` in the directory
 
 #### Advanced Options
 
-Convert with compression, custom dataset key, and reshape dimensions:
+Convert with compression, custom dataset key, and excluding metadata:
 
 ```bash
-mib2h5 -c -d '/rawdata' -r '10x10' -t 300 input.mib
+mib2h5 -c -d '/rawdata' -N -- input.mib
 ```
 
 This will:
 
 - enable Blosc compression
 - store the frames at the dataset key `/rawdata` in the HDF5 file
-- reshape the data to `(10, 10, det_y, det_x)` if there are 100 frames with
-dimensions of `(det_y, det_x)`.
+- exclude metadata from the output (using `-N` or `--no-metadata`)
+
+#### Using Long Options
+
+Long options make commands more readable and self-documenting. You can find the
+list of long options by `mib2h5 --help`.
+
+#### Metadata Control
+
+By default, metadata is included in the HDF5 output. You can control this
+behavior:
+
+```bash
+# Explicitly include metadata (default behavior)
+mib2h5 -M input.mib
+mib2h5 --with-metadata input.mib
+
+# Exclude metadata from output
+mib2h5 -N input.mib
+mib2h5 --no-metadata input.mib
+```
+
+#### Environment Variables
+
+When compression is enabled with `-c`, you can fine-tune the Blosc compression
+settings:
+
+```bash
+export MIB2H5_SHUFFLE=0            # Shuffle level (0-2, default: 2)
+export MIB2H5_COMPRESSION_LEVEL=5  # Compression level (0-9, default: 9)
+mib2h5 -c input.mib
+```
 
 ### C API Examples
 
@@ -188,45 +246,6 @@ int main() {
 }
 ```
 
-### Python API Examples
-
-#### Basic Python Example
-
-```python
-from mib2h5 import convert
-
-# Basic conversion
-try:
-    convert("input.mib")
-except (ValueError, RuntimeError):
-    print("Conversion failed.")
-else:
-    print("Conversion successful!")
-```
-
-#### Advanced Python Example
-
-```python
-from mib2h5 import convert
-
-try:
-    convert(
-        ["file1.mib", "file2.mib", "file3.mib"],
-        output_dir="/path/to/output",
-        include_metadata=True,
-        dataset_key="/rawdata",
-        metadata_key="/meta",
-        use_compression=True,
-        reshape_dims="10x10",
-        report_progress=True,
-        timeout_seconds=300
-    )
-except (ValueError, RuntimeError):
-    print("Conversion failed.")
-else:
-    print("Conversion successful!")
-```
-
 ## API Reference
 
 ### C API
@@ -248,24 +267,8 @@ int mib_to_h5(
 const char* mib_to_h5_last_error(void);
 ```
 
-### Python API
-
-```python
-convert(
-    input_files,
-    output_dir=None,
-    include_metadata=True,
-    dataset_key="/data",
-    metadata_key="/metadata",
-    use_compression=False,
-    reshape_dims=None,
-    report_progress=True,
-    timeout_seconds=900
-)
-```
-
-For detailed parameter descriptions, refer to the header file `mib2h5.h` or the
-Python docstrings.
+For the Python API reference and detailed parameter descriptions, see the
+[Python wrapper documentation](python/README.md).
 
 ## Contributing
 
