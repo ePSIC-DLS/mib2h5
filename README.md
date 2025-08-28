@@ -110,18 +110,48 @@ This will create `file1.h5`, `file2.h5` and `file3.h5` in the directory
 
 #### Advanced Options
 
-Convert with compression, custom dataset key, and reshape dimensions:
+Convert with compression, custom dataset key, and excluding metadata:
 
 ```bash
-mib2h5 -c -d '/rawdata' -r '10x10' -t 300 input.mib
+mib2h5 -c -d '/rawdata' -N -- input.mib
 ```
 
 This will:
 
 - enable Blosc compression
 - store the frames at the dataset key `/rawdata` in the HDF5 file
-- reshape the data to `(10, 10, det_y, det_x)` if there are 100 frames with
-dimensions of `(det_y, det_x)`.
+- exclude metadata from the output (using `-N` or `--no-metadata`)
+
+#### Using Long Options
+
+Long options make commands more readable and self-documenting. You can find the
+list of long options by `mib2h5 --help`.
+
+#### Metadata Control
+
+By default, metadata is included in the HDF5 output. You can control this
+behavior:
+
+```bash
+# Explicitly include metadata (default behavior)
+mib2h5 -M input.mib
+mib2h5 --with-metadata input.mib
+
+# Exclude metadata from output
+mib2h5 -N input.mib
+mib2h5 --no-metadata input.mib
+```
+
+#### Environment Variables
+
+When compression is enabled with `-c`, you can fine-tune the Blosc compression
+settings:
+
+```bash
+export MIB2H5_SHUFFLE=0            # Shuffle level (0-2, default: 2)
+export MIB2H5_COMPRESSION_LEVEL=5  # Compression level (0-9, default: 9)
+mib2h5 -c input.mib
+```
 
 ### C API Examples
 
