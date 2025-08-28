@@ -49,21 +49,63 @@ Below shows the hierarchy of the resulting HDF5 file:
 - GCC compiler (7.4 or newer, older versions may work)
 - HDF5 development libraries (1.10.4 or newer)
 - Make (3.82 or newer)
+- GNU Autotools (autoconf >= 2.64, automake) - only required when building
+the latest version
 
 #### Building from Source
 
 ```bash
-# Clone the repository
-git clone git@github.com:ePSIC-DLS/mib2h5.git
-cd mib2h5
-
-# Configure and build
+# Download and extract the release tarball
+tar xzf mib2h5-X.Y.Z.tar.gz
+cd mib2h5-X.Y.Z
 ./configure --prefix=/path/to/install
 make
 make install
 ```
 
 Without `--prefix`, the library will be installed to `/usr/local`.
+
+#### Building the Latest Version
+
+For the latest version:
+
+```bash
+git clone git@github.com:ePSIC-DLS/mib2h5.git
+cd mib2h5
+
+# Generate configure script (requires GNU Autotools)
+autoreconf -i
+
+# Then follow the standard build process
+./configure --prefix=/path/to/install
+make
+make install
+```
+
+#### Configuration Options
+
+The configure script supports several options:
+
+##### HDF5 Location
+
+- `--with-hdf5=/path/to/hdf5`
+- It also recognises the environment variables `HDF5_ROOT`, `HDF5_HOME`
+and `HDF5_DIR`
+
+##### Compression Support
+
+- `--enable-compression`: Enable Blosc compression (requires
+[c-blosc](https://github.com/Blosc/c-blosc) and
+[hdf5-blosc](https://github.com/Blosc/hdf5-blosc))
+- `--with-blosc=/path/to/blosc`
+- `--with-hdf5-blosc=/path/to/hdf5-blosc`
+
+##### Build Variants
+
+- `--enable-debug`: Debug build with symbols and static analysis
+- `--enable-asan`: For memory debugging
+
+Run `./configure --help` for all available options.
 
 ### Python
 
