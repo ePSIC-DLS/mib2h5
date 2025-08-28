@@ -37,6 +37,9 @@ test = [
     "h5py>=3.0",
 ]
 
+[project.scripts]
+mib2h5 = "mib2h5.cli:main"
+
 [tool.setuptools]
 zip-safe = false
 
