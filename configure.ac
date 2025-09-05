@@ -63,7 +63,6 @@ AS_IF([test "x$HDF5_OK" != xyes], [
 ])
 
 if test "x$HDF5_OK" != xyes; then
-  AC_MSG_NOTICE([--with-hdf5 not provided, checking common HDF5 environment variables...])
   for var in HDF5_ROOT HDF5_HOME HDF5_DIR; do
     eval dir=\$$var
     if test -n "$dir"; then
