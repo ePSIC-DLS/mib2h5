@@ -21,7 +21,8 @@ AC_ARG_ENABLE([asan],
 # --- Check for HDF5 ---
 
 AC_ARG_WITH([hdf5],
-  [AS_HELP_STRING([--with-hdf5=PATH], [Path to HDF5 installation])],
+  [AS_HELP_STRING([--with-hdf5=PATH],
+    [Path to HDF5 installation. If not specified, searches in order: system paths, $HDF5_ROOT, $HDF5_HOME, $HDF5_DIR])],
   [HDFDIR="$withval"],
   [])
 
@@ -94,7 +95,7 @@ if test "x$HDF5_OK" != xyes; then
 fi
 
 AS_IF([test "x$HDF5_OK" != xyes], [
-  AC_MSG_ERROR([HDF5 not found])
+  AC_MSG_ERROR([HDF5 not found. Use --with-hdf5=/path or set HDF5_ROOT, HDF5_HOME, or HDF5_DIR])
 ])
 
 # ---------------- Compression Option ----------------
