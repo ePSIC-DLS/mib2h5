@@ -88,9 +88,13 @@ The configure script supports several options:
 
 ##### HDF5 Location
 
-- `--with-hdf5=/path/to/hdf5`
-- It also recognises the environment variables `HDF5_ROOT`, `HDF5_HOME`
-and `HDF5_DIR`
+- `--with-hdf5=/path/to/hdf5`: Specify HDF5 installation path
+- If not specified, the configure script searches for HDF5 in the following
+order:
+  1. System paths (standard locations)
+  2. `$HDF5_ROOT`
+  3. `$HDF5_HOME`
+  4. `$HDF5_DIR`
 
 ##### Compression Support
 
