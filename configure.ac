@@ -28,7 +28,7 @@ AC_ARG_WITH([hdf5],
 HDF5_OK=no
 
 AS_IF([test -n "$HDFDIR"], [
-  AC_MSG_NOTICE([Test HDFDIR provided])
+  AC_MSG_NOTICE([Testing HDF5 at $HDFDIR])
   CPPFLAGS="$CPPFLAGS -I$HDFDIR/include"
   LDFLAGS="$LDFLAGS -L$HDFDIR/lib"
 
@@ -37,13 +37,13 @@ AS_IF([test -n "$HDFDIR"], [
       AC_DEFINE([HAVE_HDF5], [1], [Define if HDF5 is available])
       HDF5_OK=yes
     ], [
-      AC_MSG_NOTICE([libhdf5 not found on HDFDIR])
+      AC_MSG_NOTICE([libhdf5 not found at $HDFDIR/lib])
       AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HDFDIR/include||g"`])
       AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$HDFDIR/lib||g"`])
       HDF5_OK=no
     ])
   ], [
-    AC_MSG_NOTICE([hdf5.h not found on HDFDIR])
+    AC_MSG_NOTICE([hdf5.h not found at $HDFDIR/include])
     AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HDFDIR/include||g"`])
     AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$HDFDIR/lib||g"`])
     HDF5_OK=no
@@ -84,11 +84,13 @@ if test "x$HDF5_OK" != xyes; then
           HDFDIR="$dir"
           AC_MSG_NOTICE([HDF5 found in $HDFDIR])
         ], [
+          AC_MSG_NOTICE([libhdf5 not found at $dir/lib])
           AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$dir/include||g"`])
           AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$dir/lib||g; s|-Wl,-rpath,$dir/lib||g"`])
           HDF5_OK=no
         ])
       ], [
+        AC_MSG_NOTICE([hdf5.h not found at $dir/include])
         AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$dir/include||g"`])
         AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$dir/lib||g; s|-Wl,-rpath,$dir/lib||g"`])
         HDF5_OK=no
