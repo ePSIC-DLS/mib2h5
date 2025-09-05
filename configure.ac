@@ -212,3 +212,12 @@ AS_IF([test "x$asan_build" = "xyes"], [
 
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
+
+# --- Configuration Summary ---
+AS_IF([test "x$HDF5_OK" = xyes], [
+  AS_IF([test -n "$HDFDIR"], [
+    AC_MSG_NOTICE([HDF5 library found at: $HDFDIR])
+  ], [
+    AC_MSG_NOTICE([HDF5 library found in system paths])
+  ])
+])
