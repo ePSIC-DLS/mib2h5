@@ -37,16 +37,10 @@ AS_IF([test -n "$HDFDIR"], [
       AC_DEFINE([HAVE_HDF5], [1], [Define if HDF5 is available])
       HDF5_OK=yes
     ], [
-      AC_MSG_NOTICE([libhdf5 not found at $HDFDIR/lib])
-      AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HDFDIR/include||g"`])
-      AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$HDFDIR/lib||g"`])
-      HDF5_OK=no
+      AC_MSG_ERROR([libhdf5 not found at $HDFDIR/lib])
     ])
   ], [
-    AC_MSG_NOTICE([hdf5.h not found at $HDFDIR/include])
-    AS_VAR_SET([CPPFLAGS], [`echo "$CPPFLAGS" | sed "s|-I$HDFDIR/include||g"`])
-    AS_VAR_SET([LDFLAGS], [`echo "$LDFLAGS" | sed "s|-L$HDFDIR/lib||g"`])
-    HDF5_OK=no
+    AC_MSG_ERROR([hdf5.h not found at $HDFDIR/include])
   ])
 ])
 
