@@ -23,6 +23,12 @@ jobs:
     container: gcc:7
     name: Build HDF5 - ${{ matrix.name }}
     steps:
+      - name: Use archive repositories for Debian Buster
+        run: |
+          sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list
+          sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list
+          sed -i '/buster-updates/d' /etc/apt/sources.list
+
       - name: Install build dependencies
         run: |
           apt-get update
@@ -90,6 +96,14 @@ jobs:
         run: |
           tar -xzf hdf5-system.tar.gz -C /
           ldconfig
+
+      - name: Use archive repositories for Debian Buster
+        if: matrix.gcc-version <= 10
+        run: |
+          # gcc 7-10 use debian buster which reached EOL
+          sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list
+          sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list
+          sed -i '/buster-updates/d' /etc/apt/sources.list
 
       - name: Install build dependencies
         run: |
