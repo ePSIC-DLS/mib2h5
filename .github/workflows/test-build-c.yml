@@ -98,9 +98,9 @@ jobs:
           ldconfig
 
       - name: Use archive repositories for Debian Buster
-        if: matrix.gcc-version <= 10
+        if: matrix.gcc-version == 7 || matrix.gcc-version == 8
         run: |
-          # gcc 7-10 use debian buster which reached EOL
+          # gcc 7, 8 use debian buster which reached EOL
           sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list
           sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list
           sed -i '/buster-updates/d' /etc/apt/sources.list
