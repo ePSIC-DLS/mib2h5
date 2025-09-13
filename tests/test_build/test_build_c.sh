@@ -174,14 +174,28 @@ run_test_internal() {
     fi
 
     # test basic commands
-    if ! (cd "$project_root" && env "$ld_path" "$mib2h5" --version >>"$log_file" 2>&1); then
-        echo "FAIL (--version)"
-        return 1
-    fi
+    if [[ -n "$ld_path" ]]; then
+        # use env when ld_path is set
+        if ! (cd "$project_root" && env "$ld_path" "$mib2h5" --version >>"$log_file" 2>&1); then
+            echo "FAIL (--version)"
+            return 1
+        fi
 
-    if ! (cd "$project_root" && env "$ld_path" "$mib2h5" --help >>"$log_file" 2>&1); then
-        echo "FAIL (--help)"
-        return 1
+        if ! (cd "$project_root" && env "$ld_path" "$mib2h5" --help >>"$log_file" 2>&1); then
+            echo "FAIL (--help)"
+            return 1
+        fi
+    else
+        # run directly when ld_path is empty (system-wide installation)
+        if ! (cd "$project_root" && "$mib2h5" --version >>"$log_file" 2>&1); then
+            echo "FAIL (--version)"
+            return 1
+        fi
+
+        if ! (cd "$project_root" && "$mib2h5" --help >>"$log_file" 2>&1); then
+            echo "FAIL (--help)"
+            return 1
+        fi
     fi
 
     echo "PASS"
