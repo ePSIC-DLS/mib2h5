@@ -25,8 +25,8 @@ jobs:
     steps:
       - name: Install build dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y wget
+          apt-get update
+          apt-get install -y wget
 
       - name: Cache HDF5 build
         id: cache-hdf5
@@ -93,8 +93,8 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y autoconf automake libtool pkg-config
+          apt-get update
+          apt-get install -y autoconf automake libtool pkg-config
 
       - name: Generate configure script
         run: autoreconf -i
@@ -168,8 +168,8 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y autoconf automake libtool pkg-config
+          apt-get update
+          apt-get install -y autoconf automake libtool pkg-config
 
       - name: Generate configure script
         run: autoreconf -i
