@@ -24,7 +24,9 @@ jobs:
     name: Build HDF5 - ${{ matrix.name }}
     steps:
       - name: Install build dependencies
-        run: sudo apt-get update && sudo apt-get install -y wget
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget
 
       - name: Cache HDF5 build
         id: cache-hdf5
