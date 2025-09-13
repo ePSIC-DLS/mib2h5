@@ -12,6 +12,7 @@
 // long options structure for getopt_long
 static const struct option long_options[] = {
   {"help", no_argument, NULL, 'h'},
+  {"version", no_argument, NULL, 'v'},
   {"no-metadata", no_argument, NULL, 'N'},
   {"with-metadata", no_argument, NULL, 'M'},
   {"output-dir", required_argument, NULL, 'o'},
@@ -40,6 +41,7 @@ static void print_usage(const char *program_name)
   fprintf(stderr, "                                - NOT YET IMPLEMENTED\n");
   fprintf(stderr, "  -t, --timeout SECS            Timeout in seconds\n");
   fprintf(stderr, "                                - NOT YET IMPLEMENTED\n");
+  fprintf(stderr, "  -v, --version                 Display the version\n");
   fprintf(stderr, "  -h, --help                    Show this help message\n");
   fprintf(stderr, "\nEnvironment variables:\n");
   fprintf(stderr, "  MIB2H5_SHUFFLE                Shuffle level for Blosc compression (default: 2)\n");
@@ -61,7 +63,7 @@ int main(int argc, char *argv[])
 
   // parse options
   int option_index = 0;
-  while ((opt = getopt_long(argc, argv, "o:d:k:r:t:cMNh", long_options,
+  while ((opt = getopt_long(argc, argv, "o:d:k:r:t:cMNvh", long_options,
                             &option_index)) != -1) {
     switch (opt) {
       case 'o':
@@ -94,6 +96,10 @@ int main(int argc, char *argv[])
       case 'N':
         include_metadata = false;
         break;
+      case 'v':
+        printf("%d.%d.%d\n", MIB2H5_VERSION_MAJOR, MIB2H5_VERSION_MINOR,
+               MIB2H5_VERSION_PATCH);
+        return 0;
       case 'h':
         print_usage(argv[0]);
         return 0;

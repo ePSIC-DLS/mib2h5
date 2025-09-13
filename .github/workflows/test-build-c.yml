@@ -1,0 +1,206 @@
+name: C Build Tests
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # build different hdf5 artefacts
+  build-hdf5:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        include:
+          - name: system
+            prefix: /usr/local
+            artefact-name: hdf5-system
+          - name: custom
+            prefix: /opt/hdf5
+            artefact-name: hdf5-custom
+    container: gcc:7
+    name: Build HDF5 - ${{ matrix.name }}
+    steps:
+      - name: Use archive repositories for Debian Buster
+        run: |
+          sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list
+          sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list
+          sed -i '/buster-updates/d' /etc/apt/sources.list
+
+      - name: Install build dependencies
+        run: |
+          apt-get update
+          apt-get install -y wget
+
+      - name: Cache HDF5 build
+        id: cache-hdf5
+        uses: actions/cache@v4
+        with:
+          path: /tmp/${{ matrix.artefact-name }}
+          key: hdf5-1.14.6-${{ matrix.name }}-gcc7-${{ runner.os }}-v1
+          restore-keys: |
+            hdf5-1.14.6-${{ matrix.name }}-gcc7-${{ runner.os }}-
+            hdf5-1.14.6-${{ matrix.name }}-gcc7-
+
+      - name: Download and build HDF5
+        if: steps.cache-hdf5.outputs.cache-hit != 'true'
+        run: |
+          # use HDF5 1.14.x
+          wget https://github.com/HDFGroup/hdf5/releases/download/hdf5_1.14.6/hdf5-1.14.6.tar.gz
+          tar -xzf hdf5-1.14.6.tar.gz
+          cd hdf5-1.14.6
+
+          # configure for specified prefix
+          ./configure --prefix=${{ matrix.prefix }}
+          make -j$(nproc)
+
+          # staged for artefact
+          make install DESTDIR=/tmp/${{ matrix.artefact-name }}
+
+      - name: Create tarball artefact
+        run: |
+          cd /tmp/${{ matrix.artefact-name }}
+          tar -czf /tmp/${{ matrix.artefact-name }}.tar.gz .
+
+      - name: Upload HDF5 artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artefact-name }}
+          path: /tmp/${{ matrix.artefact-name }}.tar.gz
+          retention-days: 7
+          compression-level: 0
+
+  # test gcc 7-14
+  test-gcc-versions:
+    needs: build-hdf5
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        gcc-version: [7, 8, 9, 10, 11, 12, 13, 14]
+    container: gcc:${{ matrix.gcc-version }}
+    name: GCC ${{ matrix.gcc-version }} - system-wide installation
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Download HDF5 system artefact
+        uses: actions/download-artifact@v4
+        with:
+          name: hdf5-system
+
+      - name: Install HDF5 system-wide
+        run: |
+          tar -xzf hdf5-system.tar.gz -C /
+          ldconfig
+
+      - name: Use archive repositories for Debian Buster
+        if: matrix.gcc-version == 7 || matrix.gcc-version == 8
+        run: |
+          # gcc 7, 8 use debian buster which reached EOL
+          sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list
+          sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list
+          sed -i '/buster-updates/d' /etc/apt/sources.list
+
+      - name: Install build dependencies
+        run: |
+          apt-get update
+          apt-get install -y autoconf automake libtool pkg-config
+
+      - name: Generate configure script
+        run: autoreconf -i
+
+      - name: Run build test
+        run: |
+          ./tests/test_build/test_build_c.sh --only system
+
+      - name: Upload test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-gcc-${{ matrix.gcc-version }}-system
+          path: tests/test_build/logs/
+          retention-days: 7
+
+  # test different methods of specifying HDF5
+  test-hdf5-methods:
+    needs: build-hdf5
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # system-wide
+          - method: system
+            artefact: hdf5-system
+            test-name: system
+            setup: ""
+            lib-path: ""
+            description: "system-wide HDF5 at /usr/local"
+
+          # explicit path
+          - method: explicit
+            artefact: hdf5-custom
+            test-name: explicit
+            setup: "export HDF5_TEST_PATH=/opt/hdf5"
+            lib-path: /opt/hdf5/lib
+            description: "explicit --with-hdf5=/opt/hdf5"
+
+          # via environment variable
+          - method: env_var
+            artefact: hdf5-custom
+            test-name: hdf5_root
+            setup: "export HDF5_ROOT=/opt/hdf5"
+            lib-path: /opt/hdf5/lib
+            description: "environment variable HDF5_ROOT"
+
+    container: gcc:11
+    name: HDF5 ${{ matrix.method }}
+    env:
+      LD_LIBRARY_PATH: ${{ matrix.lib-path }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Download HDF5 artefact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artefact }}
+
+      - name: Install HDF5
+        run: |
+          echo "Installing HDF5 for: ${{ matrix.description }}"
+          tar -xzf ${{ matrix.artefact }}.tar.gz -C /
+          # update library cache for system-wide installation
+          if [ "${{ matrix.method }}" = "system" ]; then
+            ldconfig
+          fi
+
+      - name: Install build dependencies
+        run: |
+          apt-get update
+          apt-get install -y autoconf automake libtool pkg-config
+
+      - name: Generate configure script
+        run: autoreconf -i
+
+      - name: Run build test
+        run: |
+          # set test-specific environment
+          ${{ matrix.setup }}
+
+          # run test
+          echo "Testing: ${{ matrix.description }}"
+          ./tests/test_build/test_build_c.sh --only ${{ matrix.test-name }}
+
+      - name: Upload test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-hdf5-${{ matrix.method }}
+          path: tests/test_build/logs/
+          retention-days: 7
