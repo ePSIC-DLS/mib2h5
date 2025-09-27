@@ -128,7 +128,7 @@ def main() -> int:
     # validate input files exist
     missing_files = []
     for filepath in args.input_files:
-        if not Path(filepath).exists:
+        if not Path(filepath).exists():
             missing_files.append(filepath)
 
     if missing_files:
