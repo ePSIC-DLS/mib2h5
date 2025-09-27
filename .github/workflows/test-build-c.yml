@@ -69,7 +69,6 @@ jobs:
         with:
           name: ${{ matrix.artefact-name }}
           path: /tmp/${{ matrix.artefact-name }}.tar.gz
-          retention-days: 7
           compression-level: 0
 
   # test gcc 7-14
