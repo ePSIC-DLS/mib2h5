@@ -1,0 +1,11 @@
+"""Constants for mib2h5 package."""
+
+# default values matching C implementation
+DEFAULT_OUTPUT_DIRECTORY = None
+DEFAULT_DATASET_KEY = "/data"
+DEFAULT_INCLUDE_METADATA = True
+DEFAULT_METADATA_KEY = "/metadata"
+DEFAULT_USE_COMPRESSION = False
+DEFAULT_RESHAPE_DIMS = None
+DEFAULT_REPORT_PROGRESS = True
+DEFAULT_TIMEOUT_SECONDS = 900

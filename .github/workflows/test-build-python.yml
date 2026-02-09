@@ -1,0 +1,116 @@
+name: Python Build Tests
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  # build hdf5 library for python tests
+  build-hdf5:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container: gcc:7
+    name: Build HDF5
+    steps:
+      - name: Cache HDF5 build
+        id: cache-hdf5
+        uses: actions/cache@v4
+        with:
+          path: /tmp/hdf5-python
+          key: hdf5-1.14.6-python-gcc7-${{ runner.os }}-v1
+          restore-keys: |
+            hdf5-1.14.6-python-gcc7-${{ runner.os }}-
+            hdf5-1.14.6-python-gcc7-
+
+      - name: Download and build HDF5
+        if: steps.cache-hdf5.outputs.cache-hit != 'true'
+        run: |
+          # use archive repositories for Debian Buster
+          sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list
+          sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list
+          sed -i '/buster-updates/d' /etc/apt/sources.list
+          apt-get update && apt-get install -y wget
+
+          # use HDF5 1.14.x
+          wget https://github.com/HDFGroup/hdf5/releases/download/hdf5_1.14.6/hdf5-1.14.6.tar.gz
+          tar -xzf hdf5-1.14.6.tar.gz
+          cd hdf5-1.14.6
+
+          # configure for /opt/hdf5
+          ./configure --prefix=/opt/hdf5
+          make -j$(nproc)
+
+          # staged for artefact
+          make install DESTDIR=/tmp/hdf5-python
+
+      - name: Create tarball artefact
+        run: |
+          cd /tmp/hdf5-python
+          tar -czf /tmp/hdf5-python.tar.gz .
+
+      - name: Upload HDF5 artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hdf5-python
+          path: /tmp/hdf5-python.tar.gz
+          compression-level: 0
+
+  # test python installation methods
+  test-python:
+    needs: build-hdf5
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      HDF5_ROOT: /opt/hdf5
+      LD_LIBRARY_PATH: /opt/hdf5/lib
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        install-method: ["standard"]
+        include:
+          # add editable and pipx test for lowest-supported Python
+          - python-version: "3.10"
+            install-method: "editable"
+          - python-version: "3.10"
+            install-method: "pipx"
+    name: Python ${{ matrix.python-version }} - ${{ matrix.install-method }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool
+          # install pipx only when needed
+          if [[ "${{ matrix.install-method }}" == "pipx" ]]; then
+            sudo apt-get install -y pipx
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Download HDF5 artefact
+        uses: actions/download-artifact@v4
+        with:
+          name: hdf5-python
+
+      - name: Install HDF5
+        run: |
+          sudo tar -xzf hdf5-python.tar.gz -C /
+
+      - name: Run build test
+        run: |
+          ./tests/test_build/test_build_python.sh --only ${{ matrix.install-method }}
+
+      - name: Upload test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-py${{ matrix.python-version }}-${{ matrix.install-method }}
+          path: tests/test_build/logs/
+          retention-days: 7
